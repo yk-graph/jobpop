@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Montserrat, Geist_Mono } from 'next/font/google';
+import { ThemeProvider } from '@/providers/theme-provider';
 import './globals.css';
 
 const montserrat = Montserrat({
@@ -19,8 +20,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body className={`${montserrat.variable} ${geistMono.variable} antialiased`}>{children}</body>
-    </html>
+    <>
+      <html lang="en" suppressHydrationWarning>
+        <head />
+        <body className={`${montserrat.variable} ${geistMono.variable} antialiased`}>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            {children}
+          </ThemeProvider>
+        </body>
+      </html>
+    </>
   );
 }
