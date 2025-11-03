@@ -4,11 +4,10 @@ import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 import Instagram from 'next-auth/providers/instagram';
 
-import { verifyPassword } from '@/utils/password';
-
+import { getUserByEmail } from '@/actions/auth';
 import { prisma } from '@/lib/prisma';
 import { loginSchema } from '@/lib/zod';
-import { getUserByEmail } from '@/actions/auth';
+import { verifyPassword } from '@/utils/password';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
