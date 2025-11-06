@@ -28,9 +28,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const { email, password } = validatedFields.data;
 
           const user = await getUserByEmail(email);
-          if (!user || !user.password) return null;
+          if (!user || !user.hashedPassword) return null;
 
-          const passwordsMatch = await verifyPassword(password, user.password);
+          const passwordsMatch = await verifyPassword(password, user.hashedPassword);
 
           if (passwordsMatch) return user;
         }
