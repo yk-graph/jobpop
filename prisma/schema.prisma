@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../src/generated"
 }
 
@@ -13,20 +13,20 @@ datasource db {
 // ============================================
 
 enum EmploymentType {
-  FULL_TIME   // 正社員
-  PART_TIME   // パート・アルバイト
-  CONTRACT    // 契約社員
-  INTERNSHIP  // インターン
-  FREELANCE   // フリーランス
+  FULL_TIME // 正社員
+  PART_TIME // パート・アルバイト
+  CONTRACT // 契約社員
+  INTERNSHIP // インターン
+  FREELANCE // フリーランス
 }
 
 enum ApplicationStatus {
-  APPLIED    // 応募済み
-  REVIEWING  // 選考中
-  INTERVIEW  // 面接段階
-  ACCEPTED   // 採用
-  REJECTED   // 不採用
-  WITHDRAWN  // 応募取り下げ
+  APPLIED // 応募済み
+  REVIEWING // 選考中
+  INTERVIEW // 面接段階
+  ACCEPTED // 採用
+  REJECTED // 不採用
+  WITHDRAWN // 応募取り下げ
 }
 
 // ============================================
@@ -34,50 +34,50 @@ enum ApplicationStatus {
 // ============================================
 
 model User {
-  id              String    @id @default(cuid())               // ユーザーの一意識別子
-  name            String?                                      // ユーザー名（OAuth時に取得、任意）
-  email           String?   @unique                            // メールアドレス（OAuth時は共有拒否の可能性あり、credentials認証時は必須）
-  emailVerified   DateTime? @map("email_verified")             // メール認証完了日時（メール認証済みの場合のみ）
-  image           String?                                      // プロフィール画像URL（OAuthプロバイダーから取得）
-  hashedPassword  String?   @map("hashed_password")            // ハッシュ化されたパスワード（credentials認証の場合のみ、OAuth時はnull）
-  createdAt       DateTime  @default(now()) @map("created_at") // アカウント作成日時
-  updatedAt       DateTime  @updatedAt @map("updated_at")      // アカウント更新日時
+  id             String    @id @default(cuid()) // ユーザーの一意識別子
+  name           String? // ユーザー名（OAuth時に取得、任意）
+  email          String?   @unique // メールアドレス（OAuth時は共有拒否の可能性あり、credentials認証時は必須）
+  emailVerified  DateTime? @map("email_verified") // メール認証完了日時（メール認証済みの場合のみ）
+  image          String? // プロフィール画像URL（OAuthプロバイダーから取得）
+  hashedPassword String?   @map("hashed_password") // ハッシュ化されたパスワード（credentials認証の場合のみ、OAuth時はnull）
+  createdAt      DateTime  @default(now()) @map("created_at") // アカウント作成日時
+  updatedAt      DateTime  @updatedAt @map("updated_at") // アカウント更新日時
 
   // リレーション
-  accounts      Account[]        // 紐付けられたOAuthアカウント（Google, Instagramなど）
-  sessions      Session[]        // アクティブなセッション情報
-  applications  JobApplication[] // ユーザーが応募した求人
+  accounts     Account[] // 紐付けられたOAuthアカウント（Google, Instagramなど）
+  sessions     Session[] // アクティブなセッション情報
+  applications JobApplication[] // ユーザーが応募した求人
 
   @@map("users")
 }
 
 model Account {
-  id                 String  @id @default(cuid())        // アカウントレコードの一意識別子
-  userId             String  @map("user_id")             // 紐付けられるユーザーID
-  type               String                              // アカウントタイプ（通常は"oauth"）
-  provider           String                              // 認証プロバイダー名（"google", "instagram", "credentials"）
-  providerAccountId  String  @map("provider_account_id") // プロバイダー側のユーザーID
-  refresh_token      String? @db.Text                    // OAuthリフレッシュトークン（長期アクセス用）
-  access_token       String? @db.Text                    // OAuthアクセストークン（API呼び出し用）
-  expires_at         Int?                                // アクセストークンの有効期限（UNIX timestamp）
-  token_type         String?                             // トークンタイプ（通常は"Bearer"）
-  scope              String?                             // 許可されたスコープ（権限範囲）
-  id_token           String? @db.Text                    // OpenID ConnectのIDトークン
-  session_state      String?                             // OAuthセッション状態
+  id                String  @id @default(cuid()) // アカウントレコードの一意識別子
+  userId            String  @map("user_id") // 紐付けられるユーザーID
+  type              String // アカウントタイプ（通常は"oauth"）
+  provider          String // 認証プロバイダー名（"google", "instagram", "credentials"）
+  providerAccountId String  @map("provider_account_id") // プロバイダー側のユーザーID
+  refresh_token     String? @db.Text // OAuthリフレッシュトークン（長期アクセス用）
+  access_token      String? @db.Text // OAuthアクセストークン（API呼び出し用）
+  expires_at        Int? // アクセストークンの有効期限（UNIX timestamp）
+  token_type        String? // トークンタイプ（通常は"Bearer"）
+  scope             String? // 許可されたスコープ（権限範囲）
+  id_token          String? @db.Text // OpenID ConnectのIDトークン
+  session_state     String? // OAuthセッション状態
 
   // リレーション
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([provider, providerAccountId])  // 同じプロバイダーで同じアカウントは1つのみ
+  @@unique([provider, providerAccountId]) // 同じプロバイダーで同じアカウントは1つのみ
   @@map("accounts")
 }
 
 model Session {
-  id           String   @id @default(cuid())          // セッションレコードの一意識別子
+  id           String   @id @default(cuid()) // セッションレコードの一意識別子
   sessionToken String   @unique @map("session_token") // セッション識別用トークン（Cookie等に保存）
-  userId       String   @map("user_id")               // セッションに紐付くユーザーID
-  expires      DateTime                               // セッションの有効期限
-  
+  userId       String   @map("user_id") // セッションに紐付くユーザーID
+  expires      DateTime // セッションの有効期限
+
   // リレーション
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -85,9 +85,9 @@ model Session {
 }
 
 model VerificationToken {
-  identifier String           // トークンの識別子（通常はメールアドレス）
+  identifier String // トークンの識別子（通常はメールアドレス）
   token      String   @unique // 認証用のランダムトークン
-  expires    DateTime         // トークンの有効期限
+  expires    DateTime // トークンの有効期限
 
   @@unique([identifier, token]) // 識別子とトークンの組み合わせで一意
   @@map("verification_tokens")
@@ -98,38 +98,38 @@ model VerificationToken {
 // ============================================
 
 model Job {
-  id              String          @id @default(cuid())    // 求人の一意識別子
-  title           String          @db.VarChar(255)        // 求人タイトル（例: フロントエンドエンジニア）
-  company         String          @db.VarChar(255)        // 企業名
-  description     String          @db.Text                // 求人の詳細説明（業務内容、必要スキルなど）
-  location        String?         @db.VarChar(255)        // 勤務地（任意）
-  salary          String?         @db.VarChar(100)        // 給与情報（任意、例: 500万円〜800万円）
-  employmentType  EmploymentType? @map("employment_type") // 雇用形態（正社員、契約社員など）
-  
-  isActive        Boolean         @default(true) @map("is_active")   // 求人の公開状態（true: 公開中、false: 非公開）
-  createdAt       DateTime        @default(now()) @map("created_at") // 求人作成日時
-  updatedAt       DateTime        @updatedAt @map("updated_at")      // 求人更新日時
+  id             String          @id @default(cuid()) // 求人の一意識別子
+  title          String          @db.VarChar(255) // 求人タイトル（例: フロントエンドエンジニア）
+  company        String          @db.VarChar(255) // 企業名
+  description    String          @db.Text // 求人の詳細説明（業務内容、必要スキルなど）
+  location       String?         @db.VarChar(255) // 勤務地（任意）
+  salary         String?         @db.VarChar(100) // 給与情報（任意、例: 500万円〜800万円）
+  employmentType EmploymentType? @map("employment_type") // 雇用形態（正社員、契約社員など）
+
+  isActive  Boolean  @default(true) @map("is_active") // 求人の公開状態（true: 公開中、false: 非公開）
+  createdAt DateTime @default(now()) @map("created_at") // 求人作成日時
+  updatedAt DateTime @updatedAt @map("updated_at") // 求人更新日時
 
   // リレーション
-  applications    JobApplication[]  // この求人への応募一覧
+  applications JobApplication[] // この求人への応募一覧
 
-  @@index([isActive, createdAt])  // 公開中の求人を作成日順で検索しやすくするインデックス
+  @@index([isActive, createdAt]) // 公開中の求人を作成日順で検索しやすくするインデックス
   @@map("jobs")
 }
 
 model JobApplication {
-  id         String            @id @default(cuid())               // 応募レコードの一意識別子
-  userId     String            @map("user_id")                    // 応募したユーザーID
-  jobId      String            @map("job_id")                     // 応募先の求人ID
-  status     ApplicationStatus @default(APPLIED)                  // 応募のステータス（応募済み、選考中など）
-  appliedAt  DateTime          @default(now()) @map("applied_at") // 応募日時
+  id        String            @id @default(cuid()) // 応募レコードの一意識別子
+  userId    String            @map("user_id") // 応募したユーザーID
+  jobId     String            @map("job_id") // 応募先の求人ID
+  status    ApplicationStatus @default(APPLIED) // 応募のステータス（応募済み、選考中など）
+  appliedAt DateTime          @default(now()) @map("applied_at") // 応募日時
 
   // リレーション
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)  // ユーザー削除時に応募履歴も削除
-  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)   // 求人削除時に応募履歴も削除
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade) // ユーザー削除時に応募履歴も削除
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade) // 求人削除時に応募履歴も削除
 
-  @@unique([userId, jobId])  // 同じユーザーが同じ求人に複数回応募することを防ぐ
-  @@index([userId])          // ユーザーの応募履歴を検索しやすくするインデックス
-  @@index([jobId])           // 求人への応募者一覧を検索しやすくするインデックス
+  @@unique([userId, jobId]) // 同じユーザーが同じ求人に複数回応募することを防ぐ
+  @@index([userId]) // ユーザーの応募履歴を検索しやすくするインデックス
+  @@index([jobId]) // 求人への応募者一覧を検索しやすくするインデックス
   @@map("job_applications")
 }
