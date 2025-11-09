@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { Montserrat, Geist_Mono } from 'next/font/google';
-import { ThemeProvider } from '@/providers/theme-provider';
 import './globals.css';
 
 const montserrat = Montserrat({
@@ -23,11 +22,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <>
       <html lang="en" suppressHydrationWarning>
         <head />
-        <body className={`${montserrat.variable} ${geistMono.variable} antialiased`}>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            {children}
-          </ThemeProvider>
-        </body>
+        <body className={`${montserrat.variable} ${geistMono.variable} antialiased`}>{children}</body>
       </html>
     </>
   );
