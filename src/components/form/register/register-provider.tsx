@@ -1,12 +1,15 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useTransition } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
+import { register } from '@/actions';
+import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
+import { Spinner } from '@/components/ui/spinner';
 import { registerSchema, RegisterSchemaType } from '@/lib/zod';
 
 interface RegisterProviderProps {
@@ -15,6 +18,7 @@ interface RegisterProviderProps {
 
 export function RegisterProvider({ children }: RegisterProviderProps) {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(registerSchema),
@@ -23,54 +27,47 @@ export function RegisterProvider({ children }: RegisterProviderProps) {
       password: '',
       confirmPassword: '',
     },
+    mode: 'onSubmit',
   });
 
   async function onSubmit(values: RegisterSchemaType) {
-    try {
-      // ここで実際の登録APIを呼び出す
-      // 仮実装として、登録成功後に自動ログイン
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+    startTransition(async () => {
+      try {
+        const registerResult = await register(values);
+
+        if (!registerResult.success) {
+          form.setError('email', {
+            type: 'server',
+            message: registerResult.message,
+          });
+          return;
+        }
+
+        await signIn('credentials', {
           email: values.email,
           password: values.password,
-        }),
-      });
+          redirect: false,
+        });
 
-      if (!response.ok) {
-        const error = await response.json();
-        form.setError('email', { message: error.message || 'Registration failed' });
-        return;
+        router.push('/dashboard');
+      } catch (error) {
+        console.error('💥 Unexpected error during registration:', error);
+        form.setError('email', {
+          type: 'server',
+          message: 'An unexpected error occurred. Please try again.',
+        });
       }
-
-      // 登録成功後、自動ログイン
-      const result = await signIn('credentials', {
-        email: values.email,
-        password: values.password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        console.log('❌ Auto login failed:', result.error);
-        // 登録は成功したが自動ログインに失敗した場合、ログインページにリダイレクト
-        router.push('/login');
-      } else {
-        console.log('✅ Registration and auto login successful, redirecting...');
-        router.push('/');
-      }
-    } catch (error) {
-      console.error('💥 Registration error:', error);
-      form.setError('email', { message: 'An error occurred during registration' });
-    }
+    });
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
         {children}
+        <Button type="submit" variant="secondary" className="w-full mt-2">
+          {isPending ? <Spinner /> : null}
+          {isPending ? 'Creating Account...' : 'Create Account'}
+        </Button>
       </form>
     </Form>
   );
