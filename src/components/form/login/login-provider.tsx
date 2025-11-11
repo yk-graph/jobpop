@@ -1,12 +1,15 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useTransition } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
+import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
+import { Spinner } from '@/components/ui/spinner';
 import { loginSchema, LoginSchemaType } from '@/lib/zod';
 
 interface LoginProviderProps {
@@ -15,6 +18,7 @@ interface LoginProviderProps {
 
 export function LoginProvider({ children }: LoginProviderProps) {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
@@ -25,30 +29,35 @@ export function LoginProvider({ children }: LoginProviderProps) {
   });
 
   async function onSubmit(values: LoginSchemaType) {
-    try {
+    startTransition(async () => {
       const result = await signIn('credentials', {
         email: values.email,
         password: values.password,
         redirect: false,
       });
 
-      if (result?.error) {
-        console.log('❌ Login failed:', result.error);
-        form.setError('email', { message: 'Login failed' });
-      } else {
-        console.log('✅ Login successful, redirecting...');
-        router.push('/');
+      if (!result.ok) {
+        toast.error('Login Failed', {
+          description: 'Please check your email and password and try again.',
+        });
+        return;
       }
-    } catch (error) {
-      console.error('💥 Login error:', error);
-      form.setError('email', { message: 'An error occurred' });
-    }
+
+      toast.success('Welcome back!', {
+        description: 'You have been successfully signed in.',
+      });
+
+      router.push(result.url || '/');
+    });
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
         {children}
+        <Button type="submit" variant="secondary" className="w-full mt-2">
+          {isPending ? <Spinner /> : 'Sign In'}
+        </Button>
       </form>
     </Form>
   );

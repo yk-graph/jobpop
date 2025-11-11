@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { register } from '@/actions';
 import { Button } from '@/components/ui/button';
@@ -32,31 +33,32 @@ export function RegisterProvider({ children }: RegisterProviderProps) {
 
   async function onSubmit(values: RegisterSchemaType) {
     startTransition(async () => {
-      try {
-        const registerResult = await register(values);
+      const registerResult = await register(values);
 
-        if (!registerResult.success) {
-          form.setError('email', {
-            type: 'server',
-            message: registerResult.message,
-          });
-          return;
-        }
-
-        await signIn('credentials', {
-          email: values.email,
-          password: values.password,
-          redirect: false,
+      if (!registerResult.success) {
+        toast.error('Registration Failed', {
+          description: registerResult.message,
         });
-
-        router.push('/dashboard');
-      } catch (error) {
-        console.error('💥 Unexpected error during registration:', error);
-        form.setError('email', {
-          type: 'server',
-          message: 'An unexpected error occurred. Please try again.',
-        });
+        return;
       }
+
+      const signInResult = await signIn('credentials', {
+        email: values.email,
+        password: values.password,
+        redirect: false,
+      });
+
+      if (!signInResult.ok) {
+        toast.error('Login Failed', {
+          description: 'Please try signing in manually with your new account.',
+        });
+        return;
+      }
+
+      toast.success('Account Created!', {
+        description: 'Account has been created and Signed in.',
+      });
+      router.push(signInResult.url || '/');
     });
   }
 
@@ -65,8 +67,7 @@ export function RegisterProvider({ children }: RegisterProviderProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
         {children}
         <Button type="submit" variant="secondary" className="w-full mt-2">
-          {isPending ? <Spinner /> : null}
-          {isPending ? 'Creating Account...' : 'Create Account'}
+          {isPending ? <Spinner /> : 'Create Account'}
         </Button>
       </form>
     </Form>

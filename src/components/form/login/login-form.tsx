@@ -2,15 +2,11 @@
 
 import { useFormContext } from 'react-hook-form';
 
-import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
 export function LoginForm() {
-  const { control, formState } = useFormContext();
-
-  const isDisabled = !formState.isValid || !formState.isDirty || formState.isSubmitting;
-  console.log(formState.errors);
+  const { control } = useFormContext();
 
   return (
     <>
@@ -41,10 +37,6 @@ export function LoginForm() {
           </FormItem>
         )}
       />
-
-      <Button type="submit" variant="secondary" disabled={isDisabled} className="w-full mt-2">
-        {formState.isSubmitting ? 'Signing in...' : 'Sign In'}
-      </Button>
     </>
   );
 }
