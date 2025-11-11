@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Montserrat, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
+import { Toaster } from '@/components/ui/sonner';
+
 const montserrat = Montserrat({
   variable: '--font-montserrat',
   subsets: ['latin'],
@@ -21,8 +23,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <>
       <html lang="en" suppressHydrationWarning>
-        <head />
         <body className={`${montserrat.variable} ${geistMono.variable} antialiased`}>{children}</body>
+        <Toaster />
       </html>
     </>
   );
