@@ -21,12 +21,14 @@ export function OAuthButtons() {
       if (!result.ok) {
         toast.error('Login Failed', {
           description: 'Please try again or use a different sign-in method.',
+          richColors: true,
         });
         return;
       }
 
       toast.success('Welcome back!', {
         description: 'You have been successfully signed in.',
+        richColors: true,
       });
     });
   };

@@ -1,39 +1,28 @@
 'use server';
 
-import bcrypt from 'bcryptjs';
 import { ZodError } from 'zod';
 import { AuthError } from 'next-auth';
 
 import { prisma } from '@/lib/prisma';
-import { registerSchema, RegisterSchemaType } from '@/lib/zod';
+import { loginSchema, LoginSchemaType } from '@/lib/zod';
 import { ServerActionResult } from '@/types';
 import { signIn } from '@/lib/auth';
 
-export async function register(data: RegisterSchemaType): Promise<ServerActionResult<{ userId: string }>> {
+export async function login(data: LoginSchemaType): Promise<ServerActionResult<{ userId: string }>> {
   try {
     // Tips: safeParseではなくparseを使うとエラーが発生した場合にZodErrorがthrowされる
-    const validatedData = registerSchema.parse(data);
+    const validatedData = loginSchema.parse(data);
 
-    const { email, password } = validatedData;
+    const { email } = validatedData;
 
-    const existingUser = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (existingUser) {
-      throw new Error('User already exists');
+    if (!user) {
+      throw new Error('Invalid email or password');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await prisma.user.create({
-      data: {
-        email,
-        hashedPassword,
-      },
-    });
-
-    // 登録後に自動ログイン
     await signIn('credentials', {
       email: validatedData.email,
       password: validatedData.password,
@@ -42,7 +31,7 @@ export async function register(data: RegisterSchemaType): Promise<ServerActionRe
 
     return {
       success: true,
-      message: 'Account Created and Signed In!',
+      message: 'Successfully Signed In!',
       data: { userId: user.id },
     };
   } catch (error: unknown) {
@@ -58,12 +47,12 @@ export async function register(data: RegisterSchemaType): Promise<ServerActionRe
         case 'CredentialsSignin':
           return {
             success: false,
-            message: 'Registration successful but auto-login failed. Please sign in manually.',
+            message: 'Invalid email or password',
           };
         default:
           return {
             success: false,
-            message: 'Registration successful but authentication error occurred',
+            message: 'An unknown authentication error occurred',
           };
       }
     }

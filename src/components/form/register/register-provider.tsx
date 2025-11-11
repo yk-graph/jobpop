@@ -2,7 +2,6 @@
 
 import { ReactNode, useTransition } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -33,32 +32,21 @@ export function RegisterProvider({ children }: RegisterProviderProps) {
 
   async function onSubmit(values: RegisterSchemaType) {
     startTransition(async () => {
-      const registerResult = await register(values);
+      const result = await register(values);
 
-      if (!registerResult.success) {
+      if (!result.success) {
         toast.error('Registration Failed', {
-          description: registerResult.message,
+          description: result.message,
+          richColors: true,
         });
         return;
       }
 
-      const signInResult = await signIn('credentials', {
-        email: values.email,
-        password: values.password,
-        redirect: false,
+      toast.success('Welcome!', {
+        description: result.message,
+        richColors: true,
       });
-
-      if (!signInResult.ok) {
-        toast.error('Login Failed', {
-          description: 'Please try signing in manually with your new account.',
-        });
-        return;
-      }
-
-      toast.success('Account Created!', {
-        description: 'Account has been created and Signed in.',
-      });
-      router.push(signInResult.url || '/');
+      router.push('/');
     });
   }
 

@@ -2,11 +2,11 @@
 
 import { ReactNode, useTransition } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { login } from '@/actions';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Spinner } from '@/components/ui/spinner';
@@ -30,24 +30,22 @@ export function LoginProvider({ children }: LoginProviderProps) {
 
   async function onSubmit(values: LoginSchemaType) {
     startTransition(async () => {
-      const result = await signIn('credentials', {
-        email: values.email,
-        password: values.password,
-        redirect: false,
-      });
+      const result = await login(values);
 
-      if (!result.ok) {
+      if (!result.success) {
         toast.error('Login Failed', {
-          description: 'Please check your email and password and try again.',
+          description: result.message,
+          richColors: true,
         });
         return;
       }
 
       toast.success('Welcome back!', {
-        description: 'You have been successfully signed in.',
+        description: result.message,
+        richColors: true,
       });
 
-      router.push(result.url || '/');
+      router.push('/');
     });
   }
 

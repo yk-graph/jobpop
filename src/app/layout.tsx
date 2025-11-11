@@ -21,11 +21,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <>
-      <html lang="en" suppressHydrationWarning>
-        <body className={`${montserrat.variable} ${geistMono.variable} antialiased`}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${montserrat.variable} ${geistMono.variable} antialiased`}>
         <Toaster />
-      </html>
-    </>
+        {children}
+      </body>
+    </html>
   );
 }
