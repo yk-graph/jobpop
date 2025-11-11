@@ -1,7 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { OAuthButtons } from './_components/oauth-buttons';
+import { GoogleButton } from '@/components/button';
+import { DividerLine } from '@/components/common';
 import { LoginForm, LoginProvider } from '@/components/form';
 import { Button } from '@/components/ui/button';
 
@@ -12,17 +13,12 @@ export default function LoginPage() {
         <Image src="/images/jobpop-logo.png" alt="Logo" width={200} height={200} />
 
         {/* OAuthボタン */}
-        <OAuthButtons />
+        <div className="w-full space-y-6">
+          <GoogleButton />
+        </div>
 
         {/* 区切り線 */}
-        <div className="relative w-full">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-background text-muted-foreground">or</span>
-          </div>
-        </div>
+        <DividerLine />
 
         {/* ログインフォーム */}
         <LoginProvider>

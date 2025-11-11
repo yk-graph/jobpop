@@ -10,7 +10,8 @@ import { signIn } from '@/lib/auth';
 
 export async function login(data: LoginSchemaType): Promise<ServerActionResult<{ userId: string }>> {
   try {
-    // Tips: safeParseではなくparseを使うとエラーが発生した場合にZodErrorがthrowされる
+    // Tips: parse -> エラーが発生した場合にZodErrorがthrowされる
+    // Tips: safeParse -> successプロパティとdataプロパティを持つオブジェクトを返す
     const validatedData = loginSchema.parse(data);
 
     const { email } = validatedData;

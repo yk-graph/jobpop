@@ -19,6 +19,8 @@ export default {
     }),
     Credentials({
       authorize: async (credentials) => {
+        // Tips: parse -> エラーが発生した場合にZodErrorがthrowされる
+        // Tips: safeParse -> successプロパティとdataプロパティを持つオブジェクトを返す
         const validatedFields = loginSchema.safeParse(credentials);
 
         if (validatedFields.success) {

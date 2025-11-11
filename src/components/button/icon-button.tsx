@@ -1,42 +1,31 @@
 'use client';
 
-import { ComponentType, ReactNode } from 'react';
-import { type VariantProps } from 'class-variance-authority';
+import { ComponentProps, ComponentType } from 'react';
 
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
 
-interface IconButtonProps extends VariantProps<typeof buttonVariants> {
+// Tips: ComponentProps<typeof Button> -> 引用元であるButtonコンポーネントで定義しているpropsを全て継承し、onClick, disabled, variant, size, classNameなど使えるようにする
+interface IconButtonProps extends ComponentProps<typeof Button> {
   icon: ComponentType<{ className?: string }>;
-  children: ReactNode;
-  onClick?: () => void;
-  disabled?: boolean;
   loading?: boolean;
-  className?: string;
   iconClassName?: string;
 }
 
 export function IconButton({
   icon: Icon,
-  children,
-  onClick,
-  disabled = false,
   loading = false,
+  disabled,
   className,
-  variant = 'secondary',
-  size = 'default',
-  iconClassName,
+  iconClassName = 'text-neutral-700',
+  children,
+  ...props
 }: IconButtonProps) {
   return (
-    <Button
-      onClick={onClick}
-      disabled={disabled || loading}
-      className={cn('w-full flex items-center gap-3', className)}
-      variant={variant}
-      size={size}
-    >
-      <Icon className={cn('text-neutral-700', iconClassName)} />
-      {loading ? 'Loading...' : children}
+    <Button disabled={disabled || loading} className={cn('flex items-center gap-3', className)} {...props}>
+      <Icon className={iconClassName} />
+      {loading ? <Spinner /> : children}
     </Button>
   );
 }

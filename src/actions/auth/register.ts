@@ -1,17 +1,18 @@
 'use server';
 
-import bcrypt from 'bcryptjs';
-import { ZodError } from 'zod';
 import { AuthError } from 'next-auth';
+import { ZodError } from 'zod';
 
+import { signIn } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { registerSchema, RegisterSchemaType } from '@/lib/zod';
 import { ServerActionResult } from '@/types';
-import { signIn } from '@/lib/auth';
+import { hashPassword } from '@/utils';
 
 export async function register(data: RegisterSchemaType): Promise<ServerActionResult<{ userId: string }>> {
   try {
-    // Tips: safeParseではなくparseを使うとエラーが発生した場合にZodErrorがthrowされる
+    // Tips: parse -> エラーが発生した場合にZodErrorがthrowされる
+    // Tips: safeParse -> successプロパティとdataプロパティを持つオブジェクトを返す
     const validatedData = registerSchema.parse(data);
 
     const { email, password } = validatedData;
@@ -24,7 +25,7 @@ export async function register(data: RegisterSchemaType): Promise<ServerActionRe
       throw new Error('User already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hashPassword(password);
 
     const user = await prisma.user.create({
       data: {
