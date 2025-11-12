@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { GoogleButton } from '@/components/button';
+import { FacebookButton, GoogleButton } from '@/components/button';
 import { DividerLine } from '@/components/common';
 import { LoginForm, LoginProvider } from '@/components/form';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ export default function LoginPage() {
         {/* OAuthボタン */}
         <div className="w-full space-y-6">
           <GoogleButton />
+          <FacebookButton />
         </div>
 
         {/* 区切り線 */}
