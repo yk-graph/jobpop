@@ -4,6 +4,7 @@ import Google from 'next-auth/providers/google';
 import Facebook from 'next-auth/providers/facebook';
 
 import { getUserByEmail } from '@/actions';
+import { getAccountById, getUserById } from '@/actions';
 import { loginSchema } from '@/lib/zod';
 import { verifyPassword } from '@/utils';
 
@@ -38,4 +39,46 @@ export default {
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token }) {
+      if (!token.sub) return token;
+
+      const existingUser = await getUserById(token.sub);
+
+      if (!existingUser.success || !existingUser.data) {
+        return token;
+      }
+
+      const existingAccount = await getAccountById(token.sub);
+
+      if (existingAccount.success && existingAccount.data) {
+        token.isOauth = !!existingAccount.data;
+      }
+
+      return token;
+    },
+    async session({ session, token }) {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.sub,
+          isOauth: token.isOauth || false,
+        },
+      };
+    },
+    async redirect({ url, baseUrl }) {
+      console.log('🔄 Redirect:', { url, baseUrl });
+
+      // Facebook認証後のリダイレクト制御 -> #_=_を除去してクリーンなURLにリダイレクト
+      if (url.includes('#_=_')) {
+        return baseUrl + '/';
+      }
+
+      // デフォルトのリダイレクト処理
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
+  },
 } satisfies NextAuthConfig;
