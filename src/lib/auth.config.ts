@@ -38,31 +38,4 @@ export default {
       },
     }),
   ],
-  callbacks: {
-    async signIn({ user, account, profile }) {
-      console.log('🔵 SignIn callback triggered');
-      console.log('🔵 User:', user);
-      console.log('🔵 Account:', account);
-      console.log('🔵 Profile:', profile);
-
-      if (account?.provider === 'instagram') {
-        console.log('🔵 Instagram signIn callback');
-        console.log('🔵 Instagram profile:', profile);
-      }
-
-      return true;
-    },
-    async session({ session, token }) {
-      console.log('🔵 Session callback');
-      console.log('🔵 Session:', session);
-      return session;
-    },
-    async jwt({ token, user, account }) {
-      console.log('🔵 JWT callback');
-      console.log('🔵 Token:', token);
-      console.log('🔵 User:', user);
-      console.log('🔵 Account:', account);
-      return token;
-    },
-  },
 } satisfies NextAuthConfig;
