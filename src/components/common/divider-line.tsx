@@ -1,8 +1,8 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils'
 
 interface DividerLineProps {
-  text?: string;
-  className?: string;
+  text?: string
+  className?: string
 }
 
 export function DividerLine({ text = 'or', className }: DividerLineProps) {
@@ -15,5 +15,5 @@ export function DividerLine({ text = 'or', className }: DividerLineProps) {
         <span className="px-2 bg-background text-muted-foreground">{text}</span>
       </div>
     </div>
-  );
+  )
 }

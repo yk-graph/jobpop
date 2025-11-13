@@ -1,8 +1,8 @@
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from 'next/image'
+import Link from 'next/link'
 
-import { RegisterForm, RegisterProvider } from '@/components/form';
-import { Button } from '@/components/ui/button';
+import { RegisterForm, RegisterProvider } from '@/components/form'
+import { Button } from '@/components/ui/button'
 
 export default function RegisterPage() {
   return (
@@ -23,5 +23,5 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

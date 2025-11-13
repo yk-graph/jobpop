@@ -1,12 +1,12 @@
-'use client';
+'use client'
 
-import { useFormContext } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form'
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 
 export function RegisterForm() {
-  const { control } = useFormContext();
+  const { control } = useFormContext()
 
   return (
     <>
@@ -52,5 +52,5 @@ export function RegisterForm() {
         )}
       />
     </>
-  );
+  )
 }

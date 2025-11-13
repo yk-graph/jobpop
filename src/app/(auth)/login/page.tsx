@@ -1,10 +1,10 @@
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from 'next/image'
+import Link from 'next/link'
 
-import { FacebookLogin, GoogleLogin } from '@/components/button';
-import { DividerLine } from '@/components/common';
-import { LoginForm, LoginProvider } from '@/components/form';
-import { Button } from '@/components/ui/button';
+import { FacebookLogin, GoogleLogin } from '@/components/button'
+import { DividerLine } from '@/components/common'
+import { LoginForm, LoginProvider } from '@/components/form'
+import { Button } from '@/components/ui/button'
 
 export default function LoginPage() {
   return (
@@ -34,5 +34,5 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -1,1 +1,1 @@
-export * from './divider-line';
+export * from './divider-line'

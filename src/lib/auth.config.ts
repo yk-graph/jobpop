@@ -1,11 +1,11 @@
-import type { NextAuthConfig } from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
-import Google from 'next-auth/providers/google';
-import Facebook from 'next-auth/providers/facebook';
+import type { NextAuthConfig } from 'next-auth'
+import Credentials from 'next-auth/providers/credentials'
+import Google from 'next-auth/providers/google'
+import Facebook from 'next-auth/providers/facebook'
 
-import { getUserByEmail } from '@/actions';
-import { loginSchema } from '@/lib/zod';
-import { verifyPassword } from '@/utils';
+import { getUserByEmail } from '@/actions'
+import { loginSchema } from '@/lib/zod'
+import { verifyPassword } from '@/utils'
 
 export default {
   providers: [
@@ -21,21 +21,21 @@ export default {
       authorize: async (credentials) => {
         // Tips: parse -> エラーが発生した場合にZodErrorがthrowされる
         // Tips: safeParse -> successプロパティとdataプロパティを持つオブジェクトを返す
-        const validatedFields = loginSchema.safeParse(credentials);
+        const validatedFields = loginSchema.safeParse(credentials)
 
         if (validatedFields.success) {
-          const { email, password } = validatedFields.data;
+          const { email, password } = validatedFields.data
 
-          const { data: user } = await getUserByEmail(email);
-          if (!user || !user.hashedPassword) return null;
+          const { data: user } = await getUserByEmail(email)
+          if (!user || !user.hashedPassword) return null
 
-          const passwordsMatch = await verifyPassword(password, user.hashedPassword);
+          const passwordsMatch = await verifyPassword(password, user.hashedPassword)
 
-          if (passwordsMatch) return user;
+          if (passwordsMatch) return user
         }
 
-        return null;
+        return null
       },
     }),
   ],
-} satisfies NextAuthConfig;
+} satisfies NextAuthConfig

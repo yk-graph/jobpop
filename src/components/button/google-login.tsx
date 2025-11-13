@@ -1,13 +1,13 @@
-'use client';
+'use client'
 
-import { useActionState } from 'react';
-import { FaGoogle } from 'react-icons/fa';
+import { useActionState } from 'react'
+import { FaGoogle } from 'react-icons/fa'
 
-import { IconButton } from '@/components/button';
-import { googleLogin } from '@/actions';
+import { IconButton } from '@/components/button'
+import { googleLogin } from '@/actions'
 
 export function GoogleLogin() {
-  const [errorMessage, formAction, isPending] = useActionState(googleLogin, null);
+  const [errorMessage, formAction, isPending] = useActionState(googleLogin, null)
 
   return (
     <form action={formAction}>
@@ -15,5 +15,5 @@ export function GoogleLogin() {
         {errorMessage ? errorMessage : 'Continue with Google'}
       </IconButton>
     </form>
-  );
+  )
 }

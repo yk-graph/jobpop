@@ -1,27 +1,27 @@
-import { FormEvent, ReactNode } from 'react';
+import { FormEvent, ReactNode } from 'react'
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 
 export interface FormCardProps {
-  title?: string;
-  description?: string;
-  className?: string;
-  headerClassName?: string;
-  contentClassName?: string;
-  footerClassName?: string;
-  children: ReactNode;
-  onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
-  submitButtonText?: string;
-  cancelButtonText?: string;
-  onCancel?: () => void;
-  isLoading?: boolean;
-  disabled?: boolean;
-  submitButtonClassName?: string;
-  cancelButtonClassName?: string;
-  showCancelButton?: boolean;
-  footerContent?: ReactNode;
+  title?: string
+  description?: string
+  className?: string
+  headerClassName?: string
+  contentClassName?: string
+  footerClassName?: string
+  children: ReactNode
+  onSubmit?: (event: FormEvent<HTMLFormElement>) => void
+  submitButtonText?: string
+  cancelButtonText?: string
+  onCancel?: () => void
+  isLoading?: boolean
+  disabled?: boolean
+  submitButtonClassName?: string
+  cancelButtonClassName?: string
+  showCancelButton?: boolean
+  footerContent?: ReactNode
 }
 
 export function FormCard({
@@ -77,7 +77,7 @@ export function FormCard({
         </CardFooter>
       </form>
     </Card>
-  );
+  )
 }
 
-export default FormCard;
+export default FormCard

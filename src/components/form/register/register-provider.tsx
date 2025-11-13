@@ -1,24 +1,24 @@
-'use client';
+'use client'
 
-import { ReactNode, useTransition } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
+import { ReactNode, useTransition } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
-import { register } from '@/actions';
-import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
-import { Spinner } from '@/components/ui/spinner';
-import { registerSchema, RegisterSchemaType } from '@/lib/zod';
+import { register } from '@/actions'
+import { Button } from '@/components/ui/button'
+import { Form } from '@/components/ui/form'
+import { Spinner } from '@/components/ui/spinner'
+import { registerSchema, RegisterSchemaType } from '@/lib/zod'
 
 interface RegisterProviderProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export function RegisterProvider({ children }: RegisterProviderProps) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
 
   const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(registerSchema),
@@ -28,26 +28,26 @@ export function RegisterProvider({ children }: RegisterProviderProps) {
       confirmPassword: '',
     },
     mode: 'onSubmit',
-  });
+  })
 
   async function onSubmit(values: RegisterSchemaType) {
     startTransition(async () => {
-      const result = await register(values);
+      const result = await register(values)
 
       if (!result.success) {
         toast.error('Registration Failed', {
           description: result.message,
           richColors: true,
-        });
-        return;
+        })
+        return
       }
 
       toast.success('Welcome!', {
         description: result.message,
         richColors: true,
-      });
-      router.push('/');
-    });
+      })
+      router.push('/')
+    })
   }
 
   return (
@@ -59,5 +59,5 @@ export function RegisterProvider({ children }: RegisterProviderProps) {
         </Button>
       </form>
     </Form>
-  );
+  )
 }

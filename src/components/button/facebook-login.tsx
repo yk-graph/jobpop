@@ -1,13 +1,13 @@
-'use client';
+'use client'
 
-import { useActionState } from 'react';
-import { FaFacebook } from 'react-icons/fa';
+import { useActionState } from 'react'
+import { FaFacebook } from 'react-icons/fa'
 
-import { IconButton } from '@/components/button';
-import { facebookLogin } from '@/actions';
+import { IconButton } from '@/components/button'
+import { facebookLogin } from '@/actions'
 
 export function FacebookLogin() {
-  const [errorMessage, formAction, isPending] = useActionState(facebookLogin, null);
+  const [errorMessage, formAction, isPending] = useActionState(facebookLogin, null)
 
   return (
     <form action={formAction}>
@@ -15,5 +15,5 @@ export function FacebookLogin() {
         {errorMessage ? errorMessage : 'Continue with Facebook'}
       </IconButton>
     </form>
-  );
+  )
 }

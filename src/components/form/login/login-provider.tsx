@@ -1,24 +1,24 @@
-'use client';
+'use client'
 
-import { ReactNode, useTransition } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
+import { ReactNode, useTransition } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
-import { login } from '@/actions';
-import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
-import { Spinner } from '@/components/ui/spinner';
-import { loginSchema, LoginSchemaType } from '@/lib/zod';
+import { login } from '@/actions'
+import { Button } from '@/components/ui/button'
+import { Form } from '@/components/ui/form'
+import { Spinner } from '@/components/ui/spinner'
+import { loginSchema, LoginSchemaType } from '@/lib/zod'
 
 interface LoginProviderProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export function LoginProvider({ children }: LoginProviderProps) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
 
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
@@ -26,27 +26,27 @@ export function LoginProvider({ children }: LoginProviderProps) {
       email: '',
       password: '',
     },
-  });
+  })
 
   async function onSubmit(values: LoginSchemaType) {
     startTransition(async () => {
-      const result = await login(values);
+      const result = await login(values)
 
       if (!result.success) {
         toast.error('Login Failed', {
           description: result.message,
           richColors: true,
-        });
-        return;
+        })
+        return
       }
 
       toast.success('Welcome back!', {
         description: result.message,
         richColors: true,
-      });
+      })
 
-      router.push('/');
-    });
+      router.push('/')
+    })
   }
 
   return (
@@ -58,5 +58,5 @@ export function LoginProvider({ children }: LoginProviderProps) {
         </Button>
       </form>
     </Form>
-  );
+  )
 }

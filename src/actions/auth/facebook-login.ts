@@ -1,16 +1,16 @@
-'use server';
+'use server'
 
-import { AuthError } from 'next-auth';
+import { AuthError } from 'next-auth'
 
-import { signIn } from '@/lib/auth';
+import { signIn } from '@/lib/auth'
 
 export async function facebookLogin() {
   try {
-    await signIn('facebook', { redirectTo: '/' });
+    await signIn('facebook', { redirectTo: '/' })
   } catch (error) {
     if (error instanceof AuthError) {
-      return error.message;
+      return error.message
     }
-    throw error;
+    throw error
   }
 }

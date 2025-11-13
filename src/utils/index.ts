@@ -1,1 +1,1 @@
-export * from '@/utils/password';
+export * from '@/utils/password'

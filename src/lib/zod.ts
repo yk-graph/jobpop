@@ -1,6 +1,6 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
-const emailValidation = z.email('email is invalid').min(1, 'email is required');
+const emailValidation = z.email('email is invalid').min(1, 'email is required')
 
 const passwordValidation = z
   .string()
@@ -8,7 +8,7 @@ const passwordValidation = z
   .max(20, 'password must be at most 20 characters long')
   .regex(/(?=.*[a-z])/, 'password must contain at least one lowercase letter')
   .regex(/(?=.*[A-Z])/, 'password must contain at least one uppercase letter')
-  .regex(/(?=.*[0-9])/, 'password must contain at least one number');
+  .regex(/(?=.*[0-9])/, 'password must contain at least one number')
 
 export const registerSchema = z
   .object({
@@ -19,12 +19,12 @@ export const registerSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: 'passwords do not match',
     path: ['confirmPassword'],
-  });
+  })
 
 export const loginSchema = z.object({
   email: emailValidation,
   password: passwordValidation,
-});
+})
 
-export type RegisterSchemaType = z.infer<typeof registerSchema>;
-export type LoginSchemaType = z.infer<typeof loginSchema>;
+export type RegisterSchemaType = z.infer<typeof registerSchema>
+export type LoginSchemaType = z.infer<typeof loginSchema>
