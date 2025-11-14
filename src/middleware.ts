@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import NextAuth, { NextAuthRequest } from 'next-auth'
 
-import authConfig from '@/lib/auth.config.edge'
+import authConfig from '@/lib/auth.config'
 
 const privateRoute = ['/mypage', '/applications', '/settings']
 const authRoute = ['/login', '/register']

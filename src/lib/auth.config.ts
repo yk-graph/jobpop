@@ -3,11 +3,10 @@ import Credentials from 'next-auth/providers/credentials'
 import Google from 'next-auth/providers/google'
 import Facebook from 'next-auth/providers/facebook'
 
-import { getUserByEmail } from '@/actions'
-import { loginSchema } from '@/lib/zod'
-import { verifyPassword } from '@/utils'
-
+// Edge Runtime対応のため、データベースアクセスを含まない軽量設定
+// middleware用の軽量設定では認証処理は無効化 -> 実際の認証は通常のauth.tsで処理
 export default {
+  trustHost: true, // ホストヘッダーを信頼する設定
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -18,22 +17,7 @@ export default {
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
     }),
     Credentials({
-      authorize: async (credentials) => {
-        // Tips: parse -> エラーが発生した場合にZodErrorがthrowされる
-        // Tips: safeParse -> successプロパティとdataプロパティを持つオブジェクトを返す
-        const validatedFields = loginSchema.safeParse(credentials)
-
-        if (validatedFields.success) {
-          const { email, password } = validatedFields.data
-
-          const { data: user } = await getUserByEmail(email)
-          if (!user || !user.hashedPassword) return null
-
-          const passwordsMatch = await verifyPassword(password, user.hashedPassword)
-
-          if (passwordsMatch) return user
-        }
-
+      authorize: () => {
         return null
       },
     }),
