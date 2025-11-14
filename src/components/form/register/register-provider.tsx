@@ -30,7 +30,7 @@ export function RegisterProvider({ children }: RegisterProviderProps) {
     mode: 'onSubmit',
   })
 
-  async function onSubmit(values: RegisterSchemaType) {
+  const onSubmit = (values: RegisterSchemaType) => {
     startTransition(async () => {
       const result = await register(values)
 
@@ -46,6 +46,7 @@ export function RegisterProvider({ children }: RegisterProviderProps) {
         description: result.message,
         richColors: true,
       })
+
       router.push('/')
     })
   }

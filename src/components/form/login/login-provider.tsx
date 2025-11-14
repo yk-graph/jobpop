@@ -28,7 +28,7 @@ export function LoginProvider({ children }: LoginProviderProps) {
     },
   })
 
-  async function onSubmit(values: LoginSchemaType) {
+  const onSubmit = (values: LoginSchemaType) => {
     startTransition(async () => {
       const result = await login(values)
 
