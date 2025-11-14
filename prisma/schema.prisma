@@ -105,22 +105,20 @@ model VerificationToken {
 }
 
 model Profile {
-  id             String    @id @default(cuid()) // プロフィールの一意識別子
-  userId         String    @unique @map("user_id") // 紐付けられるユーザーID
-  countryCode    String    @map("country_code") @db.Char(2) // "JP", "US", "CA"などの国コード
-  birthYear      Int       @map("birth_year") // 生年
-  visaType       VisaType  @map("visa_type") // ビザの種類
-  highschoolDate DateTime? @map("highschool_date") // 高校卒業日（任意）
-  universityDate DateTime? @map("university_date") // 大学卒業日（任意）
-  bio            String?   @db.Text // 自己紹介文（任意）
-  website        String?   @db.VarChar(255) // ウェブサイトURL（任意）
-  twitter        String?   @db.VarChar(100) // Twitterハンドル（任意）
-  linkedin       String?   @db.VarChar(100) // LinkedInプロフィール（任意）
-  instagram      String?   @db.VarChar(100) // Instagramハンドル（任意）
-  facebook       String?   @db.VarChar(100) // Facebookプロフィール（任意）
-  whatsapp       String?   @db.VarChar(100) // WhatsApp連絡先（任意）
-  createdAt      DateTime  @default(now()) @map("created_at") // プロフィール作成日時
-  updatedAt      DateTime  @updatedAt @map("updated_at") // プロフィール更新日時
+  id          String   @id @default(cuid()) // プロフィールの一意識別子
+  userId      String   @unique @map("user_id") // 紐付けられるユーザーID
+  countryCode String   @map("country_code") @db.Char(2) // "JP", "US", "CA"などの国コード
+  birthYear   Int      @map("birth_year") // 生年
+  visaType    VisaType @map("visa_type") // ビザの種類
+  bio         String?  @db.Text // 自己紹介文（任意）
+  website     String?  @db.VarChar(255) // ウェブサイトURL（任意）
+  twitter     String?  @db.VarChar(100) // Twitterハンドル（任意）
+  linkedin    String?  @db.VarChar(100) // LinkedInプロフィール（任意）
+  instagram   String?  @db.VarChar(100) // Instagramハンドル（任意）
+  facebook    String?  @db.VarChar(100) // Facebookプロフィール（任意）
+  whatsapp    String?  @db.VarChar(100) // WhatsApp連絡先（任意）
+  createdAt   DateTime @default(now()) @map("created_at") // プロフィール作成日時
+  updatedAt   DateTime @updatedAt @map("updated_at") // プロフィール更新日時
 
   // リレーション
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
