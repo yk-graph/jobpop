@@ -6,7 +6,7 @@ import { FaFacebook } from 'react-icons/fa'
 import { IconButton } from '@/components/button'
 import { facebookLogin } from '@/actions'
 
-export const FacebookLogin = () => {
+export function FacebookLogin() {
   const [errorMessage, formAction, isPending] = useActionState(facebookLogin, null)
 
   return (

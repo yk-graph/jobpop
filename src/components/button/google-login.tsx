@@ -6,7 +6,7 @@ import { FaGoogle } from 'react-icons/fa'
 import { IconButton } from '@/components/button'
 import { googleLogin } from '@/actions'
 
-export const GoogleLogin = () => {
+export function GoogleLogin() {
   const [errorMessage, formAction, isPending] = useActionState(googleLogin, null)
 
   return (
