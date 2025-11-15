@@ -1,3 +1,4 @@
-export type ServerActionResult<T> =
-  | { success: true; message: string; data: T }
-  | { success: false; message: string; data?: never }
+// Re-export all types
+export * from './response'
+export * from './country'
+export * from './profile'
