@@ -36,7 +36,14 @@ export function InitialProfileStep1() {
   }, [name, countryCode, birthYear, visaType])
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      <div className="space-y-0.5">
+        <h1 className="text-lg font-bold text-center">Step1 : Entry Information</h1>
+        <p className="text-sm text-center text-muted-foreground">
+          Please provide your basic information to get started.
+        </p>
+      </div>
+
       {/* Name */}
       <FormField
         control={control}
@@ -135,7 +142,7 @@ export function InitialProfileStep1() {
         )}
       />
 
-      <div className="flex justify-end pt-4">
+      <div className="flex justify-end">
         <Button onClick={handleClickNext} variant="secondary" disabled={!isValidStep1}>
           Next Step
         </Button>

@@ -3,7 +3,6 @@ import NextAuth, { NextAuthRequest } from 'next-auth'
 
 import authConfig from '@/lib/auth.config'
 
-const privateRoute = ['/mypage', '/applications', '/settings']
 const authRoute = ['/login', '/register']
 
 const { auth } = NextAuth(authConfig)
@@ -12,7 +11,8 @@ export default auth(async function middleware(req: NextAuthRequest) {
   const isLoggedIn = !!req.auth
   const { nextUrl } = req
 
-  const isPrivateRoute = privateRoute.includes(nextUrl.pathname)
+  // /settingsから始まる全てのパスをチェック
+  const isPrivateRoute = nextUrl.pathname.startsWith('/settings')
   const isAuthRoute = authRoute.includes(nextUrl.pathname)
 
   // ログインしているのに認証ページ（/login, /register）にアクセス → ホームにリダイレクト
