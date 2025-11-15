@@ -40,11 +40,8 @@ export const initialProfileSchema = z.object({
     .max(new Date().getFullYear(), `birth year cannot be in the future`),
   visaType: z.enum(VisaType).describe('visa type is required'),
   bio: z.string().max(400, 'bio must be at most 400 characters long').optional(),
-  website: z.string().max(255, 'website must be at most 255 characters long').optional(),
-  twitter: z.string().max(100, 'twitter handle must be at most 100 characters long').optional(),
   linkedin: z.string().max(100, 'linkedin profile must be at most 100 characters long').optional(),
   instagram: z.string().max(100, 'instagram handle must be at most 100 characters long').optional(),
-  facebook: z.string().max(100, 'facebook profile must be at most 100 characters long').optional(),
   whatsapp: z.string().max(100, 'whatsapp contact must be at most 100 characters long').optional(),
 })
 

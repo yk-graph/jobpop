@@ -38,6 +38,13 @@ enum ApplicationStatus {
   WITHDRAWN // 応募取り下げ
 }
 
+enum Sector {
+  FOOD_SERVICE // 飲食サービス（カフェ、レストラン、ファストフードなど）
+  ACCOMMODATION // 宿泊・ホテル業（ホテル、B&B、ホステルなど）
+  RETAIL // 小売（コンビニ、スーパー、アパレルなど）
+  SERVICE // サービス業（清掃、配達、受付など）
+}
+
 // ============================================
 // Account と User 管理テーブル
 // ============================================
@@ -111,11 +118,8 @@ model Profile {
   birthYear   Int      @map("birth_year") // 生年
   visaType    VisaType @map("visa_type") // ビザの種類
   bio         String?  @db.Text // 自己紹介文（任意）
-  website     String?  @db.VarChar(255) // ウェブサイトURL（任意）
-  twitter     String?  @db.VarChar(100) // Twitterハンドル（任意）
   linkedin    String?  @db.VarChar(100) // LinkedInプロフィール（任意）
   instagram   String?  @db.VarChar(100) // Instagramハンドル（任意）
-  facebook    String?  @db.VarChar(100) // Facebookプロフィール（任意）
   whatsapp    String?  @db.VarChar(100) // WhatsApp連絡先（任意）
   createdAt   DateTime @default(now()) @map("created_at") // プロフィール作成日時
   updatedAt   DateTime @updatedAt @map("updated_at") // プロフィール更新日時
@@ -131,6 +135,7 @@ model Experience {
   userId         String         @map("user_id") // 所属するユーザーID
   company        String         @db.VarChar(255) // 会社名
   employmentType EmploymentType @map("employment_type") // 雇用形態（正社員、契約社員など）
+  isLocal        Boolean        @default(true) @map("is_local") // 現地企業かどうか
   startDate      DateTime       @map("start_date") // 勤務開始日
   endDate        DateTime?      @map("end_date") // 勤務終了日（在職中の場合はnull）
   isCurrent      Boolean        @default(false) @map("is_current") // 現在も勤務中かどうか
@@ -144,17 +149,54 @@ model Experience {
   @@map("experiences")
 }
 
+// 業種マスターテーブル（sector に紐づく業種を管理：カフェ、レストラン、コンビニなど）
+model BusinessType {
+  id          String   @id @default(cuid()) // 業種の一意識別子
+  sector      Sector // 業界セクター
+  name        String   @db.VarChar(255) // 業種名（例: Cafe, Restaurant, Convenience Store）
+  description String?  @db.Text // 業種の説明（任意）
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // リレーション
+  jobTitles JobTitle[] // この業種に関連する職種一覧
+
+  @@unique([sector, name]) // 同じ業界内で同じ業種名は重複不可
+  @@index([sector]) // 業界ごとの業種検索を高速化
+  @@map("business_types")
+}
+
+// 職種マスターテーブル（businessType に紐づく職種を管理：バリスタ、キャッシャーなど）
+model JobTitle {
+  id             String   @id @default(cuid()) // 職種の一意識別子
+  businessTypeId String   @map("business_type_id") // 業種への参照
+  title          String   @db.VarChar(255) // 職種名（例: Barista, Cashier, Server）
+  description    String?  @db.Text // 職種の説明（任意）
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // リレーション
+  businessType BusinessType @relation(fields: [businessTypeId], references: [id], onDelete: Restrict)
+  positions    Position[] // この職種を使用しているポジション一覧
+
+  @@unique([businessTypeId, title]) // 同じ業種内で同じ職種名は重複不可
+  @@index([businessTypeId]) // 業種ごとの職種検索を高速化
+  @@map("job_titles")
+}
+
 model Position {
   id           String  @id @default(cuid()) // ポジションの一意識別子
   experienceId String  @map("experience_id")
-  name         String  @db.VarChar(100) // ポジション名（例: ソフトウェアエンジニア、デザイナーなど）
+  jobTitleId   String  @map("job_title_id") // 職種への参照
   period       Int // ポジションの経験年数（何ヶ月かで表示）
   description  String? @db.Text // ポジションの詳細説明（任意）
 
   // リレーション
   experience Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  jobTitle   JobTitle   @relation(fields: [jobTitleId], references: [id], onDelete: Restrict)
 
   @@index([experienceId]) // 職務経験ごとのポジションを検索しやすくするインデックス
+  @@index([jobTitleId]) // 職種ごとのポジション検索用
   @@map("positions")
 }
 
