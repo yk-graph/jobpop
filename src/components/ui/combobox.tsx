@@ -23,6 +23,7 @@ interface ComboboxProps {
   searchPlaceholder?: string
   disabled?: boolean
   className?: string
+  onBlur?: () => void
 }
 
 export function Combobox({
@@ -34,6 +35,7 @@ export function Combobox({
   searchPlaceholder = 'Search...',
   disabled = false,
   className,
+  onBlur,
 }: ComboboxProps) {
   const [open, setOpen] = useState(false)
 
@@ -45,7 +47,16 @@ export function Combobox({
   const selectedOption = options.find((option) => option.value === value)
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover 
+      open={open} 
+      onOpenChange={(newOpen) => {
+        setOpen(newOpen)
+        // Popoverが閉じられたときにonBlurを呼び出す
+        if (!newOpen && onBlur) {
+          onBlur()
+        }
+      }}
+    >
       <PopoverTrigger asChild>
         <Button
           variant="secondary"
@@ -56,6 +67,7 @@ export function Combobox({
             className
           )}
           disabled={disabled}
+          onBlur={onBlur}
         >
           {selectedOption ? (
             <span>{selectedOption.label}</span>

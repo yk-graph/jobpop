@@ -1,7 +1,7 @@
 'use client'
 
-import { User, Briefcase, Globe } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
+import { Briefcase, Globe, User } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
@@ -44,20 +44,6 @@ export function StepBar() {
               )}
             >
               <step.icon className="w-6 h-6" />
-
-              {/* Check mark for completed steps */}
-              {isCompleted && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <svg
-                    className="w-6 h-6 text-secondary-foreground"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-              )}
             </div>
 
             {/* Connector Line */}
