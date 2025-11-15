@@ -1,3 +1,11 @@
+import { InitialProfileForm, InitialProfileProvider } from '@/components/form'
+import { StepBar } from './_components/step-bar'
+
 export default function InitialsPage() {
-  return <div>Initials Page</div>
+  return (
+    <InitialProfileProvider>
+      <StepBar />
+      <InitialProfileForm />
+    </InitialProfileProvider>
+  )
 }
