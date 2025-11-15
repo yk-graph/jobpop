@@ -135,7 +135,7 @@ model Experience {
   userId         String         @map("user_id") // 所属するユーザーID
   company        String         @db.VarChar(255) // 会社名
   employmentType EmploymentType @map("employment_type") // 雇用形態（正社員、契約社員など）
-  isLocal        Boolean        @default(true) @map("is_local") // 現地企業かどうか
+  isLocal        Boolean        @default(false) @map("is_local") // 現地企業かどうか
   startDate      DateTime       @map("start_date") // 勤務開始日
   endDate        DateTime?      @map("end_date") // 勤務終了日（在職中の場合はnull）
   isCurrent      Boolean        @default(false) @map("is_current") // 現在も勤務中かどうか

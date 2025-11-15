@@ -23,7 +23,7 @@ export function InitialProfileProvider({ children }: InitialProfileProviderProps
   const form = useForm<InitialProfileSchemaType>({
     resolver: zodResolver(initialProfileSchema),
     defaultValues: {
-      stepCount: 1,
+      stepCount: 2,
       name: '',
       countryCode: '',
       birthYear: new Date().getFullYear() - 20,

@@ -48,7 +48,7 @@ export const BUSINESS_TYPES: Record<Sector, string[]> = {
 } as const
 
 // 職種データ（business type → job titles）
-export const VANCOUVER_JOB_TITLES: Record<string, string[]> = {
+export const JOB_TITLES: Record<string, string[]> = {
   // FOOD_SERVICE
   'Cafe & Coffee Shop': ['Barista', 'Cashier', 'Kitchen Staff', 'Shift Supervisor', 'Store Manager'],
   'Restaurant & Dining': ['Server', 'Host/Hostess', 'Busser', 'Kitchen Helper', 'Line Cook', 'Dishwasher', 'Manager'],
