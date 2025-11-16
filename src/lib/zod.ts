@@ -43,6 +43,23 @@ export const initialProfileSchema = z.object({
   linkedin: z.string().max(100, 'linkedin profile must be at most 100 characters long').optional(),
   instagram: z.string().max(100, 'instagram handle must be at most 100 characters long').optional(),
   whatsapp: z.string().max(100, 'whatsapp contact must be at most 100 characters long').optional(),
+  // Work Experience
+  experience: z.object({
+    company: z.string().optional(),
+    employmentType: z.string().optional(),
+    isLocal: z.boolean().optional(),
+    isCurrent: z.boolean().optional(),
+    startDate: z.string().optional(),
+    endDate: z.string().optional(),
+    sector: z.string().optional(),
+    businessType: z.string().optional(),
+  }).optional(),
+  // Positions array
+  positions: z.array(z.object({
+    jobTitle: z.string().optional(),
+    period: z.union([z.number(), z.string()]).optional(),
+    description: z.string().optional(),
+  })).optional(),
 })
 
 export type RegisterSchemaType = z.infer<typeof registerSchema>

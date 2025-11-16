@@ -32,9 +32,13 @@ export function InitialProfileProvider({ children }: InitialProfileProviderProps
       linkedin: '',
       instagram: '',
       whatsapp: '',
+      experience: undefined,
+      positions: undefined,
     },
     mode: 'onBlur',
   })
+
+  console.log('✅️watch!!', form.watch())
 
   const onSubmit = (values: InitialProfileSchemaType) => {
     // startTransition(async () => {
