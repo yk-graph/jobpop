@@ -56,6 +56,16 @@ enum IndustryType {
   MEDIA // メディア・クリエイティブ
 }
 
+enum SoftSkill {
+  DIGITAL_COMMUNICATION_FLUENCY // Digital Communication Fluency
+  LEARNING_AGILITY // Learning Agility
+  CULTURAL_INTELLIGENCE // Cultural Intelligence
+  EMOTIONAL_RESILIENCE // Emotional Resilience
+  ATTENTION_SWITCHING // Attention Switching
+  TECHNO_EMOTIONAL_BALANCE // Techno-Emotional Balance
+  COLLABORATIVE_CREATIVITY // Collaborative Creativity
+}
+
 // ============================================
 // Account と User 管理テーブル
 // ============================================
@@ -75,6 +85,7 @@ model User {
   sessions        Session[] // アクティブなセッション情報
   profile         Profile? // ユーザープロフィール情報
   userExperiences UserExperience[] // ユーザーの職務経験一覧
+  softSkills      UserSoftSkill[] // ユーザーのソフトスキル一覧
   applications    JobApplication[] // ユーザーが応募した求人
 
   @@map("users")
@@ -156,10 +167,10 @@ model MstExperienceType {
 
 // ユーザーの経験（中間テーブル）
 model UserExperience {
-  id               String            @id @default(cuid()) // ユーザー経験の一意識別子
-  userId           String            @map("user_id") // ユーザーID
-  experienceTypeId String            @map("experience_type_id") @db.VarChar(50) // 経験タイプID
-  createdAt        DateTime          @default(now()) @map("created_at") // 作成日時
+  id               String   @id @default(cuid()) // ユーザー経験の一意識別子
+  userId           String   @map("user_id") // ユーザーID
+  experienceTypeId String   @map("experience_type_id") @db.VarChar(50) // 経験タイプID
+  createdAt        DateTime @default(now()) @map("created_at") // 作成日時
 
   // リレーション
   user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -168,6 +179,21 @@ model UserExperience {
   @@unique([userId, experienceTypeId]) // 同じユーザーが同じ経験タイプを重複登録することを防ぐ
   @@index([userId]) // ユーザーごとの検索用インデックス
   @@map("user_experiences")
+}
+
+model UserSoftSkill {
+  id          String    @id @db.VarChar(50) // ユーザーソフトスキルの一意識別子
+  userId      String    @map("user_id") // ユーザーID
+  skill       SoftSkill // ソフトスキルの種類
+  description String?   @db.Text // スキルの説明（任意）
+  createdAt   DateTime  @default(now()) @map("created_at") // 作成日時
+
+  // リレーション
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skill]) // 同じユーザーが同じソフトスキルを重複登録することを防ぐ
+  @@index([userId]) // ユーザーごとの検索用インデックス
+  @@map("user_soft_skills")
 }
 
 // ============================================
