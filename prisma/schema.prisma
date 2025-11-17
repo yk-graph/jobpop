@@ -71,7 +71,7 @@ enum SoftSkill {
 // ============================================
 
 model User {
-  id             String    @id @default(cuid()) // ユーザーの一意識別子
+  id             String    @id @default(nanoid(8)) // ユーザーの一意識別子
   name           String? // ユーザー名（OAuth時に取得、任意）
   email          String?   @unique // メールアドレス（OAuth時は共有拒否の可能性あり、credentials認証時は必須）
   emailVerified  DateTime? @map("email_verified") // メール認証完了日時（メール認証済みの場合のみ）
@@ -92,7 +92,7 @@ model User {
 }
 
 model Account {
-  id                String  @id @default(cuid()) // アカウントレコードの一意識別子
+  id                String  @id @default(nanoid(8))
   userId            String  @map("user_id") // 紐付けられるユーザーID
   type              String // アカウントタイプ（通常は"oauth"）
   provider          String // 認証プロバイダー名（"google", "instagram", "credentials"）
@@ -113,7 +113,7 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid()) // セッションレコードの一意識別子
+  id           String   @id @default(nanoid(8)) // セッションレコードの一意識別子
   sessionToken String   @unique @map("session_token") // セッション識別用トークン（Cookie等に保存）
   userId       String   @map("user_id") // セッションに紐付くユーザーID
   expires      DateTime // セッションの有効期限
@@ -134,7 +134,7 @@ model VerificationToken {
 }
 
 model Profile {
-  id          String   @id @default(cuid()) // プロフィールの一意識別子
+  id          Int      @id @default(autoincrement()) // プロフィールの一意識別子
   userId      String   @unique @map("user_id") // 紐付けられるユーザーID
   countryCode String   @map("country_code") @db.Char(2) // "JP", "US", "CA"などの国コード
   birthYear   Int      @map("birth_year") // 生年
@@ -167,7 +167,7 @@ model MstExperienceType {
 
 // ユーザーの経験（中間テーブル）
 model UserExperience {
-  id               String   @id @default(cuid()) // ユーザー経験の一意識別子
+  id               Int      @id @default(autoincrement()) // ユーザー経験の一意識別子
   userId           String   @map("user_id") // ユーザーID
   experienceTypeId String   @map("experience_type_id") @db.VarChar(50) // 経験タイプID
   createdAt        DateTime @default(now()) @map("created_at") // 作成日時
@@ -182,7 +182,7 @@ model UserExperience {
 }
 
 model UserSoftSkill {
-  id          String    @default(cuid()) // ユーザー経験の一意識別子
+  id          Int       @id @default(autoincrement()) // ユーザー経験の一意識別子
   userId      String    @map("user_id") // ユーザーID
   skill       SoftSkill // ソフトスキルの種類
   description String?   @db.Text // スキルの説明（任意）
@@ -201,7 +201,7 @@ model UserSoftSkill {
 // ============================================
 
 model Job {
-  id             String          @id @default(cuid()) // 求人の一意識別子
+  id             String          @id @default(nanoid(8)) // 求人の一意識別子
   title          String          @db.VarChar(255) // 求人タイトル（例: フロントエンドエンジニア）
   company        String          @db.VarChar(255) // 企業名
   description    String          @db.Text // 求人の詳細説明（業務内容、必要スキルなど）
@@ -221,7 +221,7 @@ model Job {
 }
 
 model JobApplication {
-  id        String            @id @default(cuid()) // 応募レコードの一意識別子
+  id        Int               @id @default(autoincrement()) // 応募履歴の一意識別子
   userId    String            @map("user_id") // 応募したユーザーID
   jobId     String            @map("job_id") // 応募先の求人ID
   status    ApplicationStatus @default(APPLIED) // 応募のステータス（応募済み、選考中など）
