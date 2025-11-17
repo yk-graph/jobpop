@@ -77,6 +77,7 @@ model User {
   emailVerified  DateTime? @map("email_verified") // メール認証完了日時（メール認証済みの場合のみ）
   image          String? // プロフィール画像URL（OAuthプロバイダーから取得）
   hashedPassword String?   @map("hashed_password") // ハッシュ化されたパスワード（credentials認証の場合のみ、OAuth時はnull）
+  countryCode    String?   @map("country_code") @db.Char(2) // "JP", "US", "CA"などの国コード（任意）
   createdAt      DateTime  @default(now()) @map("created_at") // アカウント作成日時
   updatedAt      DateTime  @updatedAt @map("updated_at") // アカウント更新日時
 
