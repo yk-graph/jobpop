@@ -16,7 +16,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <div className="min-h-svh w-full flex justify-center items-center">
+    <div className="h-svh w-full flex justify-center items-center p-6">
       <MenuButton />
       {children}
     </div>
