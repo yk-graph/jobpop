@@ -117,10 +117,7 @@ export function InitialProfileStep2() {
               <FormItem>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {INDUSTRY_EXPERIENCES[selectedIndustry].map((experience) => (
-                    <Label 
-                      key={experience.id} 
-                      className="border rounded-lg p-3 cursor-pointer hover:bg-accent/50"
-                    >
+                    <Label key={experience.id} className="border rounded-lg p-3 cursor-pointer hover:bg-accent/50">
                       <div className="flex flex-row items-center space-x-3">
                         <Checkbox
                           checked={experienceTypeIds.includes(experience.id)}

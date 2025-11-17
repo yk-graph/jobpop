@@ -50,4 +50,3 @@ export const SOFT_SKILLS: SoftSkillData[] = [
       'Ability to co-create ideas with others, combining perspectives to produce solutions better than individual work alone.', // 他者と協力して創造し、個人では出せない質の高いアイデアや成果を生み出す協働的創造力。
   },
 ] as const
-

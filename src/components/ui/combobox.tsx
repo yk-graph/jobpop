@@ -47,8 +47,8 @@ export function Combobox({
   const selectedOption = options.find((option) => option.value === value)
 
   return (
-    <Popover 
-      open={open} 
+    <Popover
+      open={open}
       onOpenChange={(newOpen) => {
         setOpen(newOpen)
         // Popoverが閉じられたときにonBlurを呼び出す

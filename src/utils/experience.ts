@@ -19,7 +19,7 @@ export function getExperiencesByIndustry(industry: IndustryType): ExperienceType
  */
 export function getExperienceOptions(industry: IndustryType): ExperienceOption[] {
   const experiences = getExperiencesByIndustry(industry)
-  
+
   return experiences.map((experience) => ({
     value: experience.id,
     label: experience.title,
@@ -33,7 +33,7 @@ export function getExperienceOptions(industry: IndustryType): ExperienceOption[]
  */
 export function getAllExperienceOptions(): ExperienceOption[] {
   const allOptions: ExperienceOption[] = []
-  
+
   Object.values(INDUSTRY_EXPERIENCES).forEach((experiences) => {
     experiences.forEach((experience) => {
       allOptions.push({
@@ -43,7 +43,7 @@ export function getAllExperienceOptions(): ExperienceOption[] {
       })
     })
   })
-  
+
   return allOptions
 }
 
@@ -74,7 +74,7 @@ export function getIndustryOptions() {
  */
 export function getExperienceById(experienceId: string): ExperienceTypeData | undefined {
   for (const experiences of Object.values(INDUSTRY_EXPERIENCES)) {
-    const found = experiences.find(exp => exp.id === experienceId)
+    const found = experiences.find((exp) => exp.id === experienceId)
     if (found) return found
   }
   return undefined
