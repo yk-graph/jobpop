@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps'
 import { X, MapPin, Clock, DollarSign, Building } from 'lucide-react'
 
@@ -13,66 +14,66 @@ const containerStyle = {
 
 // バンクーバー周辺の20個のダミー求人情報
 const jobs = [
-  { 
-    id: 1, 
-    position: { lat: 49.2827, lng: -123.1207 }, 
-    title: 'Barista', 
-    company: 'Downtown Cafe', 
+  {
+    id: 1,
+    position: { lat: 49.2827, lng: -123.1207 },
+    title: 'Barista',
+    company: 'Downtown Cafe',
     salary: '$18/hour',
     type: 'Part-time',
     image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=200&h=150&fit=crop&crop=center',
     description: 'Join our team as a friendly barista! Make amazing coffee and provide excellent customer service.',
-    requirements: ['Customer service experience', 'Coffee knowledge preferred', 'Flexible schedule']
+    requirements: ['Customer service experience', 'Coffee knowledge preferred', 'Flexible schedule'],
   },
-  { 
-    id: 2, 
-    position: { lat: 49.2845, lng: -123.1089 }, 
-    title: 'Server', 
-    company: 'Seaside Restaurant', 
+  {
+    id: 2,
+    position: { lat: 49.2845, lng: -123.1089 },
+    title: 'Server',
+    company: 'Seaside Restaurant',
     salary: '$16/hour + tips',
     type: 'Full-time',
     image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=150&fit=crop&crop=center',
     description: 'Looking for experienced servers to join our waterfront restaurant team.',
-    requirements: ['Restaurant experience', 'Team player', 'Weekend availability']
+    requirements: ['Restaurant experience', 'Team player', 'Weekend availability'],
   },
-  { 
-    id: 3, 
-    position: { lat: 49.2800, lng: -123.1200 }, 
-    title: 'Retail Assistant', 
-    company: 'City Mall', 
+  {
+    id: 3,
+    position: { lat: 49.28, lng: -123.12 },
+    title: 'Retail Assistant',
+    company: 'City Mall',
     salary: '$17/hour',
     type: 'Part-time',
     image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=200&h=150&fit=crop&crop=center',
     description: 'Help customers find what they need and maintain store appearance.',
-    requirements: ['Sales experience', 'Friendly personality', 'Bilingual preferred']
+    requirements: ['Sales experience', 'Friendly personality', 'Bilingual preferred'],
   },
-  { 
-    id: 4, 
-    position: { lat: 49.2890, lng: -123.1100 }, 
-    title: 'Kitchen Helper', 
-    company: 'Food Court', 
+  {
+    id: 4,
+    position: { lat: 49.289, lng: -123.11 },
+    title: 'Kitchen Helper',
+    company: 'Food Court',
     salary: '$16.50/hour',
     type: 'Full-time',
     image: 'https://images.unsplash.com/photo-1556909114-4f678fb3bdf6?w=200&h=150&fit=crop&crop=center',
     description: 'Support kitchen operations in busy food court environment.',
-    requirements: ['Food safety knowledge', 'Fast-paced environment', 'Team work']
+    requirements: ['Food safety knowledge', 'Fast-paced environment', 'Team work'],
   },
-  { 
-    id: 5, 
-    position: { lat: 49.2750, lng: -123.1300 }, 
-    title: 'Cashier', 
-    company: 'Local Grocery', 
+  {
+    id: 5,
+    position: { lat: 49.275, lng: -123.13 },
+    title: 'Cashier',
+    company: 'Local Grocery',
     salary: '$16/hour',
     type: 'Part-time',
     image: 'https://images.unsplash.com/photo-1534723328310-e82dad3ee43f?w=200&h=150&fit=crop&crop=center',
     description: 'Process customer transactions and provide friendly service.',
-    requirements: ['Cash handling', 'Customer service', 'Attention to detail']
-  }
+    requirements: ['Cash handling', 'Customer service', 'Attention to detail'],
+  },
 ]
 
 // CustomJobMarkerコンポーネント
 interface CustomJobMarkerProps {
-  job: typeof jobs[0]
+  job: (typeof jobs)[0]
   isClicked: boolean
   isHovered: boolean
   onHover: (hovered: boolean) => void
@@ -92,15 +93,10 @@ function CustomJobMarker({ job, isClicked, isHovered, onHover, onClick }: Custom
         style={{ pointerEvents: 'all' }}
       >
         {/* カスタムピン */}
-        <div 
+        <div
           className={`
             bg-blue-600 rounded-lg shadow-lg transition-all duration-200 ease-in-out flex items-center justify-center
-            ${isClicked 
-              ? 'w-80 h-auto p-4 rounded-2xl' 
-              : isHovered 
-                ? 'w-16 h-16 -translate-y-1' 
-                : 'w-12 h-12'
-            }
+            ${isClicked ? 'w-80 h-auto p-4 rounded-2xl' : isHovered ? 'w-16 h-16 -translate-y-1' : 'w-12 h-12'}
           `}
         >
           {!isClicked ? (
@@ -126,11 +122,7 @@ function CustomJobMarker({ job, isClicked, isHovered, onHover, onClick }: Custom
 
               {/* 求人画像 */}
               <div className="w-full h-32 bg-gray-200 rounded-lg mb-3 overflow-hidden">
-                <img 
-                  src={job.image} 
-                  alt={job.title}
-                  className="w-full h-full object-cover"
-                />
+                <Image src={job.image} alt={job.title} className="w-full h-full object-cover" />
               </div>
 
               {/* 求人詳細 */}
@@ -150,9 +142,7 @@ function CustomJobMarker({ job, isClicked, isHovered, onHover, onClick }: Custom
               </div>
 
               {/* 説明文 */}
-              <p className="text-blue-100 text-sm mt-3 leading-relaxed">
-                {job.description}
-              </p>
+              <p className="text-blue-100 text-sm mt-3 leading-relaxed">{job.description}</p>
 
               {/* 応募ボタン */}
               <button className="w-full bg-white text-blue-600 font-semibold py-2 px-4 rounded-lg mt-4 hover:bg-blue-50 transition-colors">
