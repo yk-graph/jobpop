@@ -2,6 +2,7 @@ export * from './countries'
 export * from './visa-labels'
 export * from './industries'
 export * from './experiences'
+export * from './soft-skills'
 
 // Employment types
 export const EMPLOYMENT_TYPES = [

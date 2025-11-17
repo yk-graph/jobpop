@@ -23,18 +23,14 @@ export function InitialProfileProvider({ children }: InitialProfileProviderProps
   const form = useForm<InitialProfileSchemaType>({
     resolver: zodResolver(initialProfileSchema),
     defaultValues: {
-      stepCount: 2,
+      stepCount: 1,
       name: '',
       countryCode: '',
       birthYear: new Date().getFullYear() - 20,
       visaType: 'VISITOR',
-      bio: '',
-      linkedin: '',
-      instagram: '',
-      whatsapp: '',
       experienceTypeIds: [],
+      softSkills: [],
     },
-    mode: 'onBlur',
   })
 
   console.log('✅️watch!!', form.watch())
@@ -61,9 +57,9 @@ export function InitialProfileProvider({ children }: InitialProfileProviderProps
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         {children}
-        {/* <Button type="submit" variant="secondary" className="w-full mt-2">
+        <Button type="submit" variant="secondary" className="w-full mt-2">
           {isPending ? <Spinner /> : 'Sign In'}
-        </Button> */}
+        </Button>
       </form>
     </Form>
   )

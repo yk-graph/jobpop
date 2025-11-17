@@ -1,4 +1,4 @@
-import { VisaType } from '@prisma/client'
+import { VisaType, SoftSkill } from '@prisma/client'
 import { z } from 'zod'
 
 const emailValidation = z.email('email is invalid').min(1, 'email is required')
@@ -49,6 +49,8 @@ export const initialProfileSchema = z.object({
     .min(0, 'experiences must be at least 0')
     .max(10, 'experiences must be at most 10')
     .optional(),
+  // User's soft skills - ソフトスキルIDのみ
+  softSkills: z.array(z.enum(SoftSkill)).max(7, 'soft skills must be at most 7').optional(),
 })
 
 export type RegisterSchemaType = z.infer<typeof registerSchema>

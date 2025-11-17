@@ -25,7 +25,7 @@ export function StepBar() {
   const currentStep = getValues('stepCount') || 1
 
   return (
-    <div className="flex items-center justify-center mb-20">
+    <div className="flex items-center justify-center mb-10 sm:mb-20">
       {steps.map((step, index) => {
         const isCompleted = currentStep > step.id
         const isCurrent = currentStep === step.id

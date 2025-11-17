@@ -182,7 +182,7 @@ model UserExperience {
 }
 
 model UserSoftSkill {
-  id          String    @id @db.VarChar(50) // ユーザーソフトスキルの一意識別子
+  id          String    @default(cuid()) // ユーザー経験の一意識別子
   userId      String    @map("user_id") // ユーザーID
   skill       SoftSkill // ソフトスキルの種類
   description String?   @db.Text // スキルの説明（任意）

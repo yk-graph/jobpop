@@ -1,14 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { X } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
+import { X } from 'lucide-react'
 import type { IndustryType } from '@prisma/client'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { FormField, FormItem, FormMessage } from '@/components/ui/form'
+import { Label } from '@/components/ui/label'
 import { INDUSTRIES, INDUSTRY_EXPERIENCES, INDUSTRY_ICONS, INDUSTRY_LABELS } from '@/constants'
 import { getExperienceById } from '@/utils'
 
@@ -16,7 +17,7 @@ export function InitialProfileStep2() {
   const { control, setValue, watch } = useFormContext()
   const [selectedIndustry, setSelectedIndustry] = useState<IndustryType | null>(null)
 
-  const experienceTypeIds: string[] = watch('experienceTypeIds') || []
+  const experienceTypeIds: string[] = watch('experienceTypeIds')
 
   const handleClickBack = () => setValue('stepCount', 1)
   const handleClickNext = () => setValue('stepCount', 3)
@@ -26,7 +27,7 @@ export function InitialProfileStep2() {
   }
 
   const handleExperienceToggle = (experienceId: string, checked: boolean) => {
-    const currentIds = experienceTypeIds || []
+    const currentIds = experienceTypeIds
 
     if (checked) {
       // 最大10個まで
@@ -42,7 +43,7 @@ export function InitialProfileStep2() {
   }
 
   const handleRemoveExperience = (experienceId: string) => {
-    const currentIds = experienceTypeIds || []
+    const currentIds = experienceTypeIds
     setValue(
       'experienceTypeIds',
       currentIds.filter((id) => id !== experienceId)
@@ -116,25 +117,22 @@ export function InitialProfileStep2() {
               <FormItem>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {INDUSTRY_EXPERIENCES[selectedIndustry].map((experience) => (
-                    <FormField
-                      key={experience.id}
-                      control={control}
-                      name="experienceTypeIds"
-                      render={() => (
-                        <FormItem className="flex flex-row items-center space-x-3 space-y-0 border rounded-lg p-3">
-                          <FormControl>
-                            <Checkbox
-                              checked={experienceTypeIds.includes(experience.id)}
-                              onCheckedChange={(checked) => handleExperienceToggle(experience.id, !!checked)}
-                              disabled={!experienceTypeIds.includes(experience.id) && experienceTypeIds.length >= 10}
-                            />
-                          </FormControl>
-                          <div className="flex-1">
-                            <FormLabel className="font-medium text-sm cursor-pointer">{experience.title}</FormLabel>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
+                    <Label 
+                      key={experience.id} 
+                      className="border rounded-lg p-3 cursor-pointer hover:bg-accent/50"
+                    >
+                      <div className="flex flex-row items-center space-x-3">
+                        <Checkbox
+                          checked={experienceTypeIds.includes(experience.id)}
+                          onCheckedChange={(checked) => handleExperienceToggle(experience.id, !!checked)}
+                          disabled={!experienceTypeIds.includes(experience.id) && experienceTypeIds.length >= 10}
+                          className="pointer-events-none"
+                        />
+                        <div className="flex-1">
+                          <span className="font-medium text-sm cursor-pointer">{experience.title}</span>
+                        </div>
+                      </div>
+                    </Label>
                   ))}
                 </div>
                 <FormMessage />
