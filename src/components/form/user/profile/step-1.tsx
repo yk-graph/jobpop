@@ -143,7 +143,7 @@ export function InitialProfileStep1() {
       />
 
       <div className="flex justify-end">
-        <Button onClick={handleClickNext} variant="secondary" disabled={!isValidStep1}>
+        <Button onClick={handleClickNext} variant="secondary" disabled={!isValidStep1} type="button">
           Next Step
         </Button>
       </div>

@@ -118,7 +118,7 @@ export function InitialProfileStep3() {
 
       {/* Navigation Buttons */}
       <div className="flex justify-start">
-        <Button onClick={handleClickBack} variant="outline">
+        <Button onClick={handleClickBack} variant="outline" type="button">
           Back
         </Button>
       </div>

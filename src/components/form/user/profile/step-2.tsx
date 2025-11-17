@@ -94,6 +94,7 @@ export function InitialProfileStep2() {
               <Button
                 key={industry}
                 variant={isSelected ? 'secondary' : 'background'}
+                type="button"
                 onClick={() => handleIndustryClick(industry)}
                 className="h-auto py-2 flex flex-col gap-0.5 text-wrap"
               >
@@ -147,10 +148,10 @@ export function InitialProfileStep2() {
 
       {/* Navigation Buttons */}
       <div className="flex justify-between">
-        <Button onClick={handleClickBack} variant="outline">
+        <Button onClick={handleClickBack} variant="outline" type="button">
           Back
         </Button>
-        <Button onClick={handleClickNext} variant="secondary">
+        <Button onClick={handleClickNext} variant="secondary" type="button">
           Next Step
         </Button>
       </div>

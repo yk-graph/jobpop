@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-import { login } from '@/actions'
+import { createInitialProfile } from '@/actions'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { Spinner } from '@/components/ui/spinner'
@@ -31,35 +31,36 @@ export function InitialProfileProvider({ children }: InitialProfileProviderProps
       experienceTypeIds: [],
       softSkills: [],
     },
+    mode: 'onBlur',
   })
 
-  console.log('✅️watch!!', form.watch())
-
   const onSubmit = (values: InitialProfileSchemaType) => {
-    // startTransition(async () => {
-    //   const result = await login(values)
-    //   if (!result.success) {
-    //     toast.error('Login Failed', {
-    //       description: result.message,
-    //       richColors: true,
-    //     })
-    //     return
-    //   }
-    //   toast.success('Welcome back!', {
-    //     description: result.message,
-    //     richColors: true,
-    //   })
-    //   router.push('/')
-    // })
+    startTransition(async () => {
+      const result = await createInitialProfile(values)
+      if (!result.success) {
+        toast.error('Profile Creation Failed', {
+          description: result.message,
+          richColors: true,
+        })
+        return
+      }
+      toast.success('Welcome to JobPop!', {
+        description: result.message,
+        richColors: true,
+      })
+      router.push('/')
+    })
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         {children}
-        <Button type="submit" variant="secondary" className="w-full mt-2">
-          {isPending ? <Spinner /> : 'Sign In'}
-        </Button>
+        {form.watch('stepCount') === 3 && (
+          <Button type="submit" variant="secondary" className="w-full mt-6" disabled={isPending}>
+            {isPending ? <Spinner /> : 'Start JobPop'}
+          </Button>
+        )}
       </form>
     </Form>
   )
