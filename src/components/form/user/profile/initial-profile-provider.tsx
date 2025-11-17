@@ -32,8 +32,7 @@ export function InitialProfileProvider({ children }: InitialProfileProviderProps
       linkedin: '',
       instagram: '',
       whatsapp: '',
-      experience: undefined,
-      positions: undefined,
+      experienceTypeIds: [],
     },
     mode: 'onBlur',
   })

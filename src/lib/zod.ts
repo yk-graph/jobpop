@@ -1,4 +1,4 @@
-import { VisaType, IndustryType, EmploymentType } from '@prisma/client'
+import { VisaType } from '@prisma/client'
 import { z } from 'zod'
 
 const emailValidation = z.email('email is invalid').min(1, 'email is required')
@@ -44,7 +44,8 @@ export const initialProfileSchema = z.object({
   instagram: z.string().max(100, 'instagram handle must be at most 100 characters long').optional(),
   whatsapp: z.string().max(100, 'whatsapp contact must be at most 100 characters long').optional(),
   // User's experiences - 0個以上10個以下の経験（MstExperienceTypeのIDを参照）
-  experienceTypeIds: z.array(z.string().min(1, 'invalid experience type ID'))
+  experienceTypeIds: z
+    .array(z.string().min(1, 'invalid experience type ID'))
     .min(0, 'experiences must be at least 0')
     .max(10, 'experiences must be at most 10')
     .optional(),

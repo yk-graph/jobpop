@@ -1,351 +1,154 @@
 'use client'
 
-import { useMemo } from 'react'
-import { useFieldArray, useFormContext } from 'react-hook-form'
-import { Minus, Plus } from 'lucide-react'
+import { useState } from 'react'
+import { X } from 'lucide-react'
+import { useFormContext } from 'react-hook-form'
+import type { IndustryType } from '@prisma/client'
 
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
-import { FormDatePicker } from '@/components/ui/date-picker'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { BUSINESS_TYPES, JOB_TITLES, SECTOR_LABELS } from '@/constants'
-
-const EMPLOYMENT_TYPES = [
-  { value: 'FULL_TIME', label: 'Full Time' },
-  { value: 'PART_TIME', label: 'Part Time' },
-  { value: 'CONTRACT', label: 'Contract' },
-  { value: 'INTERNSHIP', label: 'Internship' },
-  { value: 'FREELANCE', label: 'Freelance' },
-] as const
+import { INDUSTRIES, INDUSTRY_EXPERIENCES, INDUSTRY_ICONS, INDUSTRY_LABELS } from '@/constants'
+import { getExperienceById } from '@/utils'
 
 export function InitialProfileStep2() {
   const { control, setValue, watch } = useFormContext()
+  const [selectedIndustry, setSelectedIndustry] = useState<IndustryType | null>(null)
 
-  // Positions用のFieldArray
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'positions',
-  })
+  const experienceTypeIds: string[] = watch('experienceTypeIds') || []
 
   const handleClickBack = () => setValue('stepCount', 1)
   const handleClickNext = () => setValue('stepCount', 3)
 
-  // Sector選択用のオプション
-  const sectorOptions: ComboboxOption[] = useMemo(() => {
-    return Object.entries(SECTOR_LABELS).map(([key, label]) => ({
-      value: key,
-      label,
-    }))
-  }, [])
+  const handleIndustryClick = (industry: IndustryType) => {
+    setSelectedIndustry(selectedIndustry === industry ? null : industry)
+  }
 
-  const selectedSector = watch('experience.sector')
-  const businessTypes = useMemo(() => {
-    return selectedSector ? BUSINESS_TYPES[selectedSector as keyof typeof BUSINESS_TYPES] || [] : []
-  }, [selectedSector])
+  const handleExperienceToggle = (experienceId: string, checked: boolean) => {
+    const currentIds = experienceTypeIds || []
 
-  // BusinessType選択用のオプション
-  const businessTypeOptions: ComboboxOption[] = useMemo(() => {
-    return businessTypes.map((type) => ({
-      value: type,
-      label: type,
-    }))
-  }, [businessTypes])
-
-  // Position追加
-  const addPosition = () => {
-    if (fields.length < 3) {
-      append({
-        jobTitle: '',
-        period: '',
-        description: '',
-      })
+    if (checked) {
+      // 最大10個まで
+      if (currentIds.length < 10) {
+        setValue('experienceTypeIds', [...currentIds, experienceId])
+      }
+    } else {
+      setValue(
+        'experienceTypeIds',
+        currentIds.filter((id) => id !== experienceId)
+      )
     }
   }
 
-  // Position削除
-  const removePosition = (index: number) => {
-    remove(index)
-  }
-
-  // Most Recent ExperienceのBusiness Typeに基づくJobTitle取得
-  const experienceBusinessType = watch('experience.businessType')
-  const getExperienceJobTitleOptions = (): ComboboxOption[] => {
-    if (!experienceBusinessType) return []
-    const jobTitles = JOB_TITLES[experienceBusinessType] || []
-    return jobTitles.map((title) => ({
-      value: title,
-      label: title,
-    }))
+  const handleRemoveExperience = (experienceId: string) => {
+    const currentIds = experienceTypeIds || []
+    setValue(
+      'experienceTypeIds',
+      currentIds.filter((id) => id !== experienceId)
+    )
   }
 
   return (
     <div className="space-y-6">
       <div className="space-y-0.5">
         <h1 className="text-lg font-bold text-center">Step 2: Work Experience</h1>
-        <p className="text-sm text-center text-muted-foreground">
-          Tell us about your most recent work experience (optional).
-        </p>
+        <p className="text-sm text-center text-muted-foreground">Select your work experiences (up to 10).</p>
       </div>
 
-      <div className="space-y-6">
-        <h3 className="text-md font-semibold">Most Recent Experience</h3>
+      {/* Selected Experiences as Badges */}
+      {experienceTypeIds.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium">Your Selected Experiences ({experienceTypeIds.length}/10)</h3>
+          <div className="flex flex-wrap gap-2">
+            {experienceTypeIds.map((id) => {
+              const experience = getExperienceById(id)
+              if (!experience) return null
 
-        {/* Company */}
-        <FormField
-          control={control}
-          name="experience.company"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Company Name</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter company name" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Employment Type */}
-        <FormField
-          control={control}
-          name="experience.employmentType"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Employment Type</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value || ''}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select employment type" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {EMPLOYMENT_TYPES.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* isLocal Checkbox */}
-        <FormField
-          control={control}
-          name="experience.isLocal"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-              <FormControl>
-                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>This is a Canadian company</FormLabel>
-              </div>
-            </FormItem>
-          )}
-        />
-
-        {/* Current Job Checkbox */}
-        <FormField
-          control={control}
-          name="experience.isCurrent"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-              <FormControl>
-                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>I currently work here</FormLabel>
-              </div>
-            </FormItem>
-          )}
-        />
-
-        {/* Start Date */}
-        <FormField
-          control={control}
-          name="experience.startDate"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Start Date</FormLabel>
-              <FormControl>
-                <FormDatePicker field={field} placeholder="Select start date" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* End Date (if not current) */}
-        {!watch('experience.isCurrent') && (
-          <FormField
-            control={control}
-            name="experience.endDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>End Date</FormLabel>
-                <FormControl>
-                  <FormDatePicker field={field} placeholder="Select end date" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
-
-        {/* Sector Selection */}
-        <FormField
-          control={control}
-          name="experience.sector"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Industry Sector</FormLabel>
-              <FormControl>
-                <Combobox
-                  value={field.value || ''}
-                  onValueChange={field.onChange}
-                  options={sectorOptions}
-                  placeholder="Select industry sector"
-                  searchPlaceholder="Search sectors..."
-                  emptyMessage="No sector found."
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Business Type Selection */}
-        {selectedSector && (
-          <FormField
-            control={control}
-            name="experience.businessType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Business Type</FormLabel>
-                <FormControl>
-                  <Combobox
-                    value={field.value || ''}
-                    onValueChange={field.onChange}
-                    options={businessTypeOptions}
-                    placeholder="Select business type"
-                    searchPlaceholder="Search business types..."
-                    emptyMessage="No business type found."
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
-
-        {/* Positions Section */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h4 className="text-md font-semibold">Positions (Optional)</h4>
-            {fields.length < 3 && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={addPosition}
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Add
-              </Button>
-            )}
+              return (
+                <Badge
+                  key={id}
+                  variant="secondary"
+                  className="flex items-center gap-2 cursor-pointer hover:bg-secondary/80"
+                  onClick={() => handleRemoveExperience(id)}
+                >
+                  {experience.title}
+                  <X className="h-3 w-3" />
+                </Badge>
+              )
+            })}
           </div>
+        </div>
+      )}
 
-          {fields.map((field, index) => {
-            const experienceJobTitleOptions = getExperienceJobTitleOptions()
+      {/* Industry Selection */}
+      <div className="space-y-4">
+        <h3 className="text-md font-semibold">Select Industry</h3>
+        <div className="grid grid-cols-3 gap-3">
+          {INDUSTRIES.map((industry) => {
+            const Icon = INDUSTRY_ICONS[industry]
+            const isSelected = selectedIndustry === industry
 
             return (
-              <div key={field.id} className="border p-4 rounded-lg space-y-4">
-                <div className="flex items-center justify-between">
-                  <h5 className="font-medium">Position {index + 1}</h5>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removePosition(index)}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Minus className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                {/* Job Title */}
-                <FormField
-                  control={control}
-                  name={`positions.${index}.jobTitle`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Job Title</FormLabel>
-                      <FormControl>
-                        <Combobox
-                          value={field.value || ''}
-                          onValueChange={field.onChange}
-                          options={experienceJobTitleOptions}
-                          placeholder={
-                            experienceBusinessType ? 'Select job title' : 'Please select business type first'
-                          }
-                          searchPlaceholder="Search job titles..."
-                          emptyMessage="No job title found."
-                          disabled={!experienceBusinessType}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Period */}
-                <FormField
-                  control={control}
-                  name={`positions.${index}.period`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Experience Period (months)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min="1"
-                          max="120"
-                          placeholder="e.g. 6"
-                          {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || '')}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Description (Optional) */}
-                <FormField
-                  control={control}
-                  name={`positions.${index}.description`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description (Optional)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Describe your responsibilities..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <Button
+                key={industry}
+                variant={isSelected ? 'secondary' : 'background'}
+                onClick={() => handleIndustryClick(industry)}
+                className="h-auto py-2 flex flex-col gap-0.5 text-wrap"
+              >
+                <Icon className="h-5 w-5" />
+                <span className="text-xs leading-tight">{INDUSTRY_LABELS[industry]}</span>
+              </Button>
             )
           })}
         </div>
       </div>
+
+      {/* Experience Selection */}
+      {selectedIndustry && (
+        <div className="space-y-4">
+          <h3 className="text-md font-semibold">{INDUSTRY_LABELS[selectedIndustry]} Experiences</h3>
+
+          <FormField
+            control={control}
+            name="experienceTypeIds"
+            render={() => (
+              <FormItem>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {INDUSTRY_EXPERIENCES[selectedIndustry].map((experience) => (
+                    <FormField
+                      key={experience.id}
+                      control={control}
+                      name="experienceTypeIds"
+                      render={() => (
+                        <FormItem className="flex flex-row items-center space-x-3 space-y-0 border rounded-lg p-3">
+                          <FormControl>
+                            <Checkbox
+                              checked={experienceTypeIds.includes(experience.id)}
+                              onCheckedChange={(checked) => handleExperienceToggle(experience.id, !!checked)}
+                              disabled={!experienceTypeIds.includes(experience.id) && experienceTypeIds.length >= 10}
+                            />
+                          </FormControl>
+                          <div className="flex-1">
+                            <FormLabel className="font-medium text-sm cursor-pointer">{experience.title}</FormLabel>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  ))}
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {experienceTypeIds.length >= 10 && (
+            <p className="text-sm text-muted-foreground">
+              You&apos;ve reached the maximum of 10 experiences. Remove some to select others.
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Navigation Buttons */}
       <div className="flex justify-between">
