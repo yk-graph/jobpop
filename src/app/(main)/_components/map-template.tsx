@@ -60,7 +60,7 @@ export default function MapTemplate({ jobs }: { jobs: GetJobsResult[] }) {
             return (
               <AdvancedMarker
                 key={job.id}
-                position={job.experience ? { lat: job.lat, lng: job.lon } : { lat: 0, lng: 0 }}
+                position={job.experience ? { lat: job.lat, lng: job.lng } : { lat: 0, lng: 0 }}
                 onMouseEnter={() => handleJobHover(job.id, true)}
                 onMouseLeave={() => handleJobHover(job.id, false)}
                 onClick={() => handleJobClick(job.id)}

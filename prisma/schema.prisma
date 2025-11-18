@@ -216,7 +216,7 @@ model Job {
   thumbnailUrl    String         @map("thumbnail_url") @db.VarChar(255) // 求人のサムネイル画像URL
   salary          String         @db.VarChar(100) // 給与情報 ex: $18/hour, $4000/month
   lat             Float // 勤務地の緯度
-  lon             Float // 勤務地の経度
+  lng             Float // 勤務地の経度
   address         String         @db.VarChar(255) // 勤務地の住所
   salaryType      SalaryType     @map("salary_type") // 給与タイプ（時給、月給、年俸）
   employmentType  EmploymentType @map("employment_type") // 雇用形態（正社員、契約社員など）

@@ -222,7 +222,11 @@ function generateJobs() {
 
   // Process each industry
   Object.entries(INDUSTRY_EXPERIENCES).forEach(([industry, experiences]) => {
-    const industryStoreNames = storeNames[industry as keyof typeof storeNames] || ['Local Business', 'Vancouver Store', 'Downtown Location']
+    const industryStoreNames = storeNames[industry as keyof typeof storeNames] || [
+      'Local Business',
+      'Vancouver Store',
+      'Downtown Location',
+    ]
     const industryThumbnails = thumbnails[industry as keyof typeof thumbnails] || thumbnails.default
 
     // Determine number of jobs per experience type
@@ -243,7 +247,7 @@ function generateJobs() {
           thumbnailUrl: getRandomElement(industryThumbnails),
           salary: getRandomElement(details.salaries),
           lat: coords.lat,
-          lon: coords.lng,
+          lng: coords.lng,
           address: `${Math.floor(Math.random() * 9999) + 1000} ${getRandomElement([
             'Robson St',
             'Granville St',
