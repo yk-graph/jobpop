@@ -66,6 +66,12 @@ enum SoftSkill {
   COLLABORATIVE_CREATIVITY // Collaborative Creativity
 }
 
+enum SalaryType {
+  HOURLY // 時給
+  MONTHLY // 月給
+  ANNUAL // 年俸
+}
+
 // ============================================
 // Account と User 管理テーブル
 // ============================================
@@ -160,6 +166,7 @@ model MstExperienceType {
 
   // リレーション
   userExperiences UserExperience[] // このタイプの経験を持つユーザー一覧
+  jobExperiences  JobExperience[]
 
   @@index([industry]) // 業界別での検索用インデックス
   @@map("mst_experience_types")
@@ -201,23 +208,42 @@ model UserSoftSkill {
 // ============================================
 
 model Job {
-  id             String          @id @default(nanoid(8)) // 求人の一意識別子
-  title          String          @db.VarChar(255) // 求人タイトル（例: フロントエンドエンジニア）
-  company        String          @db.VarChar(255) // 企業名
-  description    String          @db.Text // 求人の詳細説明（業務内容、必要スキルなど）
-  location       String?         @db.VarChar(255) // 勤務地（任意）
-  salary         String?         @db.VarChar(100) // 給与情報（任意、例: 500万円〜800万円）
-  employmentType EmploymentType? @map("employment_type") // 雇用形態（正社員、契約社員など）
+  id             String         @id @default(nanoid(8)) // 求人の一意識別子
+  company        String         @db.VarChar(100) // 企業名 ex: starbacks
+  name           String         @db.VarChar(100) // 店舗や支店名 ex: Robson Street Store
+  title          String         @db.VarChar(255) // 求人タイトル ex: Loolking for opening staff and experienced barista!
+  description    String         @db.Text // 求人の詳細説明
+  salary         String         @db.VarChar(100) // 給与情報 ex: $18/hour, $4000/month
+  lat            Float // 勤務地の緯度
+  lon            Float // 勤務地の経度
+  salaryType     SalaryType     @map("salary_type") // 給与タイプ（時給、月給、年俸）
+  employmentType EmploymentType @map("employment_type") // 雇用形態（正社員、契約社員など）
 
   isActive  Boolean  @default(true) @map("is_active") // 求人の公開状態（true: 公開中、false: 非公開）
   createdAt DateTime @default(now()) @map("created_at") // 求人作成日時
   updatedAt DateTime @updatedAt @map("updated_at") // 求人更新日時
 
   // リレーション
-  applications JobApplication[] // この求人への応募一覧
+  applications   JobApplication[] // この求人への応募一覧
+  jobExperiences JobExperience[] // 求められる経験一覧
 
   @@index([isActive, createdAt]) // 公開中の求人を作成日順で検索しやすくするインデックス
   @@map("jobs")
+}
+
+// 求められる経験（中間テーブル）
+model JobExperience {
+  id               Int    @id @default(autoincrement()) // 求人経験の一意識別子
+  jobId            String @map("job_id") // 求人ID
+  experienceTypeId String @map("experience_type_id") @db.VarChar(50) // 経験タイプID
+
+  // リレーション
+  job            Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  experienceType MstExperienceType @relation(fields: [experienceTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, experienceTypeId]) // 同じ求人に同じ経験タイプを重複登録することを防ぐ
+  @@index([jobId]) // 求人ごとの検索用インデックス
+  @@map("job_experiences")
 }
 
 model JobApplication {
