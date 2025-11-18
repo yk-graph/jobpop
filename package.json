@@ -8,7 +8,8 @@
     "start": "next start",
     "check": "eslint . --ext .js,.jsx,.ts,.tsx && prettier --check .",
     "format": "eslint . --ext .js,.jsx,.ts,.tsx --fix && prettier --write .",
-    "seed:experience": "tsx scripts/seedExperience.ts"
+    "seed:experience": "tsx scripts/seedExperience.ts",
+    "seed:job": "tsx scripts/seedDummyJobs.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",

@@ -213,6 +213,7 @@ model Job {
   name            String         @db.VarChar(100) // 店舗や支店名 ex: Starbucks Robson Street Store
   title           String         @db.VarChar(255) // 求人タイトル ex: Loolking for opening staff and experienced barista!
   description     String         @db.Text // 求人の詳細説明
+  thumbnailUrl    String         @map("thumbnail_url") @db.VarChar(255) // 求人のサムネイル画像URL
   salary          String         @db.VarChar(100) // 給与情報 ex: $18/hour, $4000/month
   lat             Float // 勤務地の緯度
   lon             Float // 勤務地の経度
