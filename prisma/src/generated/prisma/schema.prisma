@@ -1,0 +1,251 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// Enums
+// ============================================
+
+enum VisaType {
+  VISITOR // 訪問者・観光・短期滞在
+  WORK_PERMIT // 就労許可（ワークビザ）
+  STUDY_PERMIT // 学生許可（学生ビザ）
+  WORK_HOLIDAY // ワーキングホリデー（就労＋旅行目的）
+  PERMANENT_RESIDENT // 永住者・定住者ビザ
+  FAMILY_SPONSORSHIP // 家族／配偶者を通じた滞在・移民
+  OTHER // その他（ビジネス目的、難民・人道目的、特別プログラム等）
+}
+
+enum EmploymentType {
+  FULL_TIME // 正社員
+  PART_TIME // パート・アルバイト
+  CONTRACT // 契約社員
+  INTERNSHIP // インターン
+  FREELANCE // フリーランス
+}
+
+enum ApplicationStatus {
+  APPLIED // 応募済み
+  REVIEWING // 選考中
+  INTERVIEW // 面接段階
+  ACCEPTED // 採用
+  REJECTED // 不採用
+  WITHDRAWN // 応募取り下げ
+}
+
+enum IndustryType {
+  FOOD // 飲食
+  RETAIL // 小売
+  HOSPITALITY // 宿泊・ホテル
+  HEALTHCARE // ヘルスケア・介護
+  BEAUTY // 美容
+  DELIVERY // 配送・デリバリー
+  FITNESS // フィットネス
+  LOGISTICS // 物流・倉庫
+  EDUCATION // 教育
+  CORPORATE // 企業・オフィス
+  ADMIN // 総務・人事・事務
+  FINANCE // 経理・会計
+  TECH // テック
+  MARKETING // マーケティング
+  MEDIA // メディア・クリエイティブ
+}
+
+enum SoftSkill {
+  DIGITAL_COMMUNICATION_FLUENCY // Digital Communication Fluency
+  LEARNING_AGILITY // Learning Agility
+  CULTURAL_INTELLIGENCE // Cultural Intelligence
+  EMOTIONAL_RESILIENCE // Emotional Resilience
+  ATTENTION_SWITCHING // Attention Switching
+  TECHNO_EMOTIONAL_BALANCE // Techno-Emotional Balance
+  COLLABORATIVE_CREATIVITY // Collaborative Creativity
+}
+
+enum SalaryType {
+  HOURLY // 時給
+  MONTHLY // 月給
+  ANNUAL // 年俸
+}
+
+// ============================================
+// Account と User 管理テーブル
+// ============================================
+
+model User {
+  id             String    @id @default(nanoid(8)) // ユーザーの一意識別子
+  name           String? // ユーザー名（OAuth時に取得、任意）
+  email          String?   @unique // メールアドレス（OAuth時は共有拒否の可能性あり、credentials認証時は必須）
+  emailVerified  DateTime? @map("email_verified") // メール認証完了日時（メール認証済みの場合のみ）
+  image          String? // プロフィール画像URL（OAuthプロバイダーから取得）
+  hashedPassword String?   @map("hashed_password") // ハッシュ化されたパスワード（credentials認証の場合のみ、OAuth時はnull）
+  createdAt      DateTime  @default(now()) @map("created_at") // アカウント作成日時
+  updatedAt      DateTime  @updatedAt @map("updated_at") // アカウント更新日時
+
+  // リレーション
+  accounts        Account[] // 紐付けられたOAuthアカウント（Google, Instagramなど）
+  sessions        Session[] // アクティブなセッション情報
+  profile         Profile? // ユーザープロフィール情報
+  userExperiences UserExperience[] // ユーザーの職務経験一覧
+  softSkills      UserSoftSkill[] // ユーザーのソフトスキル一覧
+  applications    JobApplication[] // ユーザーが応募した求人
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(nanoid(8))
+  userId            String  @map("user_id") // 紐付けられるユーザーID
+  type              String // アカウントタイプ（通常は"oauth"）
+  provider          String // 認証プロバイダー名（"google", "instagram", "credentials"）
+  providerAccountId String  @map("provider_account_id") // プロバイダー側のユーザーID
+  refresh_token     String? @db.Text // OAuthリフレッシュトークン（長期アクセス用）
+  access_token      String? @db.Text // OAuthアクセストークン（API呼び出し用）
+  expires_at        Int? // アクセストークンの有効期限（UNIX timestamp）
+  token_type        String? // トークンタイプ（通常は"Bearer"）
+  scope             String? // 許可されたスコープ（権限範囲）
+  id_token          String? @db.Text // OpenID ConnectのIDトークン
+  session_state     String? // OAuthセッション状態
+
+  // リレーション
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId]) // 同じプロバイダーで同じアカウントは1つのみ
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(nanoid(8)) // セッションレコードの一意識別子
+  sessionToken String   @unique @map("session_token") // セッション識別用トークン（Cookie等に保存）
+  userId       String   @map("user_id") // セッションに紐付くユーザーID
+  expires      DateTime // セッションの有効期限
+
+  // リレーション
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String // トークンの識別子（通常はメールアドレス）
+  token      String   @unique // 認証用のランダムトークン
+  expires    DateTime // トークンの有効期限
+
+  @@unique([identifier, token]) // 識別子とトークンの組み合わせで一意
+  @@map("verification_tokens")
+}
+
+model Profile {
+  id          Int      @id @default(autoincrement()) // プロフィールの一意識別子
+  userId      String   @unique @map("user_id") // 紐付けられるユーザーID
+  countryCode String   @map("country_code") @db.Char(2) // "JP", "US", "CA"などの国コード
+  birthYear   Int      @map("birth_year") // 生年
+  visaType    VisaType @map("visa_type") // ビザの種類
+  bio         String?  @db.Text // 自己紹介文（任意）
+  linkedin    String?  @db.VarChar(100) // LinkedInプロフィール（任意）
+  instagram   String?  @db.VarChar(100) // Instagramハンドル（任意）
+  whatsapp    String?  @db.VarChar(100) // WhatsApp連絡先（任意）
+  createdAt   DateTime @default(now()) @map("created_at") // プロフィール作成日時
+  updatedAt   DateTime @updatedAt @map("updated_at") // プロフィール更新日時
+
+  // リレーション
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+// 経験タイプのマスタテーブル
+model MstExperienceType {
+  id       String       @id @db.VarChar(50) // 経験タイプの一意識別子（例: "food_barista"）
+  industry IndustryType @map("industry_type") // 業界タイプ
+  title    String       @db.VarChar(255) // 職務タイトル（例: "Barista"）
+
+  // リレーション
+  userExperiences UserExperience[] // このタイプの経験を持つユーザー一覧
+  jobs            Job[] // この経験タイプが必要な求人一覧
+
+  @@index([industry]) // 業界別での検索用インデックス
+  @@map("mst_experience_types")
+}
+
+// ユーザーの経験（中間テーブル）
+model UserExperience {
+  id               Int      @id @default(autoincrement()) // ユーザー経験の一意識別子
+  userId           String   @map("user_id") // ユーザーID
+  experienceTypeId String   @map("experience_type_id") @db.VarChar(50) // 経験タイプID
+  createdAt        DateTime @default(now()) @map("created_at") // 作成日時
+
+  // リレーション
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experienceType MstExperienceType @relation(fields: [experienceTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, experienceTypeId]) // 同じユーザーが同じ経験タイプを重複登録することを防ぐ
+  @@index([userId]) // ユーザーごとの検索用インデックス
+  @@map("user_experiences")
+}
+
+model UserSoftSkill {
+  id          Int       @id @default(autoincrement()) // ユーザー経験の一意識別子
+  userId      String    @map("user_id") // ユーザーID
+  skill       SoftSkill // ソフトスキルの種類
+  description String?   @db.Text // スキルの説明（任意）
+  createdAt   DateTime  @default(now()) @map("created_at") // 作成日時
+
+  // リレーション
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skill]) // 同じユーザーが同じソフトスキルを重複登録することを防ぐ
+  @@index([userId]) // ユーザーごとの検索用インデックス
+  @@map("user_soft_skills")
+}
+
+// ============================================
+// 求人アプリ機能テーブル
+// ============================================
+
+model Job {
+  id              String         @id @default(nanoid(8)) // 求人の一意識別子
+  mstExperienceId String         @db.VarChar(50)
+  name            String         @db.VarChar(100) // 店舗や支店名 ex: Starbucks Robson Street Store
+  title           String         @db.VarChar(255) // 求人タイトル ex: Loolking for opening staff and experienced barista!
+  description     String         @db.Text // 求人の詳細説明
+  thumbnailUrl    String         @map("thumbnail_url") @db.VarChar(255) // 求人のサムネイル画像URL
+  salary          String         @db.VarChar(100) // 給与情報 ex: $18/hour, $4000/month
+  lat             Float // 勤務地の緯度
+  lng             Float // 勤務地の経度
+  address         String         @db.VarChar(255) // 勤務地の住所
+  salaryType      SalaryType     @map("salary_type") // 給与タイプ（時給、月給、年俸）
+  employmentType  EmploymentType @map("employment_type") // 雇用形態（正社員、契約社員など）
+  isActive        Boolean        @default(true) @map("is_active") // 求人の公開状態（true: 公開中、false: 非公開）
+  createdAt       DateTime       @default(now()) @map("created_at") // 求人作成日時
+  updatedAt       DateTime       @updatedAt @map("updated_at") // 求人更新日時
+
+  // リレーション
+  applications JobApplication[] // この求人への応募一覧
+  experience   MstExperienceType @relation(fields: [mstExperienceId], references: [id])
+
+  @@index([isActive, createdAt]) // 公開中の求人を作成日順で検索しやすくするインデックス
+  @@map("jobs")
+}
+
+model JobApplication {
+  id        Int               @id @default(autoincrement()) // 応募履歴の一意識別子
+  userId    String            @map("user_id") // 応募したユーザーID
+  jobId     String            @map("job_id") // 応募先の求人ID
+  status    ApplicationStatus @default(APPLIED) // 応募のステータス（応募済み、選考中など）
+  appliedAt DateTime          @default(now()) @map("applied_at") // 応募日時
+
+  // リレーション
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade) // ユーザー削除時に応募履歴も削除
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade) // 求人削除時に応募履歴も削除
+
+  @@unique([userId, jobId]) // 同じユーザーが同じ求人に複数回応募することを防ぐ
+  @@index([userId]) // ユーザーの応募履歴を検索しやすくするインデックス
+  @@index([jobId]) // 求人への応募者一覧を検索しやすくするインデックス
+  @@map("job_applications")
+}

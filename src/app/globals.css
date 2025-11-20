@@ -320,3 +320,38 @@ body {
     visibility: visible;
   }
 }
+
+@theme {
+  @keyframes jump {
+    0% {
+      transform: translateY(0);
+    }
+
+    18% {
+      transform: translateY(-18px); /* 一番の大ジャンプ */
+    }
+
+    32% {
+      transform: translateY(6px); /* どすんと着地 */
+    }
+
+    50% {
+      transform: translateY(-12px); /* 2段ミニジャンプ（ポップ感の核） */
+    }
+
+    70% {
+      transform: translateY(2px); /* 軽い跳ね返り */
+    }
+
+    85% {
+      transform: translateY(-4px); /* 小さめの余韻ジャンプ */
+    }
+
+    100% {
+      transform: translateY(0); /* 元の位置に戻る */
+    }
+  }
+
+  /* duration と easing をポップに最適化 */
+  --animate-jump: jump 1s cubic-bezier(0.25, 0.6, 0.35, 1) infinite;
+}
