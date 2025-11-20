@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { SessionProvider } from 'next-auth/react'
 
 import { getProfileByUserId } from '@/actions'
 import { MenuButton } from '@/components/button'
@@ -16,9 +17,11 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <div className="h-svh w-full flex justify-center items-center p-6">
-      <MenuButton />
-      {children}
-    </div>
+    <SessionProvider>
+      <div className="h-svh w-full flex justify-center items-center p-6">
+        <MenuButton />
+        {children}
+      </div>
+    </SessionProvider>
   )
 }

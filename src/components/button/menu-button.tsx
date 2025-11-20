@@ -1,13 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { ChartNoAxesGantt, X, User, Settings, LogOut } from 'lucide-react'
+import { useSession } from 'next-auth/react'
+import { ChartNoAxesGantt, X, User, Settings, LogOut, LogIn } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { logout } from '@/actions/auth/logout'
+import Link from 'next/link'
 
 export function MenuButton() {
+  const { data: session } = useSession()
+
   const [isOpen, setIsOpen] = useState(false)
 
   const handleToggle = () => {
@@ -65,10 +69,19 @@ export function MenuButton() {
               Settings
             </Button>
 
-            <Button variant="ghost" onClick={handleLogout} className="flex items-center gap-4 text-base group">
-              <LogOut className="group-hover:scale-110 transition-transform" />
-              Logout
-            </Button>
+            {!session ? (
+              <Link href="/login" className="flex">
+                <Button variant="ghost" className="flex items-center gap-4 text-base group">
+                  <LogIn className="group-hover:scale-110 transition-transform" />
+                  Login
+                </Button>
+              </Link>
+            ) : (
+              <Button variant="ghost" onClick={handleLogout} className="flex items-center gap-4 text-base group">
+                <LogOut className="group-hover:scale-110 transition-transform" />
+                Logout
+              </Button>
+            )}
           </nav>
         </div>
       </div>
