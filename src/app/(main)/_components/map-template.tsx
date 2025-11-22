@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { APIProvider, Map } from '@vis.gl/react-google-maps'
 
 import { type GetJobsResult } from '@/actions'
-import { GoogleMapAdvancedMarker } from '@/components/map'
+import { GoogleMapAdvancedMarker, PanToController } from '@/components/map'
 
 const containerStyle = {
   width: '100%',
@@ -19,15 +19,20 @@ interface MapTemplateProps {
 }
 
 export default function MapTemplate({ jobs, mapApiKey }: MapTemplateProps) {
-  const [selectedJob, setSelectedJob] = useState<string | null>(null)
-  const [hoveredJob, setHoveredJob] = useState<string | null>(null)
+  const [selectedJob, setSelectedJob] = useState<GetJobsResult | null>(null)
+  const [hoveredJobId, setHoveredJobId] = useState<string | null>(null)
 
   const handleJobClick = (jobId: string) => {
-    setSelectedJob(selectedJob === jobId ? null : jobId)
+    if (!selectedJob || selectedJob.id !== jobId) {
+      const job = jobs.find((job) => job.id === jobId) || null
+      setSelectedJob(job)
+    } else {
+      setSelectedJob(null)
+    }
   }
 
   const handleJobHover = (jobId: string, hovered: boolean) => {
-    setHoveredJob(hovered ? jobId : null)
+    setHoveredJobId(hovered ? jobId : null)
   }
 
   return (
@@ -40,13 +45,14 @@ export default function MapTemplate({ jobs, mapApiKey }: MapTemplateProps) {
         disableDefaultUI
         mapId="JOBPOP_MAP_ID"
       >
+        <PanToController target={selectedJob ? { lat: selectedJob.lat, lng: selectedJob.lng } : null} />
         {jobs.map((job) => {
           return (
             <GoogleMapAdvancedMarker
               key={job.id}
               job={job}
-              clicked={selectedJob === job.id}
-              hovered={hoveredJob === job.id}
+              clicked={selectedJob?.id === job.id}
+              hovered={hoveredJobId === job.id}
               handleJobClick={handleJobClick}
               handleJobHover={handleJobHover}
             />
