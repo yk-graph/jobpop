@@ -19,7 +19,12 @@ interface MapTemplateProps {
 }
 
 export default function MapTemplate({ jobs, mapApiKey }: MapTemplateProps) {
+  const [selectedJob, setSelectedJob] = useState<string | null>(null)
   const [hoveredJob, setHoveredJob] = useState<string | null>(null)
+
+  const handleJobClick = (jobId: string) => {
+    setSelectedJob(selectedJob === jobId ? null : jobId)
+  }
 
   const handleJobHover = (jobId: string, hovered: boolean) => {
     setHoveredJob(hovered ? jobId : null)
@@ -40,7 +45,9 @@ export default function MapTemplate({ jobs, mapApiKey }: MapTemplateProps) {
             <GoogleMapAdvancedMarker
               key={job.id}
               job={job}
+              clicked={selectedJob === job.id}
               hovered={hoveredJob === job.id}
+              handleJobClick={handleJobClick}
               handleJobHover={handleJobHover}
             />
           )
