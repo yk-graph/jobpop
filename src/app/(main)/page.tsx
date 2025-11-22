@@ -6,13 +6,19 @@ function delay(ms: number) {
 }
 
 export default async function MainPage() {
+  const mapApiKey = process.env.GOOGLE_MAPS_API_KEY
+
+  if (!mapApiKey) {
+    throw new Error('Google Maps API key is not defined')
+  }
+
   try {
     const jobs: GetJobsResult[] = await getJobs()
     await delay(2000)
 
-    return <MapTemplate jobs={jobs} />
+    return <MapTemplate jobs={jobs} mapApiKey={mapApiKey} />
   } catch (error) {
     console.error('Error in MainPage:', error)
-    throw new Error('some error occurred in MainPage\ncode: MAIN_PAGE_ERROR')
+    throw new Error('some error occurred in MainPage')
   }
 }
