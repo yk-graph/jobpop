@@ -2,21 +2,19 @@
 
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
-import { ChartNoAxesGantt, X, User, Settings, LogOut, LogIn } from 'lucide-react'
-
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-import { logout } from '@/actions/auth/logout'
+import { ChartNoAxesGantt, LogIn, LogOut, Settings, User, X } from 'lucide-react'
 import Link from 'next/link'
+
+import { logout } from '@/actions/auth/logout'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 export function MenuButton() {
   const { data: session } = useSession()
 
   const [isOpen, setIsOpen] = useState(false)
 
-  const handleToggle = () => {
-    setIsOpen(!isOpen)
-  }
+  const handleToggle = () => setIsOpen(!isOpen)
 
   const handleMenuItemClick = async (action: string) => {
     console.log('Menu action:', action)
@@ -36,7 +34,7 @@ export function MenuButton() {
 
       <div
         className={cn(
-          'fixed top-4 right-4 z-30 h-12 w-12 rounded-full bg-secondary transition-all duration-700 ease-in-out origin-center',
+          'fixed top-4 right-4 z-30 h-12 w-12 rounded-full bg-secondary transition-all duration-700 ease-in-out',
           isOpen ? 'scale-[100]' : 'scale-100'
         )}
       />
