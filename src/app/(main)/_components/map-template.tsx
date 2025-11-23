@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { APIProvider, Map } from '@vis.gl/react-google-maps'
 
 import { type GetJobsResult } from '@/actions'
-import { GoogleMapAdvancedMarker, PanToController } from '@/components/map'
+import { ClusteredMarkers, PanToController } from '@/components/map'
+import { JobsGeojson } from '@/utils'
 
 const containerStyle = {
   width: '100%',
@@ -14,26 +15,30 @@ const containerStyle = {
 }
 
 interface MapTemplateProps {
-  jobs: GetJobsResult[]
+  data: JobsGeojson
   mapApiKey: string
 }
 
-export default function MapTemplate({ jobs, mapApiKey }: MapTemplateProps) {
+export default function MapTemplate({ data, mapApiKey }: MapTemplateProps) {
   const [selectedJob, setSelectedJob] = useState<GetJobsResult | null>(null)
   const [hoveredJobId, setHoveredJobId] = useState<string | null>(null)
 
-  const handleJobClick = (jobId: string) => {
-    if (!selectedJob || selectedJob.id !== jobId) {
-      const job = jobs.find((job) => job.id === jobId) || null
-      setSelectedJob(job)
-    } else {
-      setSelectedJob(null)
-    }
-  }
+  const handleJobClick = useCallback(
+    (jobId: string) => {
+      if (!selectedJob || selectedJob.id !== jobId) {
+        const feature = data.features.find((feature) => feature.id === jobId)
+        const job = feature?.properties || null
+        setSelectedJob(job)
+      } else {
+        setSelectedJob(null)
+      }
+    },
+    [selectedJob, data.features]
+  )
 
-  const handleJobHover = (jobId: string, hovered: boolean) => {
+  const handleJobHover = useCallback((jobId: string, hovered: boolean) => {
     setHoveredJobId(hovered ? jobId : null)
-  }
+  }, [])
 
   return (
     <APIProvider apiKey={mapApiKey}>
@@ -46,18 +51,13 @@ export default function MapTemplate({ jobs, mapApiKey }: MapTemplateProps) {
         mapId="JOBPOP_MAP_ID"
       >
         <PanToController target={selectedJob ? { lat: selectedJob.lat, lng: selectedJob.lng } : null} />
-        {jobs.map((job) => {
-          return (
-            <GoogleMapAdvancedMarker
-              key={job.id}
-              job={job}
-              clicked={selectedJob?.id === job.id}
-              hovered={hoveredJobId === job.id}
-              handleJobClick={handleJobClick}
-              handleJobHover={handleJobHover}
-            />
-          )
-        })}
+        <ClusteredMarkers
+          geojson={data}
+          selectedJob={selectedJob}
+          hoveredJobId={hoveredJobId}
+          handleJobClick={handleJobClick}
+          handleJobHover={handleJobHover}
+        />
       </Map>
     </APIProvider>
   )
