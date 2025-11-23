@@ -1,4 +1,5 @@
 export * from './password'
 export * from './country'
+export * from './geojson-adapter'
 export * from './experience'
 export * from './soft-skill'
