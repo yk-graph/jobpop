@@ -1,0 +1,31 @@
+import type { Metadata } from 'next'
+import { Montserrat, Geist_Mono } from 'next/font/google'
+import '../globals.css'
+
+import { Toaster } from '@/components/ui/sonner'
+
+const montserrat = Montserrat({
+  variable: '--font-montserrat',
+  subsets: ['latin'],
+})
+
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+})
+
+export const metadata: Metadata = {
+  title: 'JobPop | Find Your Job, Pop Your Life',
+  description: 'Connecting Job Seekers with Their Dream Careers',
+}
+
+export default function SeekerLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${montserrat.variable} ${geistMono.variable} antialiased`}>
+        <Toaster />
+        {children}
+      </body>
+    </html>
+  )
+}
