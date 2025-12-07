@@ -72,6 +72,13 @@ enum SalaryType {
   ANNUAL // 年俸
 }
 
+enum EmployeeRole {
+  OWNER // オーナー（全権限）
+  ADMIN // 管理者（企業全体の管理権限）
+  MANAGER // 店舗マネージャー（特定店舗の管理権限）
+  STAFF // スタッフ（閲覧のみ、または限定的な編集権限）
+}
+
 // ============================================
 // Account と User 管理テーブル
 // ============================================
@@ -93,6 +100,7 @@ model User {
   userExperiences UserExperience[] // ユーザーの職務経験一覧
   softSkills      UserSoftSkill[] // ユーザーのソフトスキル一覧
   applications    JobApplication[] // ユーザーが応募した求人
+  employees       Employee[] // 雇用者として所属する企業・店舗一覧
 
   @@map("users")
 }
@@ -158,6 +166,10 @@ model Profile {
   @@map("profiles")
 }
 
+// ============================================
+// 求職者の経験・スキル管理
+// ============================================
+
 // 経験タイプのマスタテーブル
 model MstExperienceType {
   id       String       @id @db.VarChar(50) // 経験タイプの一意識別子（例: "food_barista"）
@@ -204,20 +216,92 @@ model UserSoftSkill {
 }
 
 // ============================================
+// 雇用者側（Company/Store/Employee）
+// ============================================
+
+// 企業・ブランド（例: Starbucks, Tim Hortons）
+model Company {
+  id          String   @id @default(nanoid(8))
+  name        String   @db.VarChar(255) // 企業名（例: "Starbucks"）
+  description String?  @db.Text // 企業説明
+  logoUrl     String?  @map("logo_url") @db.VarChar(255)
+  website     String?  @db.VarChar(255)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // リレーション
+  stores    Store[] // この企業が運営する店舗一覧
+  employees Employee[] // この企業に所属する従業員一覧
+
+  @@map("companies")
+}
+
+// 店舗（例: Starbucks Robson Street Store）
+model Store {
+  id            String   @id @default(nanoid(8))
+  companyId     String   @map("company_id")
+  name          String   @db.VarChar(255) // 店舗名（例: "Robson Street Store"）
+  description   String?  @db.Text // 店舗情報の説明
+  thumbnailUrl  String?  @map("thumbnail_url") @db.VarChar(255)
+  lat           Float // 店舗の緯度
+  lng           Float // 店舗の経度
+  postalCode    String   @map("postal_code") @db.VarChar(20) // "V5H 4J2"
+  country       String   @default("Canada") @db.VarChar(100) // "Canada"
+  province      String   @db.VarChar(100) // "BC"
+  city          String   @db.VarChar(100) // "Burnaby"
+  streetAddress String   @map("street_address") @db.VarChar(255) // "4800 Kingsway"
+  floor         String?  @db.VarChar(50) // "B1", "Ground Floor"
+  unit          String?  @db.VarChar(50) // "Shop 205"
+  phoneNumber   String?  @map("phone_number") @db.VarChar(50)
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // リレーション
+  company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  jobs      Job[] // この店舗が掲載する求人一覧
+  employees Employee[] // この店舗で働く従業員一覧
+
+  @@index([companyId])
+  @@index([lat, lng]) // 地図検索用インデックス
+  @@index([postalCode]) // 郵便番号検索用
+  @@map("stores")
+}
+
+// 従業員（企業・店舗への所属を管理）
+model Employee {
+  id        Int          @id @default(autoincrement())
+  userId    String       @map("user_id")
+  companyId String       @map("company_id")
+  storeId   String?      @map("store_id") // NULLの場合は企業全体の従業員
+  role      EmployeeRole @default(STAFF)
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  // リレーション
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, companyId, storeId]) // この組み合わせでのみユニーク
+  @@index([userId])
+  @@index([companyId])
+  @@index([storeId])
+  @@map("employees")
+}
+
+// ============================================
 // 求人アプリ機能テーブル
 // ============================================
 
 model Job {
   id              String         @id @default(nanoid(8)) // 求人の一意識別子
+  storeId         String         @map("store_id") // 求人を掲載した店舗ID
   mstExperienceId String         @db.VarChar(50)
-  name            String         @db.VarChar(100) // 店舗や支店名 ex: Starbucks Robson Street Store
-  title           String         @db.VarChar(255) // 求人タイトル ex: Loolking for opening staff and experienced barista!
+  title           String         @db.VarChar(255) // 求人タイトル ex: Looking for opening staff and experienced barista!
   description     String         @db.Text // 求人の詳細説明
   thumbnailUrl    String         @map("thumbnail_url") @db.VarChar(255) // 求人のサムネイル画像URL
   salary          String         @db.VarChar(100) // 給与情報 ex: $18/hour, $4000/month
-  lat             Float // 勤務地の緯度
-  lng             Float // 勤務地の経度
-  address         String         @db.VarChar(255) // 勤務地の住所
   salaryType      SalaryType     @map("salary_type") // 給与タイプ（時給、月給、年俸）
   employmentType  EmploymentType @map("employment_type") // 雇用形態（正社員、契約社員など）
   isActive        Boolean        @default(true) @map("is_active") // 求人の公開状態（true: 公開中、false: 非公開）
@@ -225,10 +309,11 @@ model Job {
   updatedAt       DateTime       @updatedAt @map("updated_at") // 求人更新日時
 
   // リレーション
-  applications JobApplication[] // この求人への応募一覧
+  store        Store             @relation(fields: [storeId], references: [id], onDelete: Cascade)
   experience   MstExperienceType @relation(fields: [mstExperienceId], references: [id])
+  applications JobApplication[] // この求人への応募一覧
 
-  @@index([isActive, createdAt]) // 公開中の求人を作成日順で検索しやすくするインデックス
+  @@index([storeId, isActive]) // 店舗ごとの公開中求人を検索しやすくするインデックス
   @@map("jobs")
 }
 
