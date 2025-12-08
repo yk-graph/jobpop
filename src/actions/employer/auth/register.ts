@@ -1,13 +1,30 @@
 'use server'
 
-import { AuthError } from 'next-auth'
+import { Prisma } from '@prisma/client'
 import { ZodError } from 'zod'
 
-import { signIn } from '@/lib/auth'
+import { TOKEN_EXPIRES_IN } from '@/constants'
 import { prisma } from '@/lib/prisma'
 import { registerSchema, RegisterSchemaType } from '@/lib/zod'
 import { ServerActionResult } from '@/types'
-import { hashPassword } from '@/utils'
+import { generateVerificationToken, hashPassword } from '@/utils'
+
+async function sendVerificationEmail(email: string, token: string): Promise<void> {
+  try {
+    await fetch(`${process.env.API_URL}/send`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        token,
+      }),
+    })
+  } catch (error) {
+    console.error('Failed to send verification email:', error)
+  }
+}
 
 export async function register(data: RegisterSchemaType): Promise<ServerActionResult<{ userId: string }>> {
   try {
@@ -21,8 +38,9 @@ export async function register(data: RegisterSchemaType): Promise<ServerActionRe
       where: { email },
     })
 
+    // 既にユーザーが存在する場合
     if (existingUser) {
-      // メール未検証の場合、トークン再送
+      // メール未検証の場合 -> トークン再送
       if (!existingUser.emailVerified) {
         // 既存トークン削除
         await prisma.verificationToken.deleteMany({
@@ -35,7 +53,7 @@ export async function register(data: RegisterSchemaType): Promise<ServerActionRe
           data: {
             identifier: email,
             token,
-            expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+            expires: new Date(Date.now() + TOKEN_EXPIRES_IN),
           },
         })
 
@@ -48,31 +66,55 @@ export async function register(data: RegisterSchemaType): Promise<ServerActionRe
         }
       }
 
+      // メール検証済みの場合 -> エラーメッセージ返却
       return {
         success: false,
         message: 'User with this email already exists.',
       }
     }
 
+    // ユーザーが存在しない場合
     const hashedPassword = await hashPassword(password)
+    const token = generateVerificationToken()
 
-    const user = await prisma.user.create({
-      data: {
-        email,
-        hashedPassword,
-      },
+    // Tips: トランザクションを使ったPrismaの処理 -> トランザクション内でユーザー、アカウント、検証トークンを作成
+    const user = await prisma.$transaction(async (tx) => {
+      // ユーザー作成
+      const newUser = await tx.user.create({
+        data: {
+          email,
+          hashedPassword,
+        },
+      })
+
+      // アカウント作成
+      await tx.account.create({
+        data: {
+          userId: newUser.id,
+          type: 'credentials',
+          provider: 'credentials',
+          providerAccountId: newUser.id,
+        },
+      })
+
+      // 検証トークン作成
+      await tx.verificationToken.create({
+        data: {
+          identifier: email,
+          token,
+          expires: new Date(Date.now() + TOKEN_EXPIRES_IN),
+        },
+      })
+
+      return newUser
     })
 
-    // 登録後に自動ログイン
-    await signIn('credentials', {
-      email: validatedData.email,
-      password: validatedData.password,
-      redirect: false,
-    })
+    // メール送信（トランザクション外）
+    await sendVerificationEmail(email, token)
 
     return {
       success: true,
-      message: 'Account Created and Signed In!',
+      message: 'Please verify your email address to complete the registration.',
       data: { userId: user.id },
     }
   } catch (error: unknown) {
@@ -83,18 +125,10 @@ export async function register(data: RegisterSchemaType): Promise<ServerActionRe
       }
     }
 
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case 'CredentialsSignin':
-          return {
-            success: false,
-            message: 'Registration successful but auto-login failed. Please sign in manually.',
-          }
-        default:
-          return {
-            success: false,
-            message: 'Registration successful but authentication error occurred',
-          }
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      return {
+        success: false,
+        message: 'Database error occurred',
       }
     }
 
