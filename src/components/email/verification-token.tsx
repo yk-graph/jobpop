@@ -36,15 +36,6 @@ export const VerificationToken = ({ verificationUrl }: VerificationTokenProps) =
           <Link style={footerLink}>Contact support</Link>
         </Text>
 
-        {/* Additional Info */}
-        <Text style={additionalInfo}>
-          If the button above doesn&apos;t work, copy and paste this link:
-          <br />
-          <Link href={verificationUrl} style={urlLink}>
-            {verificationUrl}
-          </Link>
-        </Text>
-
         <Text style={securityNote}>This verification link will expire in 24 hours for security purposes.</Text>
 
         {/* Company Footer */}

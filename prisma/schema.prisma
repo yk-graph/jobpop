@@ -140,7 +140,7 @@ model Session {
 
 model VerificationToken {
   identifier String // トークンの識別子（通常はメールアドレス）
-  token      String   @unique // 認証用のランダムトークン
+  token      String   @unique @db.VarChar(400) // 実際のトークン文字列
   expires    DateTime // トークンの有効期限
 
   @@unique([identifier, token]) // 識別子とトークンの組み合わせで一意

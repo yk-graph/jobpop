@@ -13,7 +13,7 @@ export async function POST(req: Request): Promise<Response> {
       return new Response(JSON.stringify({ error: 'Email and token are required' }), { status: 400 })
     }
 
-    const verificationUrl = `${process.env.APP_URL}/auth/verify?token=${token}&email=${email}`
+    const verificationUrl = `${process.env.APP_URL}/employer/activate?token=${token}`
 
     // React EmailコンポーネントをHTMLに変換
     const emailHtml = await render(VerificationToken({ verificationUrl }))

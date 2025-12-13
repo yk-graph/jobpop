@@ -7,7 +7,7 @@ import { TOKEN_EXPIRES_IN } from '@/constants'
 import { prisma } from '@/lib/prisma'
 import { registerSchema, RegisterSchemaType } from '@/lib/zod'
 import { ServerActionResult } from '@/types'
-import { generateVerificationToken, hashPassword } from '@/utils'
+import { generateActivateToken, hashPassword } from '@/utils'
 
 async function sendVerificationEmail(email: string, token: string): Promise<void> {
   try {
@@ -49,7 +49,7 @@ export async function register(data: RegisterSchemaType): Promise<ServerActionRe
 
     // ユーザーが存在しない場合
     const hashedPassword = await hashPassword(password)
-    const token = generateVerificationToken()
+    const token = generateActivateToken(email)
 
     // Tips: トランザクションを使ったPrismaの処理 -> トランザクション内でユーザー、検証トークンを作成
     const user = await prisma.$transaction(async (tx) => {
@@ -60,6 +60,7 @@ export async function register(data: RegisterSchemaType): Promise<ServerActionRe
           hashedPassword,
         },
       })
+      console.log('✅️ token:', token.length)
 
       // 検証トークン作成
       await tx.verificationToken.create({
