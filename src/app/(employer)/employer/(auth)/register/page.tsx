@@ -1,8 +1,7 @@
 import Link from 'next/link'
 
-import { RegisterForm } from '@/components/form'
+import { RegisterForm, RegisterProvider } from '@/components/form'
 import { Button } from '@/components/ui/button'
-import { RegisterFormProvider } from './register-form-provider'
 
 export default function EmployerAdminRegisterPage() {
   return (
@@ -10,14 +9,17 @@ export default function EmployerAdminRegisterPage() {
       <div className="flex flex-col gap-y-8 items-center max-w-4/5 sm:max-w-sm w-full">
         <h1 className="text-2xl font-semibold">Employer Register</h1>
         {/* 登録フォーム */}
-        <RegisterFormProvider>
+        <RegisterProvider>
           <RegisterForm />
-        </RegisterFormProvider>
+        </RegisterProvider>
 
-        {/* ログインボタン */}
-        <div className="text-center -mt-6">
+        {/* Link */}
+        <div className="flex flex-col justify-center -mt-4">
           <Button asChild variant="ghost" size="sm">
-            <Link href="/login">Already have an account?</Link>
+            <Link href="/employer/login">Already have an account?</Link>
+          </Button>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/employer/resend-verification">Resend verification email</Link>
           </Button>
         </div>
       </div>

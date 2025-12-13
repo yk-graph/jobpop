@@ -27,6 +27,10 @@ export const loginSchema = z.object({
   password: passwordValidation,
 })
 
+export const resendSchema = z.object({
+  email: emailValidation,
+})
+
 export const initialProfileSchema = z.object({
   stepCount: z.number().min(1).max(3),
   name: z
@@ -48,4 +52,5 @@ export const initialProfileSchema = z.object({
 
 export type RegisterSchemaType = z.infer<typeof registerSchema>
 export type LoginSchemaType = z.infer<typeof loginSchema>
+export type ResendSchemaType = z.infer<typeof resendSchema>
 export type InitialProfileSchemaType = z.infer<typeof initialProfileSchema>

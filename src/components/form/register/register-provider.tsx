@@ -12,11 +12,7 @@ import { Form } from '@/components/ui/form'
 import { Spinner } from '@/components/ui/spinner'
 import { registerSchema, RegisterSchemaType } from '@/lib/zod'
 
-interface RegisterProviderProps {
-  children: ReactNode
-}
-
-export function RegisterProvider({ children }: RegisterProviderProps) {
+export function RegisterProvider({ children }: { children: ReactNode }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 

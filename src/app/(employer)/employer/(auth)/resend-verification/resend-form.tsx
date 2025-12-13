@@ -1,69 +1,70 @@
 'use client'
 
-import { useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useTransition } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
-import { resendVerification } from '@/actions/employer'
+import { resendVerification } from '@/actions'
+import { Button } from '@/components/ui/button'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Spinner } from '@/components/ui/spinner'
+import { resendSchema, ResendSchemaType } from '@/lib/zod'
 
 export function ResendForm() {
-  const [email, setEmail] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [isPending, startTransition] = useTransition()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setMessage(null)
+  const form = useForm<ResendSchemaType>({
+    resolver: zodResolver(resendSchema),
+    defaultValues: {
+      email: '',
+    },
+    mode: 'onSubmit',
+  })
 
-    const result = await resendVerification(email)
+  const onSubmit = (values: ResendSchemaType) => {
+    startTransition(async () => {
+      const result = await resendVerification(values.email)
 
-    setIsLoading(false)
-    setMessage({
-      type: result.success ? 'success' : 'error',
-      text: result.message,
+      if (!result.success) {
+        toast.error('Failed to send email', {
+          description: result.message,
+          richColors: true,
+        })
+        return
+      }
+
+      toast.success('Email sent!', {
+        description: result.message,
+        richColors: true,
+      })
+
+      form.reset()
     })
-
-    if (result.success) {
-      setEmail('')
-    }
   }
 
   return (
-    <div className="w-full max-w-md">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700">
-            Email Address
-          </label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="your@email.com"
-            disabled={isLoading}
-          />
-        </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="example@email.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:bg-gray-400"
-        >
-          {isLoading ? 'Sending...' : 'Resend Verification Email'}
-        </button>
+        <Button type="submit" variant="secondary" className="mt-2 w-full">
+          {isPending ? <Spinner /> : 'Resend Verification Email'}
+        </Button>
       </form>
-
-      {message && (
-        <div
-          className={`mt-4 rounded-md p-3 ${
-            message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-700'
-          }`}
-        >
-          {message.text}
-        </div>
-      )}
-    </div>
+    </Form>
   )
 }

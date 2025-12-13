@@ -32,7 +32,7 @@ export async function activateAccount(token: string): Promise<ServerActionResult
     if (!dbToken) {
       return {
         success: false,
-        message: 'Token not found or already used. Please log in or request a new verification email.',
+        message: 'Invalid token. Please request a new verification email.',
       }
     }
 
@@ -54,7 +54,7 @@ export async function activateAccount(token: string): Promise<ServerActionResult
       }
     }
 
-    // ステップ4: ユーザーの存在確認
+    // ステップ4: ユーザーの存在確認 + 認証済みチェック
     const user = await prisma.user.findUnique({
       where: { email },
     })
@@ -63,6 +63,13 @@ export async function activateAccount(token: string): Promise<ServerActionResult
       return {
         success: false,
         message: 'User not found. Please register for an account.',
+      }
+    }
+
+    if (user.emailVerified) {
+      return {
+        success: false,
+        message: 'This account is already verified. Please log in.',
       }
     }
 
