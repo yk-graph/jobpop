@@ -1,8 +1,9 @@
 import { Resend } from 'resend'
+import { render } from '@react-email/render'
 
-import { VerificationToken } from '@/components/email'
+import { VerificationToken } from '@/components/email/verification-token'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = new Resend(process.env.RESEND_API_KEY as string)
 
 export async function POST(req: Request): Promise<Response> {
   try {
@@ -12,15 +13,16 @@ export async function POST(req: Request): Promise<Response> {
       return new Response(JSON.stringify({ error: 'Email and token are required' }), { status: 400 })
     }
 
-    const verificationUrl = `${process.env.NEXTAUTH_URL}/auth/verify?token=${token}&email=${email}`
+    const verificationUrl = `${process.env.APP_URL}/auth/verify?token=${token}&email=${email}`
+
+    // React EmailコンポーネントをHTMLに変換
+    const emailHtml = await render(VerificationToken({ verificationUrl }))
 
     const { data, error } = await resend.emails.send({
       from: 'JobPop <onboarding@resend.dev>',
       to: [email],
       subject: 'Verify your email address',
-      react: VerificationToken({
-        verificationUrl,
-      }),
+      html: emailHtml,
     })
 
     if (error) {

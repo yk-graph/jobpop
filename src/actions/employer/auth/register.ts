@@ -77,23 +77,13 @@ export async function register(data: RegisterSchemaType): Promise<ServerActionRe
     const hashedPassword = await hashPassword(password)
     const token = generateVerificationToken()
 
-    // Tips: トランザクションを使ったPrismaの処理 -> トランザクション内でユーザー、アカウント、検証トークンを作成
+    // Tips: トランザクションを使ったPrismaの処理 -> トランザクション内でユーザー、検証トークンを作成
     const user = await prisma.$transaction(async (tx) => {
       // ユーザー作成
       const newUser = await tx.user.create({
         data: {
           email,
           hashedPassword,
-        },
-      })
-
-      // アカウント作成
-      await tx.account.create({
-        data: {
-          userId: newUser.id,
-          type: 'credentials',
-          provider: 'credentials',
-          providerAccountId: newUser.id,
         },
       })
 
