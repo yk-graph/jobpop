@@ -40,32 +40,6 @@ export async function register(data: RegisterSchemaType): Promise<ServerActionRe
 
     // 既にユーザーが存在する場合
     if (existingUser) {
-      // メール未検証の場合 -> トークン再送
-      if (!existingUser.emailVerified) {
-        // 既存トークン削除
-        await prisma.verificationToken.deleteMany({
-          where: { identifier: email },
-        })
-
-        // 新規トークン作成
-        const token = generateVerificationToken()
-        await prisma.verificationToken.create({
-          data: {
-            identifier: email,
-            token,
-            expires: new Date(Date.now() + TOKEN_EXPIRES_IN),
-          },
-        })
-
-        // メール再送
-        await sendVerificationEmail(email, token)
-
-        return {
-          success: false,
-          message: 'Email not verified. Verification email resent.',
-        }
-      }
-
       // メール検証済みの場合 -> エラーメッセージ返却
       return {
         success: false,
