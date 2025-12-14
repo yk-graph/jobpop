@@ -1,8 +1,7 @@
 import Link from 'next/link'
 
+import { ResendForm } from '@/components/form'
 import { Button } from '@/components/ui/button'
-
-import { ResendForm } from './resend-form'
 
 export default function ResendVerificationPage() {
   return (

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { LoginForm, LoginProvider } from '@/components/form'
+import { LoginForm } from '@/components/form'
 import { Button } from '@/components/ui/button'
 
 export default async function EmployerLoginPage({
@@ -24,9 +24,7 @@ export default async function EmployerLoginPage({
         </div>
 
         {/* ログインフォーム */}
-        <LoginProvider>
-          <LoginForm />
-        </LoginProvider>
+        <LoginForm />
 
         {/* Link */}
         <div className="flex flex-col justify-center -mt-4">

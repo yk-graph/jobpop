@@ -1,8 +1,7 @@
 import Link from 'next/link'
 
+import { ForgotPasswordForm } from '@/components/form'
 import { Button } from '@/components/ui/button'
-
-import { ForgotPasswordForm } from './forgot-password-form'
 
 export default function ForgotPasswordPage() {
   return (

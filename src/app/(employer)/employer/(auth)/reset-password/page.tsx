@@ -1,10 +1,9 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
+import { ResetPasswordForm } from '@/components/form'
 import { Button } from '@/components/ui/button'
 import { verifyActivateToken } from '@/utils'
-
-import { ResetPasswordForm } from './reset-password-form'
 
 export default async function ResetPasswordPage({
   searchParams,

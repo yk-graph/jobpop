@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 import { FacebookLogin, GoogleLogin } from '@/components/button'
 import { DividerLine } from '@/components/common'
-import { LoginForm, LoginProvider } from '@/components/form'
+import { LoginForm } from '@/components/form'
 import { Button } from '@/components/ui/button'
 
 export default function LoginPage() {
@@ -22,9 +22,7 @@ export default function LoginPage() {
         <DividerLine />
 
         {/* ログインフォーム */}
-        <LoginProvider>
-          <LoginForm />
-        </LoginProvider>
+        <LoginForm />
 
         {/* 新規登録ボタン */}
         <div className="text-center -mt-6">

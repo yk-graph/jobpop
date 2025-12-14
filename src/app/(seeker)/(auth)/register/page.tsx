@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { RegisterForm, RegisterProvider } from '@/components/form'
+import { RegisterForm } from '@/components/form'
 import { Button } from '@/components/ui/button'
 
 export default function RegisterPage() {
@@ -11,9 +11,7 @@ export default function RegisterPage() {
         <Image src="/images/jobpop-logo.png" alt="Logo" width={200} height={200} />
 
         {/* 登録フォーム */}
-        <RegisterProvider>
-          <RegisterForm />
-        </RegisterProvider>
+        <RegisterForm />
 
         {/* ログインボタン */}
         <div className="text-center -mt-6">

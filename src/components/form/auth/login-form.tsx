@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode, useTransition } from 'react'
+import { useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -8,15 +8,12 @@ import { toast } from 'sonner'
 
 import { login } from '@/actions'
 import { Button } from '@/components/ui/button'
-import { Form } from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
 import { loginSchema, LoginSchemaType } from '@/lib/zod'
 
-interface LoginProviderProps {
-  children: ReactNode
-}
-
-export function LoginProvider({ children }: LoginProviderProps) {
+export function LoginForm() {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
@@ -52,7 +49,34 @@ export function LoginProvider({ children }: LoginProviderProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
-        {children}
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="example@email.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="••••••••" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <Button type="submit" variant="secondary" className="w-full mt-2">
           {isPending ? <Spinner /> : 'Sign In'}
         </Button>
