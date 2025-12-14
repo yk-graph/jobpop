@@ -4,9 +4,13 @@ import { Prisma } from '@prisma/client'
 
 import { prisma } from '@/lib/prisma'
 import { ServerActionResult } from '@/types'
-import { verifyActivateToken } from '@/utils'
+import { hashPassword, verifyActivateToken } from '@/utils'
 
-export async function activateAccount(token: string): Promise<ServerActionResult<null>> {
+export async function resetPassword(
+  token: string,
+  email: string,
+  newPassword: string
+): Promise<ServerActionResult<null>> {
   try {
     // ステップ1: JWTの検証（改ざん・署名・有効期限チェック）
     const jwtResult = verifyActivateToken(token)
@@ -17,9 +21,15 @@ export async function activateAccount(token: string): Promise<ServerActionResult
       }
     }
 
-    const email = jwtResult.email
+    // メールアドレスの一致確認
+    if (jwtResult.email !== email) {
+      return {
+        success: false,
+        message: 'Invalid token.',
+      }
+    }
 
-    // ステップ2: ユーザーの存在確認 + 認証済みチェック（最優先）
+    // ステップ2: ユーザーの存在確認
     const user = await prisma.user.findUnique({
       where: { email },
     })
@@ -27,20 +37,12 @@ export async function activateAccount(token: string): Promise<ServerActionResult
     if (!user) {
       return {
         success: false,
-        message: 'User not found. Please register for an account.',
-      }
-    }
-
-    // 既に認証済みの場合は即座に終了（トークンチェック不要）
-    if (user.emailVerified) {
-      return {
-        success: false,
-        message: 'This account is already verified. Please log in.',
+        message: 'User not found.',
       }
     }
 
     // ステップ3: DBのトークン検証（存在確認）
-    const dbToken = await prisma.verificationToken.findUnique({
+    const dbToken = await prisma.passwordResetToken.findUnique({
       where: {
         identifier_token: {
           identifier: email,
@@ -52,14 +54,14 @@ export async function activateAccount(token: string): Promise<ServerActionResult
     if (!dbToken) {
       return {
         success: false,
-        message: 'Invalid token. Please request a new verification email.',
+        message: 'Invalid or already used token. Please request a new password reset.',
       }
     }
 
     // ステップ4: DBの有効期限チェック
     if (dbToken.expires < new Date()) {
       // 期限切れトークンは削除
-      await prisma.verificationToken.delete({
+      await prisma.passwordResetToken.delete({
         where: {
           identifier_token: {
             identifier: email,
@@ -70,19 +72,21 @@ export async function activateAccount(token: string): Promise<ServerActionResult
 
       return {
         success: false,
-        message: 'Token has expired. Please request a new verification email.',
+        message: 'Token has expired. Please request a new password reset.',
       }
     }
 
-    // ステップ5: メール認証完了とトークン削除（トランザクション）
+    // ステップ5: パスワード更新とトークン削除（トランザクション）
+    const hashedPassword = await hashPassword(newPassword)
+
     await prisma.$transaction([
-      // メール認証完了
+      // パスワード更新
       prisma.user.update({
         where: { email },
-        data: { emailVerified: new Date() },
+        data: { hashedPassword },
       }),
       // トークン削除（1回のみ使用可能にする）
-      prisma.verificationToken.delete({
+      prisma.passwordResetToken.delete({
         where: {
           identifier_token: {
             identifier: email,
@@ -94,7 +98,7 @@ export async function activateAccount(token: string): Promise<ServerActionResult
 
     return {
       success: true,
-      message: 'Email verification completed successfully',
+      message: 'Password has been reset successfully. Please log in with your new password.',
       data: null,
     }
   } catch (error: unknown) {

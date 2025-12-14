@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 const emailValidation = z.email('email is invalid').min(1, 'email is required')
 
-const passwordValidation = z
+export const passwordValidation = z
   .string()
   .min(8, 'password must be at least 8 characters long')
   .max(20, 'password must be at most 20 characters long')
@@ -31,6 +31,20 @@ export const resendSchema = z.object({
   email: emailValidation,
 })
 
+export const forgotPasswordSchema = z.object({
+  email: emailValidation,
+})
+
+export const resetPasswordSchema = z
+  .object({
+    password: passwordValidation,
+    confirmPassword: z.string().min(1, 'confirm password is required'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'passwords do not match',
+    path: ['confirmPassword'],
+  })
+
 export const initialProfileSchema = z.object({
   stepCount: z.number().min(1).max(3),
   name: z
@@ -53,4 +67,6 @@ export const initialProfileSchema = z.object({
 export type RegisterSchemaType = z.infer<typeof registerSchema>
 export type LoginSchemaType = z.infer<typeof loginSchema>
 export type ResendSchemaType = z.infer<typeof resendSchema>
+export type ForgotPasswordSchemaType = z.infer<typeof forgotPasswordSchema>
+export type ResetPasswordSchemaType = z.infer<typeof resetPasswordSchema>
 export type InitialProfileSchemaType = z.infer<typeof initialProfileSchema>

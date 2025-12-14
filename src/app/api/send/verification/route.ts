@@ -13,9 +13,8 @@ export async function POST(req: Request): Promise<Response> {
       return new Response(JSON.stringify({ error: 'Email and token are required' }), { status: 400 })
     }
 
+    // メール認証用のURLを生成
     const verificationUrl = `${process.env.APP_URL}/employer/activate?token=${token}`
-
-    // React EmailコンポーネントをHTMLに変換
     const emailHtml = await render(VerificationToken({ verificationUrl }))
 
     const { data, error } = await resend.emails.send({
@@ -31,7 +30,7 @@ export async function POST(req: Request): Promise<Response> {
 
     return new Response(JSON.stringify({ success: true, data }))
   } catch (error) {
-    console.error('Email sending error:', error)
-    return new Response(JSON.stringify({ error: 'Failed to send email' }), { status: 500 })
+    console.error('Verification email sending error:', error)
+    return new Response(JSON.stringify({ error: 'Failed to send verification email' }), { status: 500 })
   }
 }

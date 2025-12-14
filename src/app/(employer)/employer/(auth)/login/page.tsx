@@ -16,7 +16,10 @@ export default async function EmployerLoginPage({
         <div className="flex flex-col items-center gap-y-2">
           <h1 className="text-2xl font-semibold">Employer Login</h1>
           {params.verified === 'true' && (
-            <p className="text-green-700 text-center">{`Your email has been successfully verified.\nPlease log in to continue.`}</p>
+            <p className="text-center text-green-700">{`Your email has been successfully verified.\nPlease log in to continue.`}</p>
+          )}
+          {params.reset === 'true' && (
+            <p className="text-center text-green-700">{`Your password has been reset successfully.\nPlease log in with your new password.`}</p>
           )}
         </div>
 
@@ -26,12 +29,12 @@ export default async function EmployerLoginPage({
         </LoginProvider>
 
         {/* Link */}
-        <div className="-mt-4 text-center">
+        <div className="flex flex-col justify-center -mt-4">
           <Button asChild variant="ghost" size="sm">
             <Link href="/employer/register">Don&apos;t have an account?</Link>
           </Button>
           <Button asChild variant="ghost" size="sm">
-            <Link href="/employer/resend-verification">Resend verification email</Link>
+            <Link href="/employer/forgot-password">Forgot password?</Link>
           </Button>
         </div>
       </div>

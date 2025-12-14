@@ -7,9 +7,9 @@ import { prisma } from '@/lib/prisma'
 import { ServerActionResult } from '@/types'
 import { generateActivateToken } from '@/utils'
 
-async function sendVerificationEmail(email: string, token: string): Promise<void> {
+async function sendPasswordResetEmail(email: string, token: string): Promise<void> {
   try {
-    await fetch(`${process.env.APP_URL}/api/send/verification`, {
+    await fetch(`${process.env.APP_URL}/api/send/password-reset`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -20,11 +20,11 @@ async function sendVerificationEmail(email: string, token: string): Promise<void
       }),
     })
   } catch (error) {
-    console.error('Failed to send verification email:', error)
+    console.error('Failed to send password reset email:', error)
   }
 }
 
-export async function resendVerification(email: string): Promise<ServerActionResult<null>> {
+export async function requestPasswordReset(email: string): Promise<ServerActionResult<null>> {
   try {
     // ユーザーの存在確認
     const user = await prisma.user.findUnique({
@@ -38,11 +38,11 @@ export async function resendVerification(email: string): Promise<ServerActionRes
       }
     }
 
-    // 既にメール認証済みかチェック
-    if (user.emailVerified) {
+    // メール未認証の場合
+    if (!user.emailVerified) {
       return {
         success: false,
-        message: 'Email is already verified. Please log in.',
+        message: 'Email is not verified. Please verify your email first.',
       }
     }
 
@@ -51,15 +51,15 @@ export async function resendVerification(email: string): Promise<ServerActionRes
 
     // トランザクション: 既存トークン削除 + 新規トークン作成
     await prisma.$transaction(async (tx) => {
-      // 既存のトークンを削除（もしあれば）
-      await tx.verificationToken.deleteMany({
+      // 既存のパスワードリセットトークンを削除（もしあれば）
+      await tx.passwordResetToken.deleteMany({
         where: {
           identifier: email,
         },
       })
 
       // 新しいトークンを作成
-      await tx.verificationToken.create({
+      await tx.passwordResetToken.create({
         data: {
           identifier: email,
           token,
@@ -69,11 +69,11 @@ export async function resendVerification(email: string): Promise<ServerActionRes
     })
 
     // メール送信（トランザクション外）
-    await sendVerificationEmail(email, token)
+    await sendPasswordResetEmail(email, token)
 
     return {
       success: true,
-      message: 'Verification email has been sent. Please check your inbox.',
+      message: 'Password reset email has been sent. Please check your inbox.',
       data: null,
     }
   } catch (error: unknown) {

@@ -147,6 +147,15 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
+model PasswordResetToken {
+  identifier String // トークンの識別子（通常はメールアドレス）
+  token      String   @unique @db.VarChar(400) // 実際のトークン文字列
+  expires    DateTime // トークンの有効期限
+
+  @@unique([identifier, token]) // 識別子とトークンの組み合わせで一意
+  @@map("password_reset_tokens")
+}
+
 model Profile {
   id          Int      @id @default(autoincrement()) // プロフィールの一意識別子
   userId      String   @unique @map("user_id") // 紐付けられるユーザーID

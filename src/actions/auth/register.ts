@@ -11,7 +11,7 @@ import { generateActivateToken, hashPassword } from '@/utils'
 
 async function sendVerificationEmail(email: string, token: string): Promise<void> {
   try {
-    await fetch(`${process.env.API_URL}/send`, {
+    await fetch(`${process.env.APP_URL}/api/send/verification`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
