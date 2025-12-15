@@ -13,7 +13,11 @@ import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
 import { loginSchema, LoginSchemaType } from '@/lib/zod'
 
-export function LoginForm() {
+interface LoginFormProps {
+  type: 'employer' | 'jobseeker'
+}
+
+export function LoginForm({ type }: LoginFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
@@ -42,7 +46,15 @@ export function LoginForm() {
         richColors: true,
       })
 
-      router.push('/')
+      if (type === 'employer') {
+        router.push('/employer/dashboard')
+        return
+      }
+
+      if (type === 'jobseeker') {
+        router.push('/')
+        return
+      }
     })
   }
 

@@ -2,8 +2,8 @@
 
 import { ZodError } from 'zod'
 
+import { getCachedSession } from '@/actions'
 import { prisma } from '@/lib/prisma'
-import { auth } from '@/lib/auth'
 import { initialProfileSchema, InitialProfileSchemaType } from '@/lib/zod'
 import { ServerActionResult } from '@/types'
 
@@ -11,7 +11,7 @@ export async function createInitialProfile(
   data: InitialProfileSchemaType
 ): Promise<ServerActionResult<{ userId: string }>> {
   try {
-    const session = await auth()
+    const session = await getCachedSession()
 
     if (!session?.user?.id) {
       throw new Error('Authentication required')

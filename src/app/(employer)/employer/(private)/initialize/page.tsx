@@ -1,0 +1,20 @@
+import { Button } from '@/components/ui/button'
+
+export default function InitializePage() {
+  return (
+    <div className="flex flex-col items-center justify-center w-full min-h-svh">
+      <div className="flex w-full max-w-4/5 flex-col items-center gap-y-2 sm:max-w-sm">
+        <h1 className="text-2xl font-bold">Initialize Page</h1>
+        <p className="text-stone-300">Please Select Your Role</p>
+        <div className="grid w-full grid-cols-2 gap-8 mt-8">
+          <Button variant={'outline'} className="w-full h-20">
+            Owner
+          </Button>
+          <Button variant={'outline'} className="w-full h-20">
+            Staff
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}

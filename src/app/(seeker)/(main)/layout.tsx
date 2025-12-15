@@ -1,12 +1,11 @@
-import { redirect } from 'next/navigation'
 import { SessionProvider } from 'next-auth/react'
+import { redirect } from 'next/navigation'
 
-import { getProfileByUserId } from '@/actions'
+import { getCachedSession, getProfileByUserId } from '@/actions'
 import { MenuButton } from '@/components/button'
-import { auth } from '@/lib/auth'
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
-  const session = await auth()
+  const session = await getCachedSession()
   const userId = session?.user?.id
 
   if (userId) {

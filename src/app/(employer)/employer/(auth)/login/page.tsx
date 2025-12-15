@@ -24,7 +24,7 @@ export default async function EmployerLoginPage({
         </div>
 
         {/* ログインフォーム */}
-        <LoginForm />
+        <LoginForm type="employer" />
 
         {/* Link */}
         <div className="flex flex-col justify-center -mt-4">
