@@ -14,12 +14,15 @@ interface AdvancedMarkerProps {
 }
 
 export function GoogleMapAdvancedMarker({
-  job: { id, lat, lng, title, name, salary, employmentType, description, thumbnailUrl },
+  job,
   clicked,
   hovered,
   handleJobClick,
   handleJobHover,
 }: AdvancedMarkerProps) {
+  const { id, title, salary, employmentType, description, thumbnailUrl, store } = job
+  const { lat, lng, name } = store
+
   return (
     <AdvancedMarker
       position={{ lat, lng }}

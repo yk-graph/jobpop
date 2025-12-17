@@ -50,7 +50,7 @@ export default function MapTemplate({ data, mapApiKey }: MapTemplateProps) {
         disableDefaultUI
         mapId="JOBPOP_MAP_ID"
       >
-        <PanToController target={selectedJob ? { lat: selectedJob.lat, lng: selectedJob.lng } : null} />
+        <PanToController target={selectedJob ? { lat: selectedJob.store.lat, lng: selectedJob.store.lng } : null} />
         <ClusteredMarkers
           geojson={data}
           selectedJob={selectedJob}

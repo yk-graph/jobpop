@@ -1,45 +1,40 @@
-import { PrismaClient, EmploymentType, SalaryType, Job } from '@prisma/client'
+import { PrismaClient, EmploymentType, SalaryType } from '@prisma/client'
 import { INDUSTRY_EXPERIENCES } from '../src/constants/experiences'
 
 const prisma = new PrismaClient()
 
-// Vancouver coordinate ranges
-const VANCOUVER_LAT_MIN = 49.2
-const VANCOUVER_LAT_MAX = 49.32
-const VANCOUVER_LNG_MIN = -123.25
-const VANCOUVER_LNG_MAX = -123.0
-
-// Generate random coordinates within Vancouver
-function getRandomVancouverCoords(): { lat: number; lng: number } {
-  const lat = VANCOUVER_LAT_MIN + Math.random() * (VANCOUVER_LAT_MAX - VANCOUVER_LAT_MIN)
-  const lng = VANCOUVER_LNG_MIN + Math.random() * (VANCOUVER_LNG_MAX - VANCOUVER_LNG_MIN)
-  return { lat, lng }
-}
-
-// Store names by industry
-const storeNames = {
-  FOOD: [
-    'Starbucks Robson Street',
-    'Tim Hortons Downtown',
-    'White Spot Granville',
-    'Cactus Club Coal Harbour',
-    "Earl's Kitchen Yaletown",
-  ],
-  RETAIL: ['London Drugs Main', 'Best Buy Pacific Centre', 'H&M Robson', 'Zara Downtown'],
-  HOSPITALITY: ['Fairmont Hotel Vancouver', 'Hyatt Regency', 'Delta Hotel'],
-  HEALTHCARE: ['VGH Support Services', 'Providence Health'],
-  BEAUTY: ['Sephora Robson', 'The Bay Beauty'],
-  DELIVERY: ['UberEats Vancouver', 'Skip The Dishes'],
-  FITNESS: ['GoodLife Fitness Downtown', 'Steve Nash Fitness'],
-  LOGISTICS: ['Canada Post Vancouver', 'FedEx Distribution'],
-  EDUCATION: ['UBC Continuing Studies', 'VCC Downtown'],
-  CORPORATE: ['Telus Garden Office', 'RBC Corporate'],
+// Company names by industry
+const companyNames = {
+  FOOD: ['Starbucks', 'Tim Hortons', 'White Spot', 'Cactus Club', "Earl's Kitchen"],
+  RETAIL: ['London Drugs', 'Best Buy', 'H&M', 'Zara'],
+  HOSPITALITY: ['Fairmont Hotels', 'Hyatt', 'Delta Hotels'],
+  HEALTHCARE: ['Vancouver General Hospital', 'Providence Health'],
+  BEAUTY: ['Sephora', 'The Bay'],
+  DELIVERY: ['UberEats', 'Skip The Dishes'],
+  FITNESS: ['GoodLife Fitness', 'Steve Nash Fitness'],
+  LOGISTICS: ['Canada Post', 'FedEx'],
+  EDUCATION: ['UBC', 'Vancouver Community College'],
+  CORPORATE: ['Telus', 'RBC'],
   ADMIN: ['City of Vancouver', 'BC Government'],
-  FINANCE: ['TD Bank Tower', 'BMO Financial'],
-  TECH: ['Microsoft Vancouver', 'Amazon Development'],
-  MARKETING: ['Hootsuite HQ', 'Lululemon Corporate'],
-  MEDIA: ['CBC Vancouver', 'Global BC'],
+  FINANCE: ['TD Bank', 'BMO'],
+  TECH: ['Microsoft', 'Amazon'],
+  MARKETING: ['Hootsuite', 'Lululemon'],
+  MEDIA: ['CBC', 'Global BC'],
 }
+
+// Store location names
+const storeLocations = [
+  'Robson Street',
+  'Downtown',
+  'Granville',
+  'Coal Harbour',
+  'Yaletown',
+  'Kitsilano',
+  'Commercial Drive',
+  'Main Street',
+  'Broadway',
+  'Kerrisdale',
+]
 
 // Job titles and descriptions by experience
 const jobDetails: Record<string, { title: string; description: string; salaries: string[] }> = {
@@ -210,101 +205,159 @@ const thumbnails = {
   ],
 }
 
-// Type for seed job data (excludes auto-generated fields)
-type SeedJob = Omit<Job, 'id' | 'createdAt' | 'updatedAt'>
-
 function getRandomElement<T>(array: T[]): T {
   return array[Math.floor(Math.random() * array.length)]
 }
 
-function generateJobs() {
-  const jobs: SeedJob[] = []
+// Vancouver coordinate ranges
+const VANCOUVER_LAT_MIN = 49.2
+const VANCOUVER_LAT_MAX = 49.32
+const VANCOUVER_LNG_MIN = -123.25
+const VANCOUVER_LNG_MAX = -123.0
+
+function getRandomVancouverCoords(): { lat: number; lng: number } {
+  const lat = VANCOUVER_LAT_MIN + Math.random() * (VANCOUVER_LAT_MAX - VANCOUVER_LAT_MIN)
+  const lng = VANCOUVER_LNG_MIN + Math.random() * (VANCOUVER_LNG_MAX - VANCOUVER_LNG_MIN)
+  return { lat, lng }
+}
+
+function getRandomAddress(): string {
+  const streetNumber = Math.floor(Math.random() * 9999) + 1000
+  const streetNames = [
+    'Robson St',
+    'Granville St',
+    'Davie St',
+    'Denman St',
+    'Commercial Dr',
+    'Main St',
+    'Hastings St',
+    'Broadway',
+    'Kingsway',
+    'Fraser St',
+  ]
+  return `${streetNumber} ${getRandomElement(streetNames)}, Vancouver, BC`
+}
+
+async function generateCompaniesAndStores() {
+  console.log('🏢 Creating companies and stores...')
+
+  const createdStores: { [industry: string]: string[] } = {}
+
+  for (const [industry, companies] of Object.entries(companyNames)) {
+    createdStores[industry] = []
+
+    for (const companyName of companies) {
+      // Create company
+      const company = await prisma.company.create({
+        data: {
+          name: companyName,
+          description: `${companyName} - A leading company in ${industry.toLowerCase()} industry`,
+        },
+      })
+
+      // Create 2-3 stores per company
+      const storeCount = Math.floor(Math.random() * 2) + 2 // 2 or 3 stores
+      for (let i = 0; i < storeCount; i++) {
+        const coords = getRandomVancouverCoords()
+        const location = getRandomElement(storeLocations)
+
+        const store = await prisma.store.create({
+          data: {
+            companyId: company.id,
+            name: `${location} Store`,
+            lat: coords.lat,
+            lng: coords.lng,
+            postalCode: `V${Math.floor(Math.random() * 9)}${String.fromCharCode(65 + Math.floor(Math.random() * 26))} ${Math.floor(Math.random() * 9)}${String.fromCharCode(65 + Math.floor(Math.random() * 26))}${Math.floor(Math.random() * 9)}`,
+            province: 'BC',
+            city: 'Vancouver',
+            streetAddress: getRandomAddress(),
+          },
+        })
+
+        createdStores[industry].push(store.id)
+      }
+    }
+  }
+
+  return createdStores
+}
+
+async function generateJobs(storesByIndustry: { [industry: string]: string[] }) {
+  console.log('💼 Creating jobs...')
+
+  let jobCount = 0
 
   // Process each industry
-  Object.entries(INDUSTRY_EXPERIENCES).forEach(([industry, experiences]) => {
-    const industryStoreNames = storeNames[industry as keyof typeof storeNames] || [
-      'Local Business',
-      'Vancouver Store',
-      'Downtown Location',
-    ]
+  for (const [industry, experiences] of Object.entries(INDUSTRY_EXPERIENCES)) {
     const industryThumbnails = thumbnails[industry as keyof typeof thumbnails] || thumbnails.default
+    const industryStores = storesByIndustry[industry] || []
+
+    if (industryStores.length === 0) {
+      console.log(`⚠️  No stores found for industry: ${industry}`)
+      continue
+    }
 
     // Determine number of jobs per experience type
-    const jobsPerExperience = industry === 'FOOD' ? 5 : 1
+    const jobsPerExperience = industry === 'FOOD' ? 5 : 2
 
-    experiences.forEach((experience) => {
+    for (const experience of experiences) {
       for (let i = 0; i < jobsPerExperience; i++) {
-        const coords = getRandomVancouverCoords()
         const details = jobDetails[experience.id] || jobDetails.default
-        const storeName = industryStoreNames[i % industryStoreNames.length]
-        const storeNumber = jobsPerExperience > 1 ? ` - Store ${i + 1}` : ''
+        const storeId = getRandomElement(industryStores)
 
-        const job = {
-          mstExperienceId: experience.id,
-          name: `${storeName}${storeNumber}`,
-          title: details.title,
-          description: details.description,
-          thumbnailUrl: getRandomElement(industryThumbnails),
-          salary: getRandomElement(details.salaries),
-          lat: coords.lat,
-          lng: coords.lng,
-          address: `${Math.floor(Math.random() * 9999) + 1000} ${getRandomElement([
-            'Robson St',
-            'Granville St',
-            'Davie St',
-            'Denman St',
-            'Commercial Dr',
-            'Main St',
-            'Hastings St',
-            'Broadway',
-            'Kingsway',
-            'Fraser St',
-          ])}, Vancouver, BC`,
-          salaryType: details.salaries[0].includes('hour')
-            ? SalaryType.HOURLY
-            : details.salaries[0].includes('month')
-              ? SalaryType.MONTHLY
-              : SalaryType.ANNUAL,
-          employmentType: getRandomElement([
-            EmploymentType.PART_TIME,
-            EmploymentType.FULL_TIME,
-            EmploymentType.CONTRACT,
-          ]),
-          isActive: true,
-        }
+        await prisma.job.create({
+          data: {
+            storeId,
+            mstExperienceId: experience.id,
+            title: details.title,
+            description: details.description,
+            thumbnailUrl: getRandomElement(industryThumbnails),
+            salary: getRandomElement(details.salaries),
+            salaryType: details.salaries[0].includes('hour')
+              ? SalaryType.HOURLY
+              : details.salaries[0].includes('month')
+                ? SalaryType.MONTHLY
+                : SalaryType.ANNUAL,
+            employmentType: getRandomElement([
+              EmploymentType.PART_TIME,
+              EmploymentType.FULL_TIME,
+              EmploymentType.CONTRACT,
+            ]),
+            isActive: true,
+          },
+        })
 
-        jobs.push(job)
+        jobCount++
       }
-    })
-  })
+    }
+  }
 
-  console.log(`Generated ${jobs.length} jobs:`)
-  console.log(`- FOOD industry: ${INDUSTRY_EXPERIENCES.FOOD.length * 5} jobs`)
-  console.log(`- Other industries: ${jobs.length - INDUSTRY_EXPERIENCES.FOOD.length * 5} jobs`)
-
-  return jobs
+  console.log(`✅ Created ${jobCount} jobs`)
+  console.log(`   - FOOD industry: ${(INDUSTRY_EXPERIENCES.FOOD?.length || 0) * 5} jobs`)
+  console.log(`   - Other industries: ${jobCount - (INDUSTRY_EXPERIENCES.FOOD?.length || 0) * 5} jobs`)
 }
 
 async function main() {
-  console.log('🌱 Starting job seeding...')
+  console.log('🌱 Starting seed process...')
 
   try {
-    // Clear existing jobs
-    console.log('🗑️  Clearing existing jobs...')
+    // Clear existing data in correct order (due to foreign key constraints)
+    console.log('🗑️  Clearing existing data...')
+    await prisma.jobApplication.deleteMany({})
     await prisma.job.deleteMany({})
+    await prisma.employee.deleteMany({})
+    await prisma.store.deleteMany({})
+    await prisma.company.deleteMany({})
 
-    // Generate and insert new jobs
-    const jobs = generateJobs()
+    // Generate companies and stores
+    const storesByIndustry = await generateCompaniesAndStores()
 
-    console.log(`📝 Inserting ${jobs.length} jobs...`)
-    await prisma.job.createMany({
-      data: jobs,
-    })
+    // Generate jobs
+    await generateJobs(storesByIndustry)
 
-    console.log('✅ Job seeding completed successfully!')
-    console.log(`📊 Total jobs created: ${jobs.length}`)
+    console.log('✅ Seed process completed successfully!')
   } catch (error) {
-    console.error('❌ Error during job seeding:', error)
+    console.error('❌ Error during seeding:', error)
     throw error
   } finally {
     await prisma.$disconnect()
