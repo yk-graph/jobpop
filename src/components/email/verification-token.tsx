@@ -114,21 +114,6 @@ const footerLink = {
   textDecoration: 'underline',
 }
 
-const additionalInfo = {
-  color: '#666666',
-  fontSize: '14px',
-  lineHeight: '1.5',
-  textAlign: 'center' as const,
-  margin: '20px 0',
-}
-
-const urlLink = {
-  color: '#0366d6',
-  fontSize: '14px',
-  textDecoration: 'underline',
-  wordBreak: 'break-all' as const,
-}
-
 const securityNote = {
   color: '#6a737d',
   fontSize: '12px',
