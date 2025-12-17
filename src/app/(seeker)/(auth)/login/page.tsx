@@ -22,7 +22,7 @@ export default function LoginPage() {
         <DividerLine />
 
         {/* ログインフォーム */}
-        <LoginForm />
+        <LoginForm type={'seeker'} />
 
         {/* 新規登録ボタン */}
         <div className="text-center -mt-6">

@@ -14,7 +14,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { loginSchema, LoginSchemaType } from '@/lib/zod'
 
 interface LoginFormProps {
-  type: 'employer' | 'jobseeker'
+  type: 'employer' | 'seeker'
 }
 
 export function LoginForm({ type }: LoginFormProps) {
@@ -51,7 +51,7 @@ export function LoginForm({ type }: LoginFormProps) {
         return
       }
 
-      if (type === 'jobseeker') {
+      if (type === 'seeker') {
         router.push('/')
         return
       }
