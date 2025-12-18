@@ -3,15 +3,14 @@
 import { EmployeeRole } from '@prisma/client'
 import { redirect } from 'next/navigation'
 
-import { getCachedSession } from '@/actions'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { CurrentEmployee, ServerActionResult } from '@/types'
 import { handleError, handleRedirectError } from '@/utils'
 
 export async function getCurrentRole(): Promise<ServerActionResult<EmployeeRole>> {
-  'use cache'
   try {
-    const session = await getCachedSession()
+    const session = await auth()
 
     if (!session?.user?.id) {
       redirect('/employer/login')
@@ -40,7 +39,6 @@ export async function getCurrentRole(): Promise<ServerActionResult<EmployeeRole>
 }
 
 export async function getCurrentEmployee(userId: string): Promise<ServerActionResult<CurrentEmployee>> {
-  'use cache'
   try {
     const employee = await prisma.employee.findFirst({
       where: { userId },

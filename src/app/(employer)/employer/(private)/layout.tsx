@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
 
-import { getCachedSession } from '@/actions'
+import { auth } from '@/lib/auth'
 
 export default async function EmployerPrivateLayout({ children }: { children: React.ReactNode }) {
-  const session = await getCachedSession()
+  const session = await auth()
 
   if (!session?.user?.id) {
     redirect('/employer/login')

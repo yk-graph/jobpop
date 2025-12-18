@@ -1,7 +1,6 @@
 export * from './auth/activate'
 export * from './auth/facebook-login'
 export * from './auth/get-account-by-id'
-export * from './auth/get-cached-session'
 export * from './auth/get-user-by-email'
 export * from './auth/get-user-by-id'
 export * from './auth/google-login'
