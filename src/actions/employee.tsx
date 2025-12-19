@@ -33,8 +33,8 @@ export async function getCurrentRole(): Promise<ServerActionResult<EmployeeRole>
       data: employeeRole.role,
     }
   } catch (error) {
-    handleRedirectError(error) // redirect() は NEXT_REDIRECT エラーをthrowするため、それを再throwする必要がある
-    return handleError(error)
+    handleRedirectError(error, 'getCurrentRole') // redirect() は NEXT_REDIRECT エラーをthrowするため、それを再throwする必要がある
+    return handleError(error, 'getCurrentRole')
   }
 }
 
@@ -59,7 +59,7 @@ export async function getCurrentEmployee(userId: string): Promise<ServerActionRe
       data: employee,
     }
   } catch (error) {
-    handleRedirectError(error) // redirect() は NEXT_REDIRECT エラーをthrowするため、それを再throwする必要がある
-    return handleError(error)
+    handleRedirectError(error, 'getCurrentEmployee') // redirect() は NEXT_REDIRECT エラーをthrowするため、それを再throwする必要がある
+    return handleError(error, 'getCurrentEmployee')
   }
 }

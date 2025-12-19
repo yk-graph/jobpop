@@ -41,6 +41,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         },
       }
     },
+    async signIn({ user, account }) {
+      // OAuthプロバイダー（Google、Facebook）の場合のみ
+      if (account?.provider === 'google' || account?.provider === 'facebook') {
+        const existingUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { emailVerified: true },
+        })
+
+        // emailVerifiedがnullの場合のみ更新
+        if (existingUser && !existingUser.emailVerified) {
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { emailVerified: new Date() },
+          })
+        }
+      }
+
+      return true
+    },
   },
   providers: [
     Google({

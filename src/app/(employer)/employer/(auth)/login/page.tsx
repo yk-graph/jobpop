@@ -1,5 +1,7 @@
 import Link from 'next/link'
 
+import { GoogleLogin } from '@/components/button'
+import { DividerLine } from '@/components/common'
 import { LoginForm } from '@/components/form'
 import { Button } from '@/components/ui/button'
 
@@ -22,6 +24,14 @@ export default async function EmployerLoginPage({
             <p className="text-center text-green-700">{`Your password has been reset successfully.\nPlease log in with your new password.`}</p>
           )}
         </div>
+
+        {/* OAuthボタン */}
+        <div className="w-full space-y-6">
+          <GoogleLogin type="employer" />
+        </div>
+
+        {/* 区切り線 */}
+        <DividerLine />
 
         {/* ログインフォーム */}
         <LoginForm type="employer" />

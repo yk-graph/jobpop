@@ -12,12 +12,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
 import { loginSchema, LoginSchemaType } from '@/lib/zod'
+import { UserType } from '@/types'
 
-interface LoginFormProps {
-  type: 'employer' | 'seeker'
-}
-
-export function LoginForm({ type }: LoginFormProps) {
+export function LoginForm({ type }: { type: UserType }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
