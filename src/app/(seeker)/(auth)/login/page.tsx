@@ -14,7 +14,7 @@ export default function LoginPage() {
 
         {/* OAuthボタン */}
         <div className="w-full space-y-6">
-          <GoogleLogin />
+          <GoogleLogin type="seeker" />
           <FacebookLogin />
         </div>
 
