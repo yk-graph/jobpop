@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { ReactNode, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { Briefcase, Globe, User } from 'lucide-react'
+import { Briefcase, Users, Store } from 'lucide-react'
 
 import { createInitialProfile } from '@/actions'
 import { StepBar } from '@/components/form'
@@ -14,11 +14,11 @@ import { Form } from '@/components/ui/form'
 import { Spinner } from '@/components/ui/spinner'
 import { initialProfileSchema, InitialProfileSchemaType } from '@/lib/zod'
 
-interface InitialProfileProviderProps {
+interface InitialOwnerProviderProps {
   children: ReactNode
 }
 
-export function InitialProfileProvider({ children }: InitialProfileProviderProps) {
+export function InitialOwnerProvider({ children }: InitialOwnerProviderProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
@@ -60,9 +60,9 @@ export function InitialProfileProvider({ children }: InitialProfileProviderProps
         <StepBar
           currentStep={form.watch('stepCount')}
           steps={[
-            { id: 1, icon: User },
-            { id: 2, icon: Briefcase },
-            { id: 3, icon: Globe },
+            { id: 1, icon: Briefcase },
+            { id: 2, icon: Store },
+            { id: 3, icon: Users },
           ]}
         />
         {children}
