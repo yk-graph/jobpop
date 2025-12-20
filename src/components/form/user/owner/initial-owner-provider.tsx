@@ -5,14 +5,14 @@ import { useRouter } from 'next/navigation'
 import { ReactNode, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { Briefcase, Users, Store } from 'lucide-react'
+import { Briefcase, Users } from 'lucide-react'
 
-import { createInitialProfile } from '@/actions'
+import { createInitialOwner } from '@/actions'
 import { StepBar } from '@/components/form'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { Spinner } from '@/components/ui/spinner'
-import { initialProfileSchema, InitialProfileSchemaType } from '@/lib/zod'
+import { initialOwnerSchema, InitialOwnerSchemaType } from '@/lib/zod'
 
 interface InitialOwnerProviderProps {
   children: ReactNode
@@ -22,25 +22,23 @@ export function InitialOwnerProvider({ children }: InitialOwnerProviderProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
-  const form = useForm<InitialProfileSchemaType>({
-    resolver: zodResolver(initialProfileSchema),
+  const form = useForm<InitialOwnerSchemaType>({
+    resolver: zodResolver(initialOwnerSchema),
     defaultValues: {
       stepCount: 1,
-      name: '',
-      countryCode: '',
-      birthYear: new Date().getFullYear() - 20,
-      visaType: 'VISITOR',
-      experienceTypeIds: [],
-      softSkills: [],
+      companyName: '',
+      companyDescription: '',
+      companyWebsite: '',
+      employeeEmails: [],
     },
     mode: 'onBlur',
   })
 
-  const onSubmit = (values: InitialProfileSchemaType) => {
+  const onSubmit = (values: InitialOwnerSchemaType) => {
     startTransition(async () => {
-      const result = await createInitialProfile(values)
+      const result = await createInitialOwner(values)
       if (!result.success) {
-        toast.error('Profile Creation Failed', {
+        toast.error('Company Setup Failed', {
           description: result.message,
           richColors: true,
         })
@@ -50,7 +48,7 @@ export function InitialOwnerProvider({ children }: InitialOwnerProviderProps) {
         description: result.message,
         richColors: true,
       })
-      router.push('/')
+      router.push('/employer/dashboard')
     })
   }
 
@@ -61,12 +59,11 @@ export function InitialOwnerProvider({ children }: InitialOwnerProviderProps) {
           currentStep={form.watch('stepCount')}
           steps={[
             { id: 1, icon: Briefcase },
-            { id: 2, icon: Store },
-            { id: 3, icon: Users },
+            { id: 2, icon: Users },
           ]}
         />
         {children}
-        {form.watch('stepCount') === 3 && (
+        {form.watch('stepCount') === 2 && (
           <Button type="submit" variant="secondary" className="w-full mt-6" disabled={isPending}>
             {isPending ? <Spinner /> : 'Start JobPop'}
           </Button>

@@ -64,9 +64,25 @@ export const initialProfileSchema = z.object({
   softSkills: z.array(z.enum(SoftSkill)).max(7, 'soft skills must be at most 7').optional(),
 })
 
+export const initialOwnerSchema = z.object({
+  stepCount: z.number().min(1).max(2),
+  companyName: z
+    .string()
+    .min(2, 'company name must be at least 2 characters long')
+    .max(255, 'company name must be at most 255 characters long'),
+  companyDescription: z.string().max(400, 'description must be at most 400 characters long').optional(),
+  companyWebsite: z
+    .url('invalid URL')
+    .max(255, 'website URL must be at most 255 characters')
+    .optional()
+    .or(z.literal('')), // Tips: .url でURL形式をチェックするが、空文字も許可したいため .or(z.literal('')) を追加して双方の条件を満たすようにするテクニック
+  employeeEmails: z.array(z.string().email('invalid email')).max(10, 'maximum 10 employees').optional(),
+})
+
 export type RegisterSchemaType = z.infer<typeof registerSchema>
 export type LoginSchemaType = z.infer<typeof loginSchema>
 export type ResendSchemaType = z.infer<typeof resendSchema>
 export type ForgotPasswordSchemaType = z.infer<typeof forgotPasswordSchema>
 export type ResetPasswordSchemaType = z.infer<typeof resetPasswordSchema>
 export type InitialProfileSchemaType = z.infer<typeof initialProfileSchema>
+export type InitialOwnerSchemaType = z.infer<typeof initialOwnerSchema>

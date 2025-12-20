@@ -2,157 +2,165 @@
 
 import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { X } from 'lucide-react'
-import type { IndustryType } from '@prisma/client'
+import { X, Plus } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { FormField, FormItem, FormMessage } from '@/components/ui/form'
-import { Label } from '@/components/ui/label'
-import { INDUSTRIES, INDUSTRY_EXPERIENCES, INDUSTRY_ICONS, INDUSTRY_LABELS } from '@/constants'
-import { getExperienceById } from '@/utils'
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 
 export function InitialOwnerStep2() {
   const { control, setValue, watch } = useFormContext()
-  const [selectedIndustry, setSelectedIndustry] = useState<IndustryType | null>(null)
+  const [emailInput, setEmailInput] = useState('')
+  const [emailError, setEmailError] = useState('')
 
-  const experienceTypeIds: string[] = watch('experienceTypeIds')
+  const employeeEmails: string[] = watch('employeeEmails') || []
 
   const handleClickBack = () => setValue('stepCount', 1)
-  const handleClickNext = () => setValue('stepCount', 3)
 
-  const handleIndustryClick = (industry: IndustryType) => {
-    setSelectedIndustry(selectedIndustry === industry ? null : industry)
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
   }
 
-  const handleExperienceToggle = (experienceId: string, checked: boolean) => {
-    const currentIds = experienceTypeIds
+  const handleAddEmail = () => {
+    setEmailError('')
 
-    if (checked) {
-      // 最大10個まで
-      if (currentIds.length < 10) {
-        setValue('experienceTypeIds', [...currentIds, experienceId])
-      }
-    } else {
-      setValue(
-        'experienceTypeIds',
-        currentIds.filter((id) => id !== experienceId)
-      )
+    if (!emailInput.trim()) {
+      setEmailError('Email address is required')
+      return
     }
+
+    if (!validateEmail(emailInput)) {
+      setEmailError('Invalid email address')
+      return
+    }
+
+    if (employeeEmails.includes(emailInput)) {
+      setEmailError('This email has already been added')
+      return
+    }
+
+    if (employeeEmails.length >= 10) {
+      setEmailError('Maximum 10 employees allowed')
+      return
+    }
+
+    setValue('employeeEmails', [...employeeEmails, emailInput])
+    setEmailInput('')
   }
 
-  const handleRemoveExperience = (experienceId: string) => {
-    const currentIds = experienceTypeIds
+  const handleRemoveEmail = (email: string) => {
     setValue(
-      'experienceTypeIds',
-      currentIds.filter((id) => id !== experienceId)
+      'employeeEmails',
+      employeeEmails.filter((e) => e !== email)
     )
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleAddEmail()
+    }
   }
 
   return (
     <div className="space-y-6">
       <div className="space-y-0.5">
-        <h1 className="text-lg font-bold text-center">Step 2: Work Experience</h1>
-        <p className="text-sm text-center text-muted-foreground">Select your work experiences (up to 10).</p>
+        <h1 className="text-lg font-bold text-center">Step 2: Link Employees</h1>
+        <p className="text-sm text-center text-muted-foreground">
+          Invite employees to your company (optional, max 10).
+        </p>
       </div>
 
-      {/* Selected Experiences as Badges */}
-      {experienceTypeIds.length > 0 && (
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium">Your Selected Experiences ({experienceTypeIds.length}/10)</h3>
-          <div className="flex flex-wrap gap-2">
-            {experienceTypeIds.map((id) => {
-              const experience = getExperienceById(id)
-              if (!experience) return null
+      {/* Information Card */}
+      <div className="border rounded-lg p-4 bg-muted/50">
+        <h3 className="text-sm font-semibold mb-2">How it works:</h3>
+        <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+          <li>Enter email addresses of existing users you want to link to your company</li>
+          <li>They will be automatically added as employees when you submit</li>
+          <li>You can skip this step and add employees later</li>
+        </ul>
+      </div>
 
-              return (
-                <Badge
-                  key={id}
-                  variant="secondary"
-                  className="flex items-center gap-2 cursor-pointer hover:bg-secondary/80"
-                  onClick={() => handleRemoveExperience(id)}
-                >
-                  {experience.title}
-                  <X className="h-3 w-3" />
-                </Badge>
-              )
-            })}
+      {/* Selected Employees */}
+      {employeeEmails.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium">Added Employees ({employeeEmails.length}/10)</h3>
+          <div className="flex flex-wrap gap-2">
+            {employeeEmails.map((email) => (
+              <Badge
+                key={email}
+                variant="secondary"
+                className="flex items-center gap-2 cursor-pointer hover:bg-secondary/80"
+                onClick={() => handleRemoveEmail(email)}
+              >
+                {email}
+                <X className="h-3 w-3" />
+              </Badge>
+            ))}
           </div>
         </div>
       )}
 
-      {/* Industry Selection */}
-      <div className="space-y-4">
-        <h3 className="text-md font-semibold">Select Industry</h3>
-        <div className="grid grid-cols-3 gap-3">
-          {INDUSTRIES.map((industry) => {
-            const Icon = INDUSTRY_ICONS[industry]
-            const isSelected = selectedIndustry === industry
-
-            return (
+      {/* Add Employee Email */}
+      <FormField
+        control={control}
+        name="employeeEmails"
+        render={() => (
+          <FormItem>
+            <FormLabel>Employee Email Address</FormLabel>
+            <div className="flex gap-2">
+              <FormControl>
+                <Input
+                  placeholder="employee@example.com"
+                  type="email"
+                  value={emailInput}
+                  onChange={(e) => {
+                    setEmailInput(e.target.value)
+                    setEmailError('')
+                  }}
+                  onKeyPress={handleKeyPress}
+                  disabled={employeeEmails.length >= 10}
+                />
+              </FormControl>
               <Button
-                key={industry}
-                variant={isSelected ? 'secondary' : 'background'}
                 type="button"
-                onClick={() => handleIndustryClick(industry)}
-                className="h-auto py-2 flex flex-col gap-0.5 text-wrap"
+                variant="outline"
+                onClick={handleAddEmail}
+                disabled={employeeEmails.length >= 10 || !emailInput.trim()}
               >
-                <Icon className="h-5 w-5" />
-                <span className="text-xs leading-tight">{INDUSTRY_LABELS[industry]}</span>
+                <Plus className="h-4 w-4" />
               </Button>
-            )
-          })}
+            </div>
+            {emailError && <p className="text-sm text-destructive">{emailError}</p>}
+            <FormDescription>
+              {employeeEmails.length >= 10
+                ? "You've reached the maximum of 10 employees"
+                : 'Press Enter or click + to add email'}
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {/* Summary */}
+      <div className="border rounded-lg p-4 bg-muted/50 space-y-2">
+        <h3 className="text-sm font-semibold">Summary</h3>
+        <div className="text-sm text-muted-foreground space-y-1">
+          <p>
+            <span className="font-medium">Company:</span> {watch('companyName') || 'Not set'}
+          </p>
+          <p>
+            <span className="font-medium">Employees to link:</span> {employeeEmails.length}
+          </p>
         </div>
       </div>
 
-      {/* Experience Selection */}
-      {selectedIndustry && (
-        <div className="space-y-4">
-          <h3 className="text-md font-semibold">{INDUSTRY_LABELS[selectedIndustry]} Experiences</h3>
-
-          <FormField
-            control={control}
-            name="experienceTypeIds"
-            render={() => (
-              <FormItem>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {INDUSTRY_EXPERIENCES[selectedIndustry].map((experience) => (
-                    <Label key={experience.id} className="border rounded-lg p-3 cursor-pointer hover:bg-accent/50">
-                      <div className="flex flex-row items-center space-x-3">
-                        <Checkbox
-                          checked={experienceTypeIds.includes(experience.id)}
-                          onCheckedChange={(checked) => handleExperienceToggle(experience.id, !!checked)}
-                          disabled={!experienceTypeIds.includes(experience.id) && experienceTypeIds.length >= 10}
-                          className="pointer-events-none"
-                        />
-                        <div className="flex-1">
-                          <span className="font-medium text-sm cursor-pointer">{experience.title}</span>
-                        </div>
-                      </div>
-                    </Label>
-                  ))}
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {experienceTypeIds.length >= 10 && (
-            <p className="text-sm text-muted-foreground">
-              You&apos;ve reached the maximum of 10 experiences. Remove some to select others.
-            </p>
-          )}
-        </div>
-      )}
-
       {/* Navigation Buttons */}
-      <div className="flex justify-between">
+      <div className="flex justify-start">
         <Button onClick={handleClickBack} variant="outline" type="button">
           Back
-        </Button>
-        <Button onClick={handleClickNext} variant="secondary" type="button">
-          Next Step
         </Button>
       </div>
     </div>

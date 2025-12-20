@@ -1,119 +1,163 @@
 'use client'
 
+import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { X } from 'lucide-react'
-import type { SoftSkill } from '@prisma/client'
+import { X, Plus } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Label } from '@/components/ui/label'
-import { SOFT_SKILLS } from '@/constants'
-import { getSoftSkillById } from '@/utils'
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 
 export function InitialOwnerStep3() {
   const { control, setValue, watch } = useFormContext()
+  const [emailInput, setEmailInput] = useState('')
+  const [emailError, setEmailError] = useState('')
 
-  const softSkills: SoftSkill[] = watch('softSkills')
+  const employeeEmails: string[] = watch('employeeEmails') || []
 
   const handleClickBack = () => setValue('stepCount', 2)
 
-  const handleSoftSkillToggle = (skillId: SoftSkill, checked: boolean) => {
-    const currentSkills = softSkills
-
-    if (checked) {
-      // 最大7個まで
-      if (currentSkills.length < 7) {
-        setValue('softSkills', [...currentSkills, skillId])
-      }
-    } else {
-      setValue(
-        'softSkills',
-        currentSkills.filter((skill) => skill !== skillId)
-      )
-    }
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
   }
 
-  const handleRemoveSoftSkill = (skillId: SoftSkill) => {
-    const currentSkills = softSkills
+  const handleAddEmail = () => {
+    setEmailError('')
+
+    if (!emailInput.trim()) {
+      setEmailError('Email address is required')
+      return
+    }
+
+    if (!validateEmail(emailInput)) {
+      setEmailError('Invalid email address')
+      return
+    }
+
+    if (employeeEmails.includes(emailInput)) {
+      setEmailError('This email has already been added')
+      return
+    }
+
+    if (employeeEmails.length >= 10) {
+      setEmailError('Maximum 10 employees allowed')
+      return
+    }
+
+    setValue('employeeEmails', [...employeeEmails, emailInput])
+    setEmailInput('')
+  }
+
+  const handleRemoveEmail = (email: string) => {
     setValue(
-      'softSkills',
-      currentSkills.filter((skill) => skill !== skillId)
+      'employeeEmails',
+      employeeEmails.filter((e) => e !== email)
     )
   }
 
-  const isSkillSelected = (skillId: SoftSkill) => softSkills.includes(skillId)
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleAddEmail()
+    }
+  }
 
   return (
     <div className="space-y-6">
       <div className="space-y-0.5">
-        <h1 className="text-lg font-bold text-center">Step 3: Soft Skills</h1>
-        <p className="text-sm text-center text-muted-foreground">Select your soft skills.</p>
+        <h1 className="text-lg font-bold text-center">Step 3: Link Employees</h1>
+        <p className="text-sm text-center text-muted-foreground">
+          Invite employees to your company (optional, max 10).
+        </p>
       </div>
 
-      {/* Selected Soft Skills as Badges */}
-      {softSkills.length > 0 && (
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium">Your Selected Skills ({softSkills.length}/7)</h3>
-          <div className="flex flex-wrap gap-2">
-            {softSkills.map((skillId) => {
-              const softSkillData = getSoftSkillById(skillId)
-              if (!softSkillData) return null
+      {/* Information Card */}
+      <div className="border rounded-lg p-4 bg-muted/50">
+        <h3 className="text-sm font-semibold mb-2">How it works:</h3>
+        <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+          <li>Enter email addresses of existing users you want to link to your company</li>
+          <li>They will be automatically added as employees when you submit</li>
+          <li>You can skip this step and add employees later</li>
+        </ul>
+      </div>
 
-              return (
-                <Badge
-                  key={skillId}
-                  variant="secondary"
-                  className="flex items-center gap-2 cursor-pointer hover:bg-secondary/80"
-                  onClick={() => handleRemoveSoftSkill(skillId)}
-                >
-                  {softSkillData.title}
-                  <X className="h-3 w-3" />
-                </Badge>
-              )
-            })}
+      {/* Selected Employees */}
+      {employeeEmails.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium">Added Employees ({employeeEmails.length}/10)</h3>
+          <div className="flex flex-wrap gap-2">
+            {employeeEmails.map((email) => (
+              <Badge
+                key={email}
+                variant="secondary"
+                className="flex items-center gap-2 cursor-pointer hover:bg-secondary/80"
+                onClick={() => handleRemoveEmail(email)}
+              >
+                {email}
+                <X className="h-3 w-3" />
+              </Badge>
+            ))}
           </div>
         </div>
       )}
 
-      {/* Soft Skills Selection */}
-      <div className="space-y-4">
-        <h3 className="text-md font-semibold">Available Soft Skills</h3>
-
-        <FormField
-          control={control}
-          name="softSkills"
-          render={() => (
-            <FormItem>
-              <div className="grid grid-cols-1 gap-4">
-                {SOFT_SKILLS.map((skill) => (
-                  <Label key={skill.id} className="border rounded-lg p-4 cursor-pointer hover:bg-accent/50">
-                    <div className="flex flex-row items-start space-x-3">
-                      <Checkbox
-                        checked={isSkillSelected(skill.id)}
-                        onCheckedChange={(checked) => handleSoftSkillToggle(skill.id, !!checked)}
-                        disabled={!isSkillSelected(skill.id) && softSkills.length >= 7}
-                        className="mt-0.5 pointer-events-none"
-                      />
-                      <div className="flex-1 space-y-1">
-                        <FormLabel className="font-medium text-sm cursor-pointer">{skill.title}</FormLabel>
-                        <p className="text-xs text-muted-foreground">{skill.description}</p>
-                      </div>
-                    </div>
-                  </Label>
-                ))}
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {softSkills.length >= 7 && (
-          <p className="text-sm text-muted-foreground">
-            You&apos;ve reached the maximum of 7 soft skills. Remove some to select others.
-          </p>
+      {/* Add Employee Email */}
+      <FormField
+        control={control}
+        name="employeeEmails"
+        render={() => (
+          <FormItem>
+            <FormLabel>Employee Email Address</FormLabel>
+            <div className="flex gap-2">
+              <FormControl>
+                <Input
+                  placeholder="employee@example.com"
+                  type="email"
+                  value={emailInput}
+                  onChange={(e) => {
+                    setEmailInput(e.target.value)
+                    setEmailError('')
+                  }}
+                  onKeyPress={handleKeyPress}
+                  disabled={employeeEmails.length >= 10}
+                />
+              </FormControl>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleAddEmail}
+                disabled={employeeEmails.length >= 10 || !emailInput.trim()}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+            {emailError && <p className="text-sm text-destructive">{emailError}</p>}
+            <FormDescription>
+              {employeeEmails.length >= 10
+                ? "You've reached the maximum of 10 employees"
+                : 'Press Enter or click + to add email'}
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
         )}
+      />
+
+      {/* Summary */}
+      <div className="border rounded-lg p-4 bg-muted/50 space-y-2">
+        <h3 className="text-sm font-semibold">Summary</h3>
+        <div className="text-sm text-muted-foreground space-y-1">
+          <p>
+            <span className="font-medium">Company:</span> {watch('companyName') || 'Not set'}
+          </p>
+          <p>
+            <span className="font-medium">Store:</span> {watch('storeName') || 'Not set'}
+          </p>
+          <p>
+            <span className="font-medium">Employees to link:</span> {employeeEmails.length}
+          </p>
+        </div>
       </div>
 
       {/* Navigation Buttons */}

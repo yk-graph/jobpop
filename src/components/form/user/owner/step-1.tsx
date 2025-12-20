@@ -2,145 +2,79 @@
 
 import { useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { VisaType } from '@prisma/client'
 
 import { Button } from '@/components/ui/button'
-import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { COUNTRIES, COUNTRY_CODES, VISA_LABELS } from '@/constants'
+import { Textarea } from '@/components/ui/textarea'
 
 export function InitialOwnerStep1() {
-  const { control, setValue, watch, trigger } = useFormContext()
-
-  const currentYear = new Date().getFullYear()
-  const minBirthYear = 1970
-  const maxBirthYear = currentYear - 18 // 18歳以上
-
-  // 国データをComboboxOptionに変換
-  const countryOptions: ComboboxOption[] = COUNTRY_CODES.map((code) => ({
-    value: code,
-    label: `${COUNTRIES[code].flag} ${COUNTRIES[code].nameEn}`,
-  }))
+  const { control, setValue, watch } = useFormContext()
 
   const handleClickNext = async () => setValue('stepCount', 2)
 
-  const name = watch('name')
-  const countryCode = watch('countryCode')
-  const birthYear = watch('birthYear')
-  const visaType = watch('visaType')
+  const companyName = watch('companyName')
 
   const isValidStep1 = useMemo(() => {
-    return !!name && !!countryCode && !!birthYear && !!visaType
-  }, [name, countryCode, birthYear, visaType])
+    return !!companyName && companyName.length >= 2
+  }, [companyName])
 
   return (
     <div className="space-y-6">
       <div className="space-y-0.5">
-        <h1 className="text-lg font-bold text-center">Step1 : Entry Information</h1>
-        <p className="text-sm text-center text-muted-foreground">
-          Please provide your basic information to get started.
-        </p>
+        <h1 className="text-lg font-bold text-center">Step 1: Company Information</h1>
+        <p className="text-sm text-center text-muted-foreground">Please provide your company details.</p>
       </div>
 
-      {/* Name */}
-      <FormField
-        control={control}
-        name="name"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Full Name</FormLabel>
-            <FormControl>
-              <Input placeholder="Enter your full name" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      {/* Country Code */}
-      <FormField
-        control={control}
-        name="countryCode"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Country</FormLabel>
-            <FormControl>
-              <Combobox
-                value={field.value || ''}
-                onValueChange={(value) => {
-                  field.onChange(value)
-                }}
-                onBlur={() => {
-                  field.onBlur()
-                  trigger('countryCode')
-                }}
-                options={countryOptions}
-                placeholder="Select your country"
-                searchPlaceholder="Search countries..."
-                emptyMessage="No country found."
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      {/* Birth Year */}
-      <FormField
-        control={control}
-        name="birthYear"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Birth Year</FormLabel>
-            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value.toString() || ''}>
+      {/* Company Section */}
+      <div className="space-y-4">
+        {/* Company Name */}
+        <FormField
+          control={control}
+          name="companyName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Company Name *</FormLabel>
               <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select birth year" />
-                </SelectTrigger>
+                <Input placeholder="e.g., JobPop Inc." {...field} />
               </FormControl>
-              <SelectContent>
-                {Array.from({ length: maxBirthYear - minBirthYear + 1 }, (_, i) => {
-                  const year = maxBirthYear - i
-                  return (
-                    <SelectItem key={year} value={year.toString()}>
-                      {year}
-                    </SelectItem>
-                  )
-                })}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      {/* Visa Type */}
-      <FormField
-        control={control}
-        name="visaType"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Visa Type</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value || ''}>
+        {/* Company Description */}
+        <FormField
+          control={control}
+          name="companyDescription"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Company Description</FormLabel>
               <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select visa type" />
-                </SelectTrigger>
+                <Textarea placeholder="Tell us about your company..." className="resize-none" rows={4} {...field} />
               </FormControl>
-              <SelectContent>
-                {Object.values(VisaType).map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {VISA_LABELS[type]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+              <FormDescription>Optional: Brief description of your company (max 400 characters)</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Company Website */}
+        <FormField
+          control={control}
+          name="companyWebsite"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Company Website</FormLabel>
+              <FormControl>
+                <Input placeholder="https://www.example.com" type="url" {...field} />
+              </FormControl>
+              <FormDescription>Optional: Your company&apos;s website URL</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
 
       <div className="flex justify-end">
         <Button onClick={handleClickNext} variant="secondary" disabled={!isValidStep1} type="button">
