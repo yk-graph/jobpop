@@ -7,7 +7,7 @@ function delay(ms: number) {
 }
 
 export default async function MainPage() {
-  const mapApiKey = process.env.GOOGLE_MAPS_API_KEY
+  const mapApiKey = process.env.PUBLIC_GOOGLE_MAPS_API_KEY
 
   if (!mapApiKey) {
     throw new Error('Google Maps API key is not defined')
