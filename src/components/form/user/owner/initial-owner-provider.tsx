@@ -5,10 +5,8 @@ import { useRouter } from 'next/navigation'
 import { ReactNode, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { Briefcase, Users } from 'lucide-react'
 
-import { createInitialOwner } from '@/actions'
-import { StepBar } from '@/components/form'
+import { createInitialCompany } from '@/actions/company'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { Spinner } from '@/components/ui/spinner'
@@ -25,18 +23,24 @@ export function InitialOwnerProvider({ children }: InitialOwnerProviderProps) {
   const form = useForm<InitialOwnerSchemaType>({
     resolver: zodResolver(initialOwnerSchema),
     defaultValues: {
-      stepCount: 1,
       companyName: '',
-      companyDescription: '',
-      companyWebsite: '',
-      employeeEmails: [],
+      companyDescription: undefined,
+      companyWebsite: undefined,
+      phoneNumber: '',
+      postalCode: '',
+      country: 'Canada',
+      province: '',
+      city: '',
+      streetAddress: '',
+      floor: undefined,
+      unit: undefined,
     },
     mode: 'onBlur',
   })
 
   const onSubmit = (values: InitialOwnerSchemaType) => {
     startTransition(async () => {
-      const result = await createInitialOwner(values)
+      const result = await createInitialCompany(values)
       if (!result.success) {
         toast.error('Company Setup Failed', {
           description: result.message,
@@ -54,20 +58,11 @@ export function InitialOwnerProvider({ children }: InitialOwnerProviderProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <StepBar
-          currentStep={form.watch('stepCount')}
-          steps={[
-            { id: 1, icon: Briefcase },
-            { id: 2, icon: Users },
-          ]}
-        />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         {children}
-        {form.watch('stepCount') === 2 && (
-          <Button type="submit" variant="secondary" className="w-full mt-6" disabled={isPending}>
-            {isPending ? <Spinner /> : 'Start JobPop'}
-          </Button>
-        )}
+        <Button type="submit" variant="secondary" className="w-full" disabled={isPending}>
+          {isPending ? <Spinner /> : 'Create Company'}
+        </Button>
       </form>
     </Form>
   )
