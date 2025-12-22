@@ -2,8 +2,8 @@
 
 import { ZodError } from 'zod'
 
-import { prisma } from '@/lib/prisma'
 import { auth } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 import { initialProfileSchema, InitialProfileSchemaType } from '@/lib/zod'
 import { ServerActionResult } from '@/types'
 

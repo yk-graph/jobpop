@@ -3,11 +3,14 @@
 import { useActionState } from 'react'
 import { FaGoogle } from 'react-icons/fa'
 
-import { IconButton } from '@/components/button'
 import { googleLogin } from '@/actions'
+import { IconButton } from '@/components/button'
+import { UserType } from '@/types'
 
-export function GoogleLogin() {
-  const [errorMessage, formAction, isPending] = useActionState(googleLogin, null)
+export function GoogleLogin({ type }: { type: UserType }) {
+  const [errorMessage, formAction, isPending] = useActionState(async () => {
+    return await googleLogin(type)
+  }, null)
 
   return (
     <form action={formAction}>

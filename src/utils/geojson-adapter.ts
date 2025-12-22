@@ -14,7 +14,7 @@ export function convertJobsToGeoJSON(jobs: GetJobsResult[]): JobsGeojson {
       id: job.id,
       geometry: {
         type: 'Point',
-        coordinates: [job.lng, job.lat], // GeoJSONは [lng, lat] の順序
+        coordinates: [job.store.lng, job.store.lat], // GeoJSONは [lng, lat] の順序
       },
       properties: {
         ...job,
@@ -29,8 +29,11 @@ export function convertFeatureToJob(feature: JobsGeojson['features'][0]): GetJob
 
   return {
     ...feature.properties,
-    lat,
-    lng,
+    store: {
+      ...feature.properties.store,
+      lat,
+      lng,
+    },
   }
 }
 
@@ -41,7 +44,7 @@ export function extractPointsFromJobs(jobs: GetJobsResult[]) {
     id: job.id,
     geometry: {
       type: 'Point' as const,
-      coordinates: [job.lng, job.lat] as [number, number],
+      coordinates: [job.store.lng, job.store.lat] as [number, number],
     },
     properties: job,
   }))
