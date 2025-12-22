@@ -11,6 +11,17 @@ export const passwordValidation = z
   .regex(/(?=.*[A-Z])/, 'password must contain at least one uppercase letter')
   .regex(/(?=.*[0-9])/, 'password must contain at least one number')
 
+export const postalCodeValidation = z
+  .string()
+  .min(1, 'postal code is required')
+  .transform((val) => val.replace(/\s+/g, '').toUpperCase()) // スペースを削除して大文字に変換
+  .refine((val) => val.length === 6, {
+    message: 'postal code must be 6 characters',
+  })
+  .refine((val) => /^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(val), {
+    message: 'invalid postal code format (e.g., V6B4Y8)',
+  })
+
 export const registerSchema = z
   .object({
     email: emailValidation,
@@ -65,7 +76,6 @@ export const initialProfileSchema = z.object({
 })
 
 export const initialOwnerSchema = z.object({
-  stepCount: z.number().min(1).max(2),
   companyName: z
     .string()
     .min(2, 'company name must be at least 2 characters long')
@@ -76,8 +86,20 @@ export const initialOwnerSchema = z.object({
     .max(255, 'website URL must be at most 255 characters')
     .optional()
     .or(z.literal('')), // Tips: .url でURL形式をチェックするが、空文字も許可したいため .or(z.literal('')) を追加して双方の条件を満たすようにするテクニック
-  employeeEmails: z.array(z.string().email('invalid email')).max(10, 'maximum 10 employees').optional(),
+  phoneNumber: z.string().min(1, 'phone number is required').max(50, 'phone number must be at most 50 characters'),
+  postalCode: z.string().min(1, 'postal code is required').max(20, 'postal code must be at most 20 characters'),
+  country: z.string().min(1, 'country is required').max(100, 'country must be at most 100 characters'),
+  province: z.string().min(1, 'province is required').max(100, 'province must be at most 100 characters'),
+  city: z.string().min(1, 'city is required').max(100, 'city must be at most 100 characters'),
+  streetAddress: z
+    .string()
+    .min(1, 'street address is required')
+    .max(255, 'street address must be at most 255 characters'),
+  floor: z.string().max(50, 'floor must be at most 50 characters').optional(),
+  unit: z.string().max(50, 'unit must be at most 50 characters').optional(),
 })
+
+export const postalCodeSchema = z.object({ postalCode: postalCodeValidation })
 
 export type RegisterSchemaType = z.infer<typeof registerSchema>
 export type LoginSchemaType = z.infer<typeof loginSchema>
@@ -86,3 +108,4 @@ export type ForgotPasswordSchemaType = z.infer<typeof forgotPasswordSchema>
 export type ResetPasswordSchemaType = z.infer<typeof resetPasswordSchema>
 export type InitialProfileSchemaType = z.infer<typeof initialProfileSchema>
 export type InitialOwnerSchemaType = z.infer<typeof initialOwnerSchema>
+export type PostalCodeSchemaType = z.infer<typeof postalCodeSchema>
