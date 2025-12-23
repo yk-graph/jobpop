@@ -79,7 +79,11 @@ export const initialOwnerSchema = z.object({
   companyName: z
     .string()
     .min(2, 'company name must be at least 2 characters long')
-    .max(255, 'company name must be at most 255 characters long'),
+    .max(255, 'company name must be at most 255 characters long')
+    .regex(
+      /^[A-Za-z0-9\s&\-.,]+$/,
+      'company name must contain only English letters, numbers, and symbols (&, -, ., ,)'
+    ),
   companyDescription: z.string().max(400, 'description must be at most 400 characters long').optional(),
   companyWebsite: z
     .url('invalid URL')

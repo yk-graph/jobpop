@@ -230,7 +230,7 @@ model UserSoftSkill {
 
 // 企業・ブランド（例: Starbucks, Tim Hortons）
 model Company {
-  id            String   @id @default(nanoid(8))
+  id            String   @id @db.VarChar(32) // 会社名が一意識別子となる
   name          String   @db.VarChar(255) // 企業名（例: "Starbucks"）
   description   String?  @db.Text // 企業説明
   logoUrl       String?  @map("logo_url") @db.VarChar(255)
@@ -288,12 +288,13 @@ model Store {
 
 // 従業員（企業・店舗への所属を管理）
 model Employee {
-  id        Int          @id @default(autoincrement())
+  id        String       @id @db.VarChar(48) // StoreId_UserId を組み合わせた一意識別子 ex: "store123_user456"
   userId    String       @map("user_id")
   companyId String       @map("company_id")
   storeId   String?      @map("store_id") // NULLの場合は企業全体の従業員
   role      EmployeeRole @default(STAFF)
   createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
 
   // リレーション
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)

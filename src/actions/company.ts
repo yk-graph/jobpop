@@ -47,6 +47,7 @@ export async function createInitialCompany(
       // Step 1: Create Company
       const company = await tx.company.create({
         data: {
+          id: data.companyName.replace(/\s+/g, '_').trim().toLowerCase(), // company id を会社名から生成
           name: data.companyName,
           description: data.companyDescription || null,
           website: data.companyWebsite || null,
@@ -64,6 +65,7 @@ export async function createInitialCompany(
       // Step 2: Create Employee record for current user as OWNER
       await tx.employee.create({
         data: {
+          id: `${company.id}_${userId}`, // StoreId_UserId を組み合わせた一意識別子
           userId: userId,
           companyId: company.id,
           storeId: null,
