@@ -39,13 +39,17 @@ export interface GeocodingResponse {
 
 // 抽出された住所情報
 export interface ExtractedAddress {
-  country: string
+  formattedAddress: string // Google APIから取得したフォーマット済み住所
+  country: string // 国情報
   countryShort: string
-  province: string
+  province: string // 州/都道府県情報
   provinceShort: string
-  city: string
-  streetAddress: string
-  postalCode: string
+  city: string // 市区町村情報
+  streetAddress: string // 町名・番地（例: "4800 Kingsway"）
+  postalCode: string // 郵便番号
+  floor?: string // 階層情報（例: "B1", "Ground Floor"）
+  unit?: string // 部屋番号・ユニット番号（例: "Shop 205", "Suite 100"）
   lat: number
   lng: number
+  placeId?: string // Google Place ID（詳細情報の取得に使用可能）
 }

@@ -1,14 +1,114 @@
 'use server'
 
 import { postalCodeSchema, PostalCodeSchemaType } from '@/lib/zod'
-import { ServerActionResult } from '@/types'
-import { ExtractedAddress, GeocodingResponse } from '@/types'
+import { ExtractedAddress, GeocodingResponse, GeocodingResult, ServerActionResult } from '@/types'
 import { handleError } from '@/utils'
 
-/**
- * 郵便番号から住所情報を取得する(Google Maps Geocoding API v3 を使用)
- * Google Maps Geocoding API を使用
- */
+const GOOGLE_GEOCODING_API_BASE = 'https://maps.googleapis.com/maps/api/geocode/json'
+
+// Geocoding APIのレスポンスを検証し、エラーの場合は適切なメッセージを返す
+function validateGeocodingResponse(data: GeocodingResponse, context: string) {
+  if (data.status !== 'OK') {
+    switch (data.status) {
+      case 'ZERO_RESULTS':
+        return `${context}: No results found`
+      case 'OVER_QUERY_LIMIT':
+        return `${context}: API quota exceeded. Please try again later.`
+      case 'REQUEST_DENIED':
+        return `${context}: API request denied. Please check your API key configuration.`
+      case 'INVALID_REQUEST':
+        return `${context}: Invalid request. Please check the parameters.`
+      case 'UNKNOWN_ERROR':
+        return `${context}: Unknown error occurred. Please try again.`
+      default:
+        return `${context}: Geocoding failed with status ${data.status}`
+    }
+  }
+
+  if (!data.results || data.results.length === 0) {
+    return `${context}: No results found`
+  }
+}
+
+// Google Geocoding APIにリクエストを送信し、レスポンスを検証する
+async function fetchGeocodingAPI(url: string, context: string): Promise<ServerActionResult<GeocodingResult>> {
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    return {
+      success: false,
+      message: `${context}: API request failed - ${response.statusText}`,
+    }
+  }
+
+  const data: GeocodingResponse = await response.json()
+
+  // ステータスチェック
+  const validationError = validateGeocodingResponse(data, context)
+  if (validationError) {
+    return {
+      success: false,
+      message: validationError,
+    }
+  }
+
+  return {
+    success: true,
+    message: `${context}: Successfully retrieved data`,
+    data: data.results[0],
+  }
+}
+
+// 住所コンポーネント抽出用のヘルパー関数を作成
+function createAddressComponentExtractor(result: GeocodingResult) {
+  return {
+    extractLong: (types: string[]): string => {
+      const component = result.address_components.find((comp) => types.some((type) => comp.types.includes(type)))
+      return component?.long_name || ''
+    },
+    extractShort: (types: string[]): string => {
+      const component = result.address_components.find((comp) => types.some((type) => comp.types.includes(type)))
+      return component?.short_name || ''
+    },
+  }
+}
+
+// 抽出した住所情報を組み立てる
+function buildExtractedAddress(
+  result: GeocodingResult,
+  originalPostalCode: string,
+  originalLat: number,
+  originalLng: number
+): ExtractedAddress {
+  const { extractLong, extractShort } = createAddressComponentExtractor(result)
+
+  // streetAddressを組み立て (street_number + route)
+  const streetNumber = extractLong(['street_number'])
+  const route = extractLong(['route'])
+  const streetAddress = streetNumber && route ? `${streetNumber} ${route}` : route || streetNumber || ''
+
+  // 建物内部情報を抽出（取得可能な場合）
+  const floor = extractLong(['floor']) || undefined
+  const unit = extractLong(['subpremise']) || undefined
+
+  return {
+    formattedAddress: result.formatted_address,
+    country: extractLong(['country']),
+    countryShort: extractShort(['country']),
+    province: extractLong(['administrative_area_level_1']),
+    provinceShort: extractShort(['administrative_area_level_1']),
+    city: extractLong(['locality', 'sublocality', 'administrative_area_level_3']),
+    streetAddress,
+    postalCode: extractLong(['postal_code']) || originalPostalCode,
+    floor,
+    unit,
+    lat: originalLat,
+    lng: originalLng,
+    placeId: result.place_id,
+  }
+}
+
+// 郵便番号から住所情報を取得するサーバーアクション
 export async function getAddressFromPostalCode(
   postalCode: PostalCodeSchemaType,
   countryCode: string = 'CA'
@@ -27,83 +127,25 @@ export async function getAddressFromPostalCode(
     // 郵便番号のバリデーション
     const validatedPostalCode = postalCodeSchema.parse(postalCode)
 
-    // Google Maps Geocoding API v3 にリクエスト
-    const endPoint = `https://maps.googleapis.com/maps/api/geocode/json?address=${validatedPostalCode.postalCode}&region=${countryCode}&key=${apiKey}`
-    const response = await fetch(endPoint)
+    // 1. 郵便番号から住所情報を取得
+    const addressURL = `${GOOGLE_GEOCODING_API_BASE}?address=${validatedPostalCode.postalCode}&region=${countryCode}&key=${apiKey}`
+    const addressResult = await fetchGeocodingAPI(addressURL, 'Postal code lookup')
 
-    if (!response.ok) {
-      return {
-        success: false,
-        message: `Geocoding API request failed: ${response.statusText}`,
-      }
+    if (!addressResult.success || !addressResult.data) {
+      return addressResult
     }
 
-    const data: GeocodingResponse = await response.json()
+    const { lat, lng } = addressResult.data.geometry.location
 
-    // ステータスチェック
-    if (data.status !== 'OK') {
-      if (data.status === 'ZERO_RESULTS') {
-        return {
-          success: false,
-          message: 'No results found for this postal code',
-        }
-      }
-      if (data.status === 'OVER_QUERY_LIMIT') {
-        return {
-          success: false,
-          message: 'API quota exceeded. Please try again later.',
-        }
-      }
-      if (data.status === 'REQUEST_DENIED') {
-        return {
-          success: false,
-          message: 'API request denied. Please check your API key configuration.',
-        }
-      }
-      return {
-        success: false,
-        message: `Geocoding failed: ${data.status}`,
-      }
-    }
+    // 2. 緯度経度から詳細な住所情報を取得
+    const detailURL = `${GOOGLE_GEOCODING_API_BASE}?latlng=${lat},${lng}&key=${apiKey}`
+    const detailResult = await fetchGeocodingAPI(detailURL, 'Detailed address lookup')
 
-    // 結果が存在しない場合
-    if (!data.results || data.results.length === 0) {
-      return {
-        success: false,
-        message: 'No results found',
-      }
-    }
+    // 詳細情報が取得できればそれを使用、失敗したら元の結果を使用
+    const finalResult = detailResult.success && detailResult.data ? detailResult.data : addressResult.data
 
-    // 最初の結果から住所情報を抽出
-    const result = data.results[0]
-
-    // address_components から必要な情報を抽出
-    const extractComponent = (types: string[]): string => {
-      const component = result.address_components.find((comp) => types.some((type) => comp.types.includes(type)))
-      return component?.long_name || ''
-    }
-
-    const extractComponentShort = (types: string[]): string => {
-      const component = result.address_components.find((comp) => types.some((type) => comp.types.includes(type)))
-      return component?.short_name || ''
-    }
-
-    // streetAddressを組み立て (street_number + route)
-    const streetNumber = extractComponent(['street_number'])
-    const route = extractComponent(['route'])
-    const streetAddress = streetNumber && route ? `${streetNumber} ${route}` : route || streetNumber || ''
-
-    const extractedAddress: ExtractedAddress = {
-      country: extractComponent(['country']),
-      countryShort: extractComponentShort(['country']),
-      province: extractComponent(['administrative_area_level_1']),
-      provinceShort: extractComponentShort(['administrative_area_level_1']),
-      city: extractComponent(['locality', 'sublocality', 'administrative_area_level_3']),
-      streetAddress,
-      postalCode: extractComponent(['postal_code']) || validatedPostalCode.postalCode,
-      lat: result.geometry.location.lat,
-      lng: result.geometry.location.lng,
-    }
+    // 3. 住所情報を抽出
+    const extractedAddress = buildExtractedAddress(finalResult, validatedPostalCode.postalCode, lat, lng)
 
     return {
       success: true,
