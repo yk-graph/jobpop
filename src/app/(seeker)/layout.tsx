@@ -3,6 +3,7 @@ import { Montserrat, Geist_Mono } from 'next/font/google'
 import '../globals.css'
 
 import { Toaster } from '@/components/ui/sonner'
+import { ThemeProvider } from '@/providers'
 
 const montserrat = Montserrat({
   variable: '--font-montserrat',
@@ -23,8 +24,10 @@ export default function SeekerLayout({ children }: Readonly<{ children: React.Re
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${montserrat.variable} ${geistMono.variable} antialiased`}>
-        <Toaster />
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" disableTransitionOnChange>
+          <Toaster />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )
