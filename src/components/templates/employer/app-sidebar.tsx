@@ -1,7 +1,10 @@
 'use client'
 
-import { BookOpen, Bot, Command, Frame, LifeBuoy, Map, PieChart, Send, Settings2, SquareTerminal } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { BookOpen, Bot, Frame, LifeBuoy, Map, PieChart, Send, Settings2 } from 'lucide-react'
 
+import { NavPrimary, NavSecondary, NavUser } from '@/components/templates/employer'
 import {
   Sidebar,
   SidebarContent,
@@ -11,10 +14,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { NavMain } from './nav-main'
-import { NavProjects } from './nav-projects'
-import { NavSecondary } from './nav-secondary'
-import { NavUser } from './nav-user'
 
 const data = {
   user: {
@@ -23,26 +22,6 @@ const data = {
     avatar: '/avatars/shadcn.jpg',
   },
   navMain: [
-    {
-      title: 'Playground',
-      url: '#',
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: 'History',
-          url: '#',
-        },
-        {
-          title: 'Starred',
-          url: '#',
-        },
-        {
-          title: 'Settings',
-          url: '#',
-        },
-      ],
-    },
     {
       title: 'Models',
       url: '#',
@@ -147,22 +126,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Command className="size-4" />
-                </div>
+              <Link href="/employer/dashboard">
+                <Image
+                  height={80}
+                  width={80}
+                  src="/images/jobpop-icon.png"
+                  alt="Inc Logo"
+                  className="h-8 w-8 rounded-md"
+                />
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Acme Inc</span>
-                  <span className="truncate text-xs">Enterprise</span>
+                  <span className="font-medium">Job Pop</span>
+                  <span className="text-xs">for Employer</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavPrimary projects={data.projects} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
