@@ -25,39 +25,39 @@ const data = {
   primaryItems: [
     {
       name: 'Stores',
-      url: '/employer/dashboard/stores',
+      url: '/employer/stores',
       icon: Store,
     },
     {
       name: 'Members',
-      url: '/employer/dashboard/members',
+      url: '/employer/members',
       icon: Users,
     },
     {
       name: 'Jobs',
-      url: '/employer/dashboard/jobs',
+      url: '/employer/jobs',
       icon: Briefcase,
     },
     {
       name: 'Applicants',
-      url: '/employer/dashboard/applicants',
+      url: '/employer/applicants',
       icon: FileText,
     },
     {
       name: 'Messages',
-      url: '/employer/dashboard/messages',
+      url: '/employer/messages',
       icon: Mail,
     },
   ],
   secondaryItems: [
     {
       title: 'Company',
-      url: '/employer/dashboard/company',
+      url: '/employer/company',
       icon: Building2,
     },
     {
       title: 'Analytics',
-      url: '/employer/dashboard/analytics',
+      url: '/employer/analytics',
       icon: BarChart3,
     },
     {

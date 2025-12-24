@@ -6,7 +6,7 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { auth } from '@/lib/auth'
 import { getCurrentRoleByUserId, getUserById } from '@/actions'
 
-export default async function EmployerDashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function EmployerMainLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
   const userId = session?.user?.id
 
@@ -25,14 +25,7 @@ export default async function EmployerDashboardLayout({ children }: { children: 
       <AppSidebar user={user.data} role={role.data} />
       <SidebarInset>
         <Header />
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-          </div>
-          <div className="bg-muted/50 min-h-screen flex-1 rounded-xl md:min-h-min">{children}</div>
-        </div>
+        <main className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   )
