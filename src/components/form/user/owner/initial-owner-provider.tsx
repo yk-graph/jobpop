@@ -23,6 +23,7 @@ export function InitialOwnerProvider({ children }: InitialOwnerProviderProps) {
   const form = useForm<InitialOwnerSchemaType>({
     resolver: zodResolver(initialOwnerSchema),
     defaultValues: {
+      userName: '',
       companyName: '',
       companyDescription: undefined,
       companyWebsite: undefined,

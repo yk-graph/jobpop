@@ -61,6 +61,20 @@ export function InitialOwnerForm() {
       <div className="space-y-4">
         <FormField
           control={control}
+          name="userName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>User Name *</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g., John Doe" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
           name="companyName"
           render={({ field }) => (
             <FormItem>

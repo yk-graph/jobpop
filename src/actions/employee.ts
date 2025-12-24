@@ -3,21 +3,14 @@
 import { EmployeeRole } from '@prisma/client'
 import { redirect } from 'next/navigation'
 
-import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { CurrentEmployee, ServerActionResult } from '@/types'
 import { handleError, handleRedirectError } from '@/utils'
 
-export async function getCurrentRole(): Promise<ServerActionResult<EmployeeRole>> {
+export async function getCurrentRoleByUserId(userId: string): Promise<ServerActionResult<EmployeeRole>> {
   try {
-    const session = await auth()
-
-    if (!session?.user?.id) {
-      redirect('/employer/login')
-    }
-
     const employeeRole = await prisma.employee.findFirst({
-      where: { userId: session.user.id },
+      where: { userId },
       select: {
         role: true,
       },
@@ -33,8 +26,8 @@ export async function getCurrentRole(): Promise<ServerActionResult<EmployeeRole>
       data: employeeRole.role,
     }
   } catch (error) {
-    handleRedirectError(error, 'getCurrentRole') // redirect() は NEXT_REDIRECT エラーをthrowするため、それを再throwする必要がある
-    return handleError(error, 'getCurrentRole')
+    handleRedirectError(error, 'getCurrentRoleByUserId') // redirect() は NEXT_REDIRECT エラーをthrowするため、それを再throwする必要がある
+    return handleError(error, 'getCurrentRoleByUserId')
   }
 }
 

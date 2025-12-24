@@ -76,6 +76,10 @@ export const initialProfileSchema = z.object({
 })
 
 export const initialOwnerSchema = z.object({
+  userName: z
+    .string()
+    .min(4, 'name must be at least 4 characters long')
+    .max(100, 'name must be at most 100 characters long'),
   companyName: z
     .string()
     .min(2, 'company name must be at least 2 characters long')
