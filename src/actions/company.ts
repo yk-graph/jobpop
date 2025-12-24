@@ -62,7 +62,15 @@ export async function createInitialCompany(
         },
       })
 
-      // Step 2: Create Employee record for current user as OWNER
+      // Step 2: Create User Name update
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          name: data.userName,
+        },
+      })
+
+      // Step 3: Create Employee record for current user as OWNER
       await tx.employee.create({
         data: {
           id: `${company.id}_${userId}`, // StoreId_UserId を組み合わせた一意識別子
