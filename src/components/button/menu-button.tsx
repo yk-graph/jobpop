@@ -21,7 +21,7 @@ export function MenuButton() {
     setIsOpen(false)
   }
 
-  const handleLogout = async () => await logout()
+  const handleLogout = async () => await logout('seeker')
 
   return (
     <>

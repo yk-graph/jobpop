@@ -1,8 +1,9 @@
 'use client'
 
 import { EmployeeRole, User } from '@prisma/client'
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react'
+import { ArrowRightLeft, BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut } from 'lucide-react'
 
+import { logout } from '@/actions/auth/logout'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -23,6 +24,8 @@ interface NavUserProps {
 export function NavUser({ user, role }: NavUserProps) {
   const { isMobile } = useSidebar()
 
+  const handleLogout = async () => await logout('employer')
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -38,7 +41,7 @@ export function NavUser({ user, role }: NavUserProps) {
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate text-xs">{role}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -50,22 +53,16 @@ export function NavUser({ user, role }: NavUserProps) {
             sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.image || '/avatars/shadcn.jpg'} alt={user.name || 'User Avatar'} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <p className="truncate font-medium">{user.name}</p>
-                  <p className="truncate text-xs">{role}</p>
-                </div>
+              <div className="py-1.5 px-3 flex flex-col text-left text-sm leading-tight">
+                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate text-xs">{user.email}</span>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
+                <ArrowRightLeft />
+                Switch Seeker Page
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -84,7 +81,7 @@ export function NavUser({ user, role }: NavUserProps) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>
