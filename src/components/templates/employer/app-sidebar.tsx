@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { BookOpen, Bot, Frame, LifeBuoy, Map, PieChart, Send, Settings2 } from 'lucide-react'
+import { BarChart3, Briefcase, Building2, FileText, LifeBuoy, Mail, Store, Users } from 'lucide-react'
 
 import { NavPrimary, NavSecondary, NavUser } from '@/components/templates/employer'
 import {
@@ -21,100 +21,48 @@ const data = {
     email: 'm@example.com',
     avatar: '/avatars/shadcn.jpg',
   },
-  navMain: [
+  primaryItems: [
     {
-      title: 'Models',
-      url: '#',
-      icon: Bot,
-      items: [
-        {
-          title: 'Genesis',
-          url: '#',
-        },
-        {
-          title: 'Explorer',
-          url: '#',
-        },
-        {
-          title: 'Quantum',
-          url: '#',
-        },
-      ],
+      name: 'Stores',
+      url: '/employer/dashboard/stores',
+      icon: Store,
     },
     {
-      title: 'Documentation',
-      url: '#',
-      icon: BookOpen,
-      items: [
-        {
-          title: 'Introduction',
-          url: '#',
-        },
-        {
-          title: 'Get Started',
-          url: '#',
-        },
-        {
-          title: 'Tutorials',
-          url: '#',
-        },
-        {
-          title: 'Changelog',
-          url: '#',
-        },
-      ],
+      name: 'Members',
+      url: '/employer/dashboard/members',
+      icon: Users,
     },
     {
-      title: 'Settings',
-      url: '#',
-      icon: Settings2,
-      items: [
-        {
-          title: 'General',
-          url: '#',
-        },
-        {
-          title: 'Team',
-          url: '#',
-        },
-        {
-          title: 'Billing',
-          url: '#',
-        },
-        {
-          title: 'Limits',
-          url: '#',
-        },
-      ],
+      name: 'Jobs',
+      url: '/employer/dashboard/jobs',
+      icon: Briefcase,
+    },
+    {
+      name: 'Applicants',
+      url: '/employer/dashboard/applicants',
+      icon: FileText,
+    },
+    {
+      name: 'Messages',
+      url: '/employer/dashboard/messages',
+      icon: Mail,
     },
   ],
-  navSecondary: [
+  secondaryItems: [
+    {
+      title: 'Company',
+      url: '/employer/dashboard/company',
+      icon: Building2,
+    },
+    {
+      title: 'Analytics',
+      url: '/employer/dashboard/analytics',
+      icon: BarChart3,
+    },
     {
       title: 'Support',
-      url: '#',
+      url: '/employer/support',
       icon: LifeBuoy,
-    },
-    {
-      title: 'Feedback',
-      url: '#',
-      icon: Send,
-    },
-  ],
-  projects: [
-    {
-      name: 'Design Engineering',
-      url: '#',
-      icon: Frame,
-    },
-    {
-      name: 'Sales & Marketing',
-      url: '#',
-      icon: PieChart,
-    },
-    {
-      name: 'Travel',
-      url: '#',
-      icon: Map,
     },
   ],
 }
@@ -144,8 +92,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavPrimary projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavPrimary items={data.primaryItems} />
+        <NavSecondary items={data.secondaryItems} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

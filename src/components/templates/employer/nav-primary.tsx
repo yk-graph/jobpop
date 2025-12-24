@@ -18,21 +18,21 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 
-export function NavPrimary({
-  projects,
-}: {
-  projects: {
+interface NavPrimaryProps {
+  items: {
     name: string
     url: string
     icon: LucideIcon
   }[]
-}) {
+}
+
+export function NavPrimary({ items }: NavPrimaryProps) {
   const { isMobile } = useSidebar()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarMenu>
-        {projects.map((item) => (
+        {items.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
               <a href={item.url}>
