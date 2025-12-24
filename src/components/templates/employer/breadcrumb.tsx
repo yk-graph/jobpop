@@ -64,12 +64,12 @@ export function Breadcrumb({ customSegments }: BreadcrumbProps) {
   // パスから自動生成
   const segments = pathname.split('/').filter((segment) => segment !== '')
 
-  // employer/dashboard 以降のパスを取得
-  const dashboardIndex = segments.findIndex((seg) => seg === 'dashboard')
-  const breadcrumbSegments = dashboardIndex >= 0 ? segments.slice(dashboardIndex + 1) : segments
+  // "employer" を除外して、dashboard以降のパスを取得
+  const employerIndex = segments.findIndex((seg) => seg === 'employer')
+  const pathSegments = employerIndex >= 0 ? segments.slice(employerIndex + 1) : segments
 
-  // セグメントがない場合（ダッシュボードのトップページ）
-  if (breadcrumbSegments.length === 0) {
+  // "dashboard" の場合はDashboardのみ表示
+  if (pathSegments.length === 0 || (pathSegments.length === 1 && pathSegments[0] === 'dashboard')) {
     return (
       <BreadcrumbComponent>
         <BreadcrumbList>
@@ -80,6 +80,9 @@ export function Breadcrumb({ customSegments }: BreadcrumbProps) {
       </BreadcrumbComponent>
     )
   }
+
+  // "dashboard" を除外したセグメント
+  const breadcrumbSegments = pathSegments[0] === 'dashboard' ? pathSegments.slice(1) : pathSegments
 
   return (
     <BreadcrumbComponent>
@@ -93,7 +96,7 @@ export function Breadcrumb({ customSegments }: BreadcrumbProps) {
         {/* 動的なセグメント */}
         {breadcrumbSegments.map((segment, index) => {
           const isLast = index === breadcrumbSegments.length - 1
-          const href = `/employer/dashboard/${breadcrumbSegments.slice(0, index + 1).join('/')}`
+          const href = `/employer/${breadcrumbSegments.slice(0, index + 1).join('/')}`
 
           return (
             <div key={segment} className="flex items-center gap-2">

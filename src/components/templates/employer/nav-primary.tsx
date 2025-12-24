@@ -23,6 +23,7 @@ interface NavPrimaryProps {
     name: string
     url: string
     icon: LucideIcon
+    isMenuTrigger: boolean
   }[]
 }
 
@@ -40,33 +41,35 @@ export function NavPrimary({ items }: NavPrimaryProps) {
                 <span>{item.name}</span>
               </a>
             </SidebarMenuButton>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuAction showOnHover>
-                  <MoreHorizontal />
-                  <span className="sr-only">More</span>
-                </SidebarMenuAction>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-48"
-                side={isMobile ? 'bottom' : 'right'}
-                align={isMobile ? 'end' : 'start'}
-              >
-                <DropdownMenuItem>
-                  <Folder className="text-muted-foreground" />
-                  <span>View Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Share className="text-muted-foreground" />
-                  <span>Share Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Trash2 className="text-muted-foreground" />
-                  <span>Delete Project</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {item.isMenuTrigger && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuAction showOnHover>
+                    <MoreHorizontal />
+                    <span className="sr-only">More</span>
+                  </SidebarMenuAction>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  className="w-48"
+                  side={isMobile ? 'bottom' : 'right'}
+                  align={isMobile ? 'end' : 'start'}
+                >
+                  <DropdownMenuItem>
+                    <Folder className="text-muted-foreground" />
+                    <span>View Project</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Share className="text-muted-foreground" />
+                    <span>Share Project</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <Trash2 className="text-muted-foreground" />
+                    <span>Delete Project</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </SidebarMenuItem>
         ))}
       </SidebarMenu>

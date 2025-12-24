@@ -21,32 +21,44 @@ const data = {
     name: 'shadcn',
     email: 'm@example.com',
     avatar: '/avatars/shadcn.jpg',
+    isMenuTrigger: false,
   },
   primaryItems: [
     {
       name: 'Stores',
       url: '/employer/stores',
       icon: Store,
+      isMenuTrigger: false,
     },
     {
       name: 'Members',
       url: '/employer/members',
       icon: Users,
+      isMenuTrigger: false,
     },
     {
       name: 'Jobs',
       url: '/employer/jobs',
       icon: Briefcase,
+      isMenuTrigger: false,
     },
     {
       name: 'Applicants',
       url: '/employer/applicants',
       icon: FileText,
+      isMenuTrigger: false,
     },
     {
       name: 'Messages',
       url: '/employer/messages',
       icon: Mail,
+      isMenuTrigger: false,
+    },
+    {
+      name: 'Analytics',
+      url: '/employer/analytics',
+      icon: BarChart3,
+      isMenuTrigger: false,
     },
   ],
   secondaryItems: [
@@ -54,11 +66,6 @@ const data = {
       title: 'Company',
       url: '/employer/company',
       icon: Building2,
-    },
-    {
-      title: 'Analytics',
-      url: '/employer/analytics',
-      icon: BarChart3,
     },
     {
       title: 'Support',
