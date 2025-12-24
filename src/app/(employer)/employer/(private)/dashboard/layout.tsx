@@ -1,11 +1,28 @@
+import { redirect } from 'next/navigation'
+
 import { Header } from '@/components/templates/employer/header'
 import { AppSidebar } from '@/components/templates/employer/app-sidebar'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import { auth } from '@/lib/auth'
+import { getUserById } from '@/actions'
 
-export default function EmployerDashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function EmployerDashboardLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth()
+  const userId = session?.user?.id
+
+  if (!userId) {
+    redirect('/employer/login')
+  }
+
+  const user = await getUserById(userId)
+
+  if (!user.success || !user.data) {
+    throw new Error(user.message)
+  }
+
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar user={user.data} />
       <SidebarInset>
         <Header />
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">

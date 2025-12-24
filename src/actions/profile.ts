@@ -1,11 +1,36 @@
 'use server'
 
-import { ZodError } from 'zod'
+import { Profile } from '@prisma/client'
+import { redirect } from 'next/navigation'
 
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { initialProfileSchema, InitialProfileSchemaType } from '@/lib/zod'
 import { ServerActionResult } from '@/types'
+import { handleError, handleRedirectError } from '@/utils'
+
+export async function getProfileByUserId(userId: string): Promise<ServerActionResult<Profile>> {
+  try {
+    const profile = await prisma.profile.findFirst({
+      where: { userId },
+    })
+
+    if (!profile) {
+      return {
+        success: false,
+        message: 'Profile not found',
+      }
+    }
+
+    return {
+      success: true,
+      message: 'Profile found',
+      data: profile,
+    }
+  } catch (error) {
+    return handleError(error, 'getProfileByUserId')
+  }
+}
 
 export async function createInitialProfile(
   data: InitialProfileSchemaType
@@ -14,8 +39,9 @@ export async function createInitialProfile(
     const session = await auth()
 
     if (!session?.user?.id) {
-      throw new Error('Authentication required')
+      redirect('/login')
     }
+
     const userId = session.user.id
 
     const validatedData = initialProfileSchema.parse(data)
@@ -26,7 +52,10 @@ export async function createInitialProfile(
     })
 
     if (existingProfile) {
-      throw new Error('Profile already exists')
+      return {
+        success: false,
+        message: 'Profile already exists',
+      }
     }
 
     // Tips: $transaction を使うことで複数のDB操作を一つのトランザクションとしてまとめて処理する
@@ -67,19 +96,10 @@ export async function createInitialProfile(
     return {
       success: true,
       message: 'Profile created successfully!',
-      data: { userId: session.user.id },
+      data: { userId },
     }
-  } catch (error: unknown) {
-    if (error instanceof ZodError) {
-      return {
-        success: false,
-        message: error.issues.map((issue) => issue.message).join(', '),
-      }
-    }
-
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : 'Failed to create profile',
-    }
+  } catch (error) {
+    handleRedirectError(error, 'createInitialProfile')
+    return handleError(error, 'createInitialProfile')
   }
 }
