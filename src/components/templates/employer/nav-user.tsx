@@ -1,6 +1,6 @@
 'use client'
 
-import { User } from '@prisma/client'
+import { EmployeeRole, User } from '@prisma/client'
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -17,9 +17,10 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/c
 
 interface NavUserProps {
   user: User
+  role: EmployeeRole
 }
 
-export function NavUser({ user }: NavUserProps) {
+export function NavUser({ user, role }: NavUserProps) {
   const { isMobile } = useSidebar()
 
   return (
@@ -55,8 +56,8 @@ export function NavUser({ user }: NavUserProps) {
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <p className="truncate font-medium">{user.name}</p>
+                  <p className="truncate text-xs">{role}</p>
                 </div>
               </div>
             </DropdownMenuLabel>
