@@ -17,7 +17,10 @@ export async function getCurrentRoleByUserId(userId: string): Promise<ServerActi
     })
 
     if (!employeeRole) {
-      redirect('/employer/initialize') // 初期設定ページへリダイレクト -> OWNERとして Company, Store 情報を登録 or 既存 Company, Store に紐付けするページに遷移
+      return {
+        success: false,
+        message: 'Employee role not found',
+      }
     }
 
     return {
@@ -26,7 +29,6 @@ export async function getCurrentRoleByUserId(userId: string): Promise<ServerActi
       data: employeeRole.role,
     }
   } catch (error) {
-    handleRedirectError(error, 'getCurrentRoleByUserId') // redirect() は NEXT_REDIRECT エラーをthrowするため、それを再throwする必要がある
     return handleError(error, 'getCurrentRoleByUserId')
   }
 }

@@ -4,7 +4,7 @@ import Credentials from 'next-auth/providers/credentials'
 import Facebook from 'next-auth/providers/facebook'
 import Google from 'next-auth/providers/google'
 
-import { getAccountById, getUserByEmail, getUserById } from '@/actions'
+import { getAccountById, getCurrentRoleByUserId, getUserByEmail, getUserById } from '@/actions'
 import { prisma } from '@/lib/prisma'
 import { loginSchema } from '@/lib/zod'
 import { verifyPassword } from '@/utils'
@@ -17,14 +17,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token }) {
       if (!token.sub) return token
 
+      // ユーザーが存在するか確認
       const existingUser = await getUserById(token.sub)
-
+      // ユーザーが存在しない場合、tokenをそのまま返す
       if (!existingUser.success || !existingUser.data) {
         return token
       }
 
-      const existingAccount = await getAccountById(token.sub)
+      // ユーザーが存在する場合で、かつEmployeeである場合、Employeeのロールをtokenに追加
+      const currentRole = await getCurrentRoleByUserId(token.sub)
+      if (currentRole.success && currentRole.data) {
+        token.isEmployer = !!currentRole.data
+        token.role = currentRole.data
+      }
 
+      // ユーザーが存在し、かつOAuthアカウントを持っている場合、isOauthフラグをtokenに追加
+      const existingAccount = await getAccountById(token.sub)
       if (existingAccount.success && existingAccount.data) {
         token.isOauth = !!existingAccount.data
       }
@@ -38,6 +46,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           ...session.user,
           id: token.sub,
           isOauth: token.isOauth || false,
+          isEmployer: token.isEmployer || false,
+          role: token.role || null,
         },
       }
     },
