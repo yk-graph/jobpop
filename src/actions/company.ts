@@ -1,6 +1,6 @@
 'use server'
 
-import { EmployeeRole } from '@prisma/client'
+import { Company, EmployeeRole } from '@prisma/client'
 import { redirect } from 'next/navigation'
 
 import { auth } from '@/lib/auth'
@@ -8,6 +8,41 @@ import { prisma } from '@/lib/prisma'
 import { initialOwnerSchema, InitialOwnerSchemaType } from '@/lib/zod'
 import { ServerActionResult } from '@/types'
 import { handleError, handleRedirectError } from '@/utils'
+
+export async function getCurrentCompany(userId: string): Promise<ServerActionResult<Company>> {
+  try {
+    // ユーザーの従業員レコードから会社情報を取得
+    const employee = await prisma.employee.findFirst({
+      where: { userId },
+      include: {
+        company: true,
+      },
+    })
+
+    if (!employee) {
+      return {
+        success: false,
+        message: 'You are not associated with any company',
+      }
+    }
+
+    if (!employee.company) {
+      return {
+        success: false,
+        message: 'Company not found',
+      }
+    }
+
+    return {
+      success: true,
+      message: 'Company retrieved successfully',
+      data: employee.company,
+    }
+  } catch (error) {
+    handleRedirectError(error, 'getCurrentCompany')
+    return handleError(error, 'getCurrentCompany')
+  }
+}
 
 export async function createInitialCompany(
   values: InitialOwnerSchemaType

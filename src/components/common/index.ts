@@ -1,2 +1,6 @@
 export * from './divider-line'
+export * from './info-description'
+export * from './info-item'
+export * from './info-wrapper'
 export * from './loading'
+export * from './page-header'

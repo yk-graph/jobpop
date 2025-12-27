@@ -24,7 +24,7 @@ export default async function EmployerMainLayout({ children }: { children: React
       <AppSidebar user={currentUser.data} role={role} />
       <SidebarInset>
         <Header />
-        <main className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</main>
+        <div className="flex flex-1 flex-col p-4 overflow-auto">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   )
