@@ -18,10 +18,10 @@ export default async function EmployerLoginPage({
         <div className="flex flex-col items-center gap-y-2">
           <h1 className="text-2xl font-semibold">Employer Login</h1>
           {params.verified === 'true' && (
-            <p className="text-center text-green-700">{`Your email has been successfully verified.\nPlease log in to continue.`}</p>
+            <p className="text-center text-success">{`Your email has been successfully verified.\nPlease log in to continue.`}</p>
           )}
           {params.reset === 'true' && (
-            <p className="text-center text-green-700">{`Your password has been reset successfully.\nPlease log in with your new password.`}</p>
+            <p className="text-center text-success">{`Your password has been reset successfully.\nPlease log in with your new password.`}</p>
           )}
         </div>
 

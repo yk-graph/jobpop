@@ -6,10 +6,10 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   return (
     <div className="flex h-screen items-center justify-center">
       <div className="text-center max-w-md mx-auto p-6">
-        <h2 className="text-2xl font-bold text-stone-900 mb-4">An error occurred</h2>
+        <h2 className="text-2xl font-bold mb-4">An error occurred</h2>
 
         {/* page.tsx からのエラーメッセージをそのまま表示 */}
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div className="mb-6 p-4 bg-white rounded-lg">
           <p className="text-red-700 font-medium whitespace-pre-wrap">{error.message}</p>
         </div>
 
