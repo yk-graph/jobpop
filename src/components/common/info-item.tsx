@@ -1,13 +1,16 @@
 import { ReactNode } from 'react'
 import { LucideIcon } from 'lucide-react'
 
+import { Clipboard } from '@/components/common'
+
 interface InfoItemProps {
   label: string
   value: string | ReactNode
   icon?: LucideIcon
+  copyValue?: string
 }
 
-export function InfoItem({ label, value, icon: Icon }: InfoItemProps) {
+export function InfoItem({ label, value, icon: Icon, copyValue }: InfoItemProps) {
   const displayValue = typeof value === 'string' && !value ? '-' : value
 
   return (
@@ -16,9 +19,15 @@ export function InfoItem({ label, value, icon: Icon }: InfoItemProps) {
       <div className="flex-1">
         <p className="text-sm font-medium">{label}</p>
         {typeof displayValue === 'string' ? (
-          <p className="text-sm text-muted-foreground">{displayValue}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-muted-foreground">{displayValue}</p>
+            {copyValue && <Clipboard value={copyValue} className="text-muted-foreground" />}
+          </div>
         ) : (
-          displayValue
+          <div className="flex items-center gap-2">
+            {displayValue}
+            {copyValue && <Clipboard value={copyValue} className="text-muted-foreground" />}
+          </div>
         )}
       </div>
     </div>

@@ -1,3 +1,4 @@
+export * from './clipboard'
 export * from './divider-line'
 export * from './info-description'
 export * from './info-item'
