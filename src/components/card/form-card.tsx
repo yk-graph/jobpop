@@ -79,5 +79,3 @@ export function FormCard({
     </Card>
   )
 }
-
-export default FormCard

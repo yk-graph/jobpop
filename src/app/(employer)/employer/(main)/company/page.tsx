@@ -45,7 +45,7 @@ export default async function CompanyPage() {
         action={<Button variant="outline">Edit Company</Button>}
       />
 
-      <Card>
+      <Card className="border-none">
         <CardHeader title={company.name} description={`Company ID: ${company.id}`} icon={Building2} titleSize="2xl" />
         <CardContent className="space-y-6">
           {company.description && (
@@ -95,7 +95,7 @@ export default async function CompanyPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="border-none">
         <CardHeader title="Address Details" titleSize="lg" />
         <CardContent>
           <InfoWrapper>
