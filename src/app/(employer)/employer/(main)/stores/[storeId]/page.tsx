@@ -62,7 +62,13 @@ export default async function StoreDetailPage({ params }: StoreDetailPageProps) 
       />
 
       <Card className="border-none">
-        <CardHeader title={store.name} description={`Store ID: ${store.id}`} icon={StoreIcon} titleSize="2xl" />
+        <CardHeader
+          title={store.name}
+          description={`Store ID: ${store.id}`}
+          icon={StoreIcon}
+          titleSize="2xl"
+          copyValue={store.id}
+        />
         <CardContent className="space-y-6">
           {store.thumbnailUrl && (
             <div className="relative aspect-video w-full overflow-hidden rounded-lg">

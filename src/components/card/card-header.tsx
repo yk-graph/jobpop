@@ -1,6 +1,6 @@
-import { ReactNode } from 'react'
 import { LucideIcon } from 'lucide-react'
 
+import { Clipboard } from '@/components/common'
 import { CardDescription, CardHeader as CardHeaderPrimitive, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
@@ -9,7 +9,7 @@ interface CardHeaderProps {
   description?: string
   icon?: LucideIcon
   titleSize?: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
-  action?: ReactNode
+  copyValue?: string
 }
 
 const sizeClasses = {
@@ -20,37 +20,19 @@ const sizeClasses = {
   '2xl': 'text-2xl',
 }
 
-export function CardHeader({
-  title,
-  description,
-  icon: Icon,
-  titleSize = 'lg',
-  action,
-}: CardHeaderProps) {
-  if (action) {
-    return (
-      <CardHeaderPrimitive>
-        <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <CardTitle className={cn(sizeClasses[titleSize], Icon && 'flex items-center gap-2')}>
-              {Icon && <Icon className="h-6 w-6" />}
-              {title}
-            </CardTitle>
-            {description && <CardDescription>{description}</CardDescription>}
-          </div>
-          {action}
-        </div>
-      </CardHeaderPrimitive>
-    )
-  }
-
+export function CardHeader({ title, description, icon: Icon, titleSize = 'lg', copyValue }: CardHeaderProps) {
   return (
     <CardHeaderPrimitive>
       <CardTitle className={cn(sizeClasses[titleSize], Icon && 'flex items-center gap-2')}>
         {Icon && <Icon className="h-6 w-6" />}
         {title}
       </CardTitle>
-      {description && <CardDescription>{description}</CardDescription>}
+      {description && (
+        <CardDescription className="flex items-center gap-2">
+          {description}
+          {copyValue && <Clipboard value={copyValue} />}
+        </CardDescription>
+      )}
     </CardHeaderPrimitive>
   )
 }

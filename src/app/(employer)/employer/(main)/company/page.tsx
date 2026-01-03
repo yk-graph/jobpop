@@ -1,6 +1,6 @@
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Building2, Globe, MapPin, Phone } from 'lucide-react'
+import { redirect } from 'next/navigation'
+import { Building2, Link2, MapPin, Phone } from 'lucide-react'
 
 import { getCurrentCompany } from '@/actions/company'
 import { CardHeader } from '@/components/card'
@@ -14,7 +14,7 @@ export default async function CompanyPage() {
   const session = await auth()
 
   if (!session?.user?.id) {
-    redirect('/employer/login')
+    throw new Error('You must be logged in to view this page.')
   }
 
   const result = await getCurrentCompany(session.user.id)
@@ -46,7 +46,13 @@ export default async function CompanyPage() {
       />
 
       <Card className="border-none">
-        <CardHeader title={company.name} description={`Company ID: ${company.id}`} icon={Building2} titleSize="2xl" />
+        <CardHeader
+          title={company.name}
+          description={`Company ID: ${company.id}`}
+          icon={Building2}
+          titleSize="2xl"
+          copyValue={company.id}
+        />
         <CardContent className="space-y-6">
           {company.description && (
             <div className="space-y-1">
@@ -61,10 +67,10 @@ export default async function CompanyPage() {
             <h3 className="font-semibold">Contact Information</h3>
 
             <div className="grid gap-3">
-              <InfoItem icon={Phone} label="Phone" value={company.phoneNumber} />
+              <InfoItem icon={Phone} label="Phone" value={company.phoneNumber} copyValue={company.phoneNumber} />
 
               <InfoItem
-                icon={Globe}
+                icon={Link2}
                 label="Website"
                 value={
                   company.website ? (
@@ -82,7 +88,7 @@ export default async function CompanyPage() {
                 }
               />
 
-              <InfoItem icon={MapPin} label="Address" value={fullAddress} />
+              <InfoItem icon={MapPin} label="Address" value={fullAddress} copyValue={fullAddress} />
             </div>
           </div>
 
