@@ -42,7 +42,11 @@ export default async function CompanyPage() {
       <PageHeader
         title="Company Information"
         description="View and manage your company details"
-        action={<Button variant="outline">Edit Company</Button>}
+        action={
+          <Button variant="outline" asChild>
+            <Link href="/employer/company/edit">Edit Company</Link>
+          </Button>
+        }
       />
 
       <Card className="border-none">

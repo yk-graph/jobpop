@@ -10,6 +10,8 @@ import { ServerActionResult } from '@/types'
 import { handleError, handleRedirectError } from '@/utils'
 
 export async function getCurrentCompany(userId: string): Promise<ServerActionResult<Company>> {
+  'use cache'
+
   try {
     // ユーザーの従業員レコードから会社情報を取得
     const employee = await prisma.employee.findFirst({
