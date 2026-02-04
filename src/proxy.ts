@@ -7,7 +7,7 @@ const authRoute = ['/login', '/register']
 
 const { auth } = NextAuth(authConfig)
 
-export default auth(async function middleware(req: NextAuthRequest) {
+export default auth(async function proxy(req: NextAuthRequest) {
   const isLoggedIn = !!req.auth
   const { nextUrl } = req
 

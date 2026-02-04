@@ -7,7 +7,10 @@ import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 
 export function Logout() {
-  const [errorMessage, formAction, isPending] = useActionState(logout, null)
+  const [errorMessage, formAction, isPending] = useActionState(
+    async () => (await logout('seeker')) ?? null,
+    null
+  )
 
   return (
     <form action={formAction}>
