@@ -8,7 +8,7 @@ export async function getRolesByUserId(userId: string): Promise<EmployeeRole[] |
     select: { role: true },
   })
 
-  if (employees.length === 0) {
+  if (!employees.length) {
     return null
   }
 
