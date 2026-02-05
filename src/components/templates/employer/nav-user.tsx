@@ -3,7 +3,6 @@
 import { EmployeeRole, User } from '@prisma/client'
 import { ArrowRightLeft, BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut } from 'lucide-react'
 
-// import { logout } from '@/actions/auth/logout'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
