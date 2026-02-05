@@ -1,1 +1,1 @@
-export * from './verification-token'
+export * from './verification-email'

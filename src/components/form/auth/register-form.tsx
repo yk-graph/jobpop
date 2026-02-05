@@ -1,25 +1,25 @@
 'use client'
 
-import { useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-import { register } from '@/actions'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
+import { authClient } from '@/lib/better-auth/client'
 import { registerSchema, RegisterSchemaType } from '@/lib/zod'
 
 export function RegisterForm() {
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition()
+  const [isPending, setIsPending] = useState(false)
 
   const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -27,30 +27,62 @@ export function RegisterForm() {
     mode: 'onSubmit',
   })
 
-  const onSubmit = (values: RegisterSchemaType) => {
-    startTransition(async () => {
-      const result = await register(values)
+  const onSubmit = async (data: RegisterSchemaType) => {
+    setIsPending(true)
 
-      if (!result.success) {
-        toast.error('Registration Failed', {
-          description: result.message,
-          richColors: true,
-        })
-        return
-      }
-
-      toast.success('Welcome!', {
-        description: result.message,
-        richColors: true,
-      })
-
-      router.push('/')
+    await authClient.signUp.email({
+      name: `${data.firstName} ${data.lastName}`,
+      email: data.email,
+      password: data.password,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      fetchOptions: {
+        onSuccess() {
+          toast.success('A verification email has been sent. Please check your inbox.')
+        },
+        onError(ctx) {
+          toast.error(ctx.error.message ?? 'Sign up failed. Please try again.')
+        },
+      },
     })
+
+    setIsPending(false)
+    form.reset()
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>First Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="John" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Doe" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
         <FormField
           control={form.control}
           name="email"
@@ -93,7 +125,7 @@ export function RegisterForm() {
           )}
         />
 
-        <Button type="submit" variant="secondary" className="w-full mt-2">
+        <Button type="submit" variant="secondary" className="w-full mt-2" disabled={isPending}>
           {isPending ? <Spinner /> : 'Create Account'}
         </Button>
       </form>
