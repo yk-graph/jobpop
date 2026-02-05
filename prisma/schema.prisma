@@ -80,21 +80,20 @@ enum EmployeeRole {
 }
 
 // ============================================
-// Account と User 管理テーブル
+// Better Auth 認証テーブル
 // ============================================
 
 model User {
-  id             String    @id @default(nanoid(8)) // ユーザーの一意識別子
-  name           String? // ユーザー名（OAuth時に取得、任意）
-  email          String?   @unique // メールアドレス（OAuth時は共有拒否の可能性あり、credentials認証時は必須）
-  emailVerified  DateTime? @map("email_verified") // メール認証完了日時（メール認証済みの場合のみ）
-  image          String? // プロフィール画像URL（OAuthプロバイダーから取得）
-  hashedPassword String?   @map("hashed_password") // ハッシュ化されたパスワード（credentials認証の場合のみ、OAuth時はnull）
-  createdAt      DateTime  @default(now()) @map("created_at") // アカウント作成日時
-  updatedAt      DateTime  @updatedAt @map("updated_at") // アカウント更新日時
+  id            String   @id // Better Authがアプリケーション側でIDを生成
+  name          String // ユーザー名（必須）
+  email         String   @unique // メールアドレス（必須・一意）
+  emailVerified Boolean  @default(false) @map("email_verified") // メール認証済みかどうか（Boolean）
+  image         String?  @db.Text // プロフィール画像URL
+  createdAt     DateTime @default(now()) @map("created_at") // アカウント作成日時
+  updatedAt     DateTime @updatedAt @map("updated_at") // アカウント更新日時
 
   // リレーション
-  accounts        Account[] // 紐付けられたOAuthアカウント（Google, Instagramなど）
+  accounts        Account[] // 紐付けられた認証アカウント（Google, Facebook, credentials等）
   sessions        Session[] // アクティブなセッション情報
   profile         Profile? // ユーザープロフィール情報
   userExperiences UserExperience[] // ユーザーの職務経験一覧
@@ -102,59 +101,60 @@ model User {
   applications    JobApplication[] // ユーザーが応募した求人
   employees       Employee[] // 雇用者として所属する企業・店舗一覧
 
-  @@map("users")
-}
-
-model Account {
-  id                String  @id @default(nanoid(8))
-  userId            String  @map("user_id") // 紐付けられるユーザーID
-  type              String // アカウントタイプ（通常は"oauth"）
-  provider          String // 認証プロバイダー名（"google", "instagram", "credentials"）
-  providerAccountId String  @map("provider_account_id") // プロバイダー側のユーザーID
-  refresh_token     String? @db.Text // OAuthリフレッシュトークン（長期アクセス用）
-  access_token      String? @db.Text // OAuthアクセストークン（API呼び出し用）
-  expires_at        Int? // アクセストークンの有効期限（UNIX timestamp）
-  token_type        String? // トークンタイプ（通常は"Bearer"）
-  scope             String? // 許可されたスコープ（権限範囲）
-  id_token          String? @db.Text // OpenID ConnectのIDトークン
-  session_state     String? // OAuthセッション状態
-
-  // リレーション
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId]) // 同じプロバイダーで同じアカウントは1つのみ
-  @@map("accounts")
+  @@map("user")
 }
 
 model Session {
-  id           String   @id @default(nanoid(8)) // セッションレコードの一意識別子
-  sessionToken String   @unique @map("session_token") // セッション識別用トークン（Cookie等に保存）
-  userId       String   @map("user_id") // セッションに紐付くユーザーID
-  expires      DateTime // セッションの有効期限
+  id        String   @id // Better Authがアプリケーション側でIDを生成
+  token     String   @unique // セッション識別用トークン
+  expiresAt DateTime @map("expires_at") // セッションの有効期限
+  ipAddress String?  @map("ip_address") // 接続元IPアドレス
+  userAgent String?  @map("user_agent") @db.Text // ユーザーエージェント情報
+  userId    String   @map("user_id") // セッションに紐付くユーザーID
+  createdAt DateTime @default(now()) @map("created_at") // セッション作成日時
+  updatedAt DateTime @updatedAt @map("updated_at") // セッション更新日時
 
   // リレーション
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("sessions")
+  @@map("session")
 }
 
-model VerificationToken {
-  identifier String // トークンの識別子（通常はメールアドレス）
-  token      String   @unique @db.VarChar(400) // 実際のトークン文字列
-  expires    DateTime // トークンの有効期限
+model Account {
+  id                    String    @id // Better Authがアプリケーション側でIDを生成
+  accountId             String    @map("account_id") // プロバイダー側のアカウントID（OAuthの場合）またはuserId（credentials）
+  providerId            String    @map("provider_id") // 認証プロバイダーID（"google", "facebook", "credential"等）
+  userId                String    @map("user_id") // 紐付けられるユーザーID
+  accessToken           String?   @map("access_token") @db.Text // OAuthアクセストークン
+  refreshToken          String?   @map("refresh_token") @db.Text // OAuthリフレッシュトークン
+  idToken               String?   @map("id_token") @db.Text // OpenID ConnectのIDトークン
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at") // アクセストークンの有効期限
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at") // リフレッシュトークンの有効期限
+  scope                 String? // 許可されたスコープ（権限範囲）
+  password              String? // ハッシュ化されたパスワード（credentials認証の場合）
+  createdAt             DateTime  @default(now()) @map("created_at") // アカウント作成日時
+  updatedAt             DateTime  @updatedAt @map("updated_at") // アカウント更新日時
 
-  @@unique([identifier, token]) // 識別子とトークンの組み合わせで一意
-  @@map("verification_tokens")
+  // リレーション
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("account")
 }
 
-model PasswordResetToken {
-  identifier String // トークンの識別子（通常はメールアドレス）
-  token      String   @unique @db.VarChar(400) // 実際のトークン文字列
-  expires    DateTime // トークンの有効期限
+model Verification {
+  id         String    @id // Better Authがアプリケーション側でIDを生成
+  identifier String // トークンの識別子（メールアドレス等）
+  value      String    @db.Text // 検証値（トークン文字列）
+  expiresAt  DateTime  @map("expires_at") // トークンの有効期限
+  createdAt  DateTime? @default(now()) @map("created_at") // 作成日時
+  updatedAt  DateTime? @updatedAt @map("updated_at") // 更新日時
 
-  @@unique([identifier, token]) // 識別子とトークンの組み合わせで一意
-  @@map("password_reset_tokens")
+  @@map("verification")
 }
+
+// ============================================
+// ユーザープロフィール
+// ============================================
 
 model Profile {
   id          Int      @id @default(autoincrement()) // プロフィールの一意識別子
