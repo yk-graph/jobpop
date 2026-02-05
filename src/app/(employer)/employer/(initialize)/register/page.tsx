@@ -1,8 +1,21 @@
 import Link from 'next/link'
+import { headers } from 'next/headers'
 
 import { Button } from '@/components/ui/button'
+import { auth } from '@/lib/better-auth/auth'
+import { redirect } from 'next/navigation'
 
-export default function InitializePage() {
+export default async function EmployerRegisterPage() {
+  const data = await auth.api.getSession({
+    headers: await headers(),
+  })
+
+  if (!data) {
+    redirect('/login?error=authentication_required&redirectTo=/employer/register')
+  }
+
+  const { session, user } = data
+
   return (
     <div className="flex w-full max-w-4/5 flex-col items-center gap-y-2 sm:max-w-sm">
       <h1 className="text-2xl font-bold">Initialize Page</h1>

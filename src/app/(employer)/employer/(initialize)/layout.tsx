@@ -1,3 +1,5 @@
+import { FullScreenContainer } from '@/components/containers'
+
 export default function EmployerInitializeLayout({ children }: { children: React.ReactNode }) {
-  return <div className="min-h-svh w-full flex justify-center items-center">{children}</div>
+  return <FullScreenContainer>{children}</FullScreenContainer>
 }

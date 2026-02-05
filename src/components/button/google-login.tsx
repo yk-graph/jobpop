@@ -5,11 +5,15 @@ import { FaGoogle } from 'react-icons/fa'
 import { IconButton } from '@/components/button'
 import { authClient } from '@/lib/better-auth/client'
 
-export function GoogleLogin() {
+interface GoogleLoginProps {
+  redirectTo?: string
+}
+
+export function GoogleLogin({ redirectTo }: GoogleLoginProps) {
   const signInWithGoogle = async () => {
     await authClient.signIn.social({
       provider: 'google',
-      callbackURL: '/',
+      callbackURL: redirectTo || '/',
     })
   }
 

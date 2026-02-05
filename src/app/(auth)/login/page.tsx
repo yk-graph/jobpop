@@ -13,12 +13,22 @@ export default async function LoginPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const hasError = (await searchParams).error
-  const errorMessage =
-    hasError === 'token_expired'
-      ? 'Your session has expired. Please log in again.'
-      : hasError === 'invalid_token'
-        ? 'Invalid token. Please log in again.'
-        : null
+  const hasRedirect = (await searchParams).redirectTo
+
+  let errorMessage: string | null
+  switch (hasError) {
+    case 'invalid_credentials':
+      errorMessage = 'Invalid email or password. Please try again.'
+      break
+    case 'authentication_required':
+      errorMessage = 'You must be logged in to access that page.'
+      break
+    case 'authentication_required':
+      errorMessage = 'You must be logged in to access that page.'
+      break
+    default:
+      errorMessage = null
+  }
 
   return (
     <FullScreenContainer>
@@ -33,14 +43,14 @@ export default async function LoginPage({
 
         {/* OAuthボタン */}
         <div className="w-full space-y-6">
-          <GoogleLogin />
+          <GoogleLogin redirectTo={hasRedirect as string} />
         </div>
 
         {/* 区切り線 */}
         <DividerLine />
 
         {/* ログインフォーム */}
-        <LoginForm />
+        <LoginForm redirectTo={hasRedirect as string} />
 
         {/* 新規登録ボタン */}
         <div className="text-center -mt-6">

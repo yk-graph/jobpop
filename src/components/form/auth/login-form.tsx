@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -12,7 +13,12 @@ import { Spinner } from '@/components/ui/spinner'
 import { authClient } from '@/lib/better-auth/client'
 import { loginSchema, LoginSchemaType } from '@/lib/zod'
 
-export function LoginForm() {
+interface LoginFormProps {
+  redirectTo?: string
+}
+
+export function LoginForm({ redirectTo }: LoginFormProps) {
+  const router = useRouter()
   const [isPending, setIsPending] = useState(false)
 
   const form = useForm<LoginSchemaType>({
@@ -33,6 +39,7 @@ export function LoginForm() {
       fetchOptions: {
         onSuccess() {
           toast.success('Successfully signed in.')
+          router.push(redirectTo || '/')
         },
         onError(ctx) {
           if (ctx.error.code === 'EMAIL_NOT_VERIFIED') {

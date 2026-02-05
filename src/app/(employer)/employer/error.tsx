@@ -1,10 +1,11 @@
 'use client'
 
+import { FullScreenContainer } from '@/components/containers'
 import { Button } from '@/components/ui/button'
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
-    <div className="flex h-screen items-center justify-center">
+    <FullScreenContainer>
       <div className="text-center max-w-md mx-auto p-6">
         <h2 className="text-2xl font-bold mb-4">An error occurred</h2>
 
@@ -25,6 +26,6 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
 
         <Button onClick={reset}>Try again</Button>
       </div>
-    </div>
+    </FullScreenContainer>
   )
 }
