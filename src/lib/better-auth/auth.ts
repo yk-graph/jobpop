@@ -21,8 +21,10 @@ export const auth = betterAuth({
   // メール認証の設定
   emailVerification: {
     sendOnSignUp: true, // 会員登録時に自動でメール送信する場合は true に設定
+    sendOnSignIn: true, // 未認証ユーザーがログイン試行時に認証メールを再送する場合は true に設定
     autoSignInAfterVerification: true, // 認証完了後に自動ログインする場合は true に設定
-    expiresIn: 60 * 60 * 24, // 認証メールの有効期限（24時間）
+    // expiresIn: 60 * 60 * 24, // 認証メールの有効期限（24時間）
+    expiresIn: 10,
     callbackURL: '/', // 認証完了後のリダイレクト先URL（エラー時はproxy.tsで/loginにリダイレクト）
 
     sendVerificationEmail: async ({ user, url }) => {

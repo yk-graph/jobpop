@@ -1,22 +1,19 @@
 'use client'
 
-import { useTransition } from 'react'
+import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-// import { login } from '@/actions'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
+import { authClient } from '@/lib/better-auth/client'
 import { loginSchema, LoginSchemaType } from '@/lib/zod'
-import { UserType } from '@/types'
 
-export function LoginForm({ type }: { type: UserType }) {
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition()
+export function LoginForm() {
+  const [isPending, setIsPending] = useState(false)
 
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
@@ -24,31 +21,31 @@ export function LoginForm({ type }: { type: UserType }) {
       email: '',
       password: '',
     },
+    mode: 'onSubmit',
   })
 
-  const onSubmit = (values: LoginSchemaType) => {
-    // startTransition(async () => {
-    //   const result = await login(values)
-    //   if (!result.success) {
-    //     toast.error('Login Failed', {
-    //       description: result.message,
-    //       richColors: true,
-    //     })
-    //     return
-    //   }
-    //   toast.success('Welcome back!', {
-    //     description: result.message,
-    //     richColors: true,
-    //   })
-    //   if (type === 'employer') {
-    //     router.push('/employer/dashboard')
-    //     return
-    //   }
-    //   if (type === 'seeker') {
-    //     router.push('/')
-    //     return
-    //   }
-    // })
+  const onSubmit = async (data: LoginSchemaType) => {
+    setIsPending(true)
+
+    await authClient.signIn.email({
+      email: data.email,
+      password: data.password,
+      fetchOptions: {
+        onSuccess() {
+          toast.success('Successfully signed in.')
+        },
+        onError(ctx) {
+          if (ctx.error.code === 'EMAIL_NOT_VERIFIED') {
+            toast.info('A new verification email has been sent. Please verify within 24 hours.')
+            return
+          }
+          toast.error(ctx.error.message || 'Sign in failed. Please try again.')
+        },
+      },
+    })
+
+    setIsPending(false)
+    form.reset()
   }
 
   return (
@@ -82,7 +79,7 @@ export function LoginForm({ type }: { type: UserType }) {
           )}
         />
 
-        <Button type="submit" variant="secondary" className="w-full mt-2">
+        <Button type="submit" variant="secondary" className="w-full mt-2" disabled={isPending}>
           {isPending ? <Spinner /> : 'Sign In'}
         </Button>
       </form>

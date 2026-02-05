@@ -38,10 +38,10 @@ export function RegisterForm() {
       lastName: data.lastName,
       fetchOptions: {
         onSuccess() {
-          toast.success('A verification email has been sent. Please check your inbox.')
+          toast.success('A verification email has been sent. Please verify within 24 hours.')
         },
         onError(ctx) {
-          toast.error(ctx.error.message ?? 'Sign up failed. Please try again.')
+          toast.error(ctx.error.message || 'Sign up failed. Please try again.')
         },
       },
     })
