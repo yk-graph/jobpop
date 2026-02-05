@@ -1,16 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { useSession } from 'next-auth/react'
+// import { useSession } from 'next-auth/react'
 import { ChartNoAxesGantt, LogIn, LogOut, Settings, User, X } from 'lucide-react'
 import Link from 'next/link'
 
-import { logout } from '@/actions/auth/logout'
+// import { logout } from '@/actions/auth/logout'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 export function MenuButton() {
-  const { data: session } = useSession()
+  // const { data: session } = useSession()
 
   const [isOpen, setIsOpen] = useState(false)
 
@@ -21,7 +21,7 @@ export function MenuButton() {
     setIsOpen(false)
   }
 
-  const handleLogout = async () => await logout('seeker')
+  // const handleLogout = async () => await logout('seeker')
 
   return (
     <>
@@ -67,7 +67,7 @@ export function MenuButton() {
               Settings
             </Button>
 
-            {!session ? (
+            {/* {!session ? (
               <Link href="/login" className="flex">
                 <Button variant="ghost" className="flex items-center gap-4 text-base group">
                   <LogIn className="group-hover:scale-110 transition-transform" />
@@ -79,7 +79,7 @@ export function MenuButton() {
                 <LogOut className="group-hover:scale-110 transition-transform" />
                 Logout
               </Button>
-            )}
+            )} */}
           </nav>
         </div>
       </div>
