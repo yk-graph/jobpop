@@ -6,7 +6,7 @@ import { ReactNode, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-import { createInitialCompany } from '@/actions/company'
+// import { createInitialCompany } from '@/actions/company'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { Spinner } from '@/components/ui/spinner'
@@ -40,21 +40,21 @@ export function InitialOwnerProvider({ children }: InitialOwnerProviderProps) {
   })
 
   const onSubmit = (values: InitialOwnerSchemaType) => {
-    startTransition(async () => {
-      const result = await createInitialCompany(values)
-      if (!result.success) {
-        toast.error('Company Setup Failed', {
-          description: result.message,
-          richColors: true,
-        })
-        return
-      }
-      toast.success('Welcome to JobPop!', {
-        description: result.message,
-        richColors: true,
-      })
-      router.push('/employer/dashboard')
-    })
+    // startTransition(async () => {
+    //   const result = await createInitialCompany(values)
+    //   if (!result.success) {
+    //     toast.error('Company Setup Failed', {
+    //       description: result.message,
+    //       richColors: true,
+    //     })
+    //     return
+    //   }
+    //   toast.success('Welcome to JobPop!', {
+    //     description: result.message,
+    //     richColors: true,
+    //   })
+    //   router.push('/employer/dashboard')
+    // })
   }
 
   return (

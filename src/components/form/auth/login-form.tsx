@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-import { login } from '@/actions'
+// import { login } from '@/actions'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -27,32 +27,28 @@ export function LoginForm({ type }: { type: UserType }) {
   })
 
   const onSubmit = (values: LoginSchemaType) => {
-    startTransition(async () => {
-      const result = await login(values)
-
-      if (!result.success) {
-        toast.error('Login Failed', {
-          description: result.message,
-          richColors: true,
-        })
-        return
-      }
-
-      toast.success('Welcome back!', {
-        description: result.message,
-        richColors: true,
-      })
-
-      if (type === 'employer') {
-        router.push('/employer/dashboard')
-        return
-      }
-
-      if (type === 'seeker') {
-        router.push('/')
-        return
-      }
-    })
+    // startTransition(async () => {
+    //   const result = await login(values)
+    //   if (!result.success) {
+    //     toast.error('Login Failed', {
+    //       description: result.message,
+    //       richColors: true,
+    //     })
+    //     return
+    //   }
+    //   toast.success('Welcome back!', {
+    //     description: result.message,
+    //     richColors: true,
+    //   })
+    //   if (type === 'employer') {
+    //     router.push('/employer/dashboard')
+    //     return
+    //   }
+    //   if (type === 'seeker') {
+    //     router.push('/')
+    //     return
+    //   }
+    // })
   }
 
   return (

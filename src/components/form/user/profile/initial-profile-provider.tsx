@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { Briefcase, Globe, User } from 'lucide-react'
 
-import { createInitialProfile } from '@/actions'
+// import { createInitialProfile } from '@/actions'
 import { StepBar } from '@/components/form'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
@@ -37,21 +37,21 @@ export function InitialProfileProvider({ children }: InitialProfileProviderProps
   })
 
   const onSubmit = (values: InitialProfileSchemaType) => {
-    startTransition(async () => {
-      const result = await createInitialProfile(values)
-      if (!result.success) {
-        toast.error('Profile Creation Failed', {
-          description: result.message,
-          richColors: true,
-        })
-        return
-      }
-      toast.success('Welcome to JobPop!', {
-        description: result.message,
-        richColors: true,
-      })
-      router.push('/')
-    })
+    // startTransition(async () => {
+    //   const result = await createInitialProfile(values)
+    //   if (!result.success) {
+    //     toast.error('Profile Creation Failed', {
+    //       description: result.message,
+    //       richColors: true,
+    //     })
+    //     return
+    //   }
+    //   toast.success('Welcome to JobPop!', {
+    //     description: result.message,
+    //     richColors: true,
+    //   })
+    //   router.push('/')
+    // })
   }
 
   return (

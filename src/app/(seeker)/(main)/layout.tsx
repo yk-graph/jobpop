@@ -1,9 +1,9 @@
-import { SessionProvider } from 'next-auth/react'
+// import { SessionProvider } from 'next-auth/react'
 // import { redirect } from 'next/navigation'
 
 // import { auth } from '@/lib/auth'
 // import { getProfileByUserId } from '@/actions'
-import { MenuButton } from '@/components/button'
+// import { MenuButton } from '@/components/button'
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   // const session = await auth()
@@ -17,11 +17,11 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   // }
 
   return (
-    <SessionProvider>
-      <div className="h-svh w-full flex justify-center items-center p-6">
-        <MenuButton />
-        {children}
-      </div>
-    </SessionProvider>
+    // <SessionProvider>
+    <div className="h-svh w-full flex justify-center items-center p-6">
+      {/* <MenuButton /> */}
+      {children}
+    </div>
+    // </SessionProvider>
   )
 }

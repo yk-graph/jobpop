@@ -3,7 +3,7 @@
 import { EmployeeRole, User } from '@prisma/client'
 import { ArrowRightLeft, BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut } from 'lucide-react'
 
-import { logout } from '@/actions/auth/logout'
+// import { logout } from '@/actions/auth/logout'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -24,7 +24,7 @@ interface NavUserProps {
 export function NavUser({ user, role }: NavUserProps) {
   const { isMobile } = useSidebar()
 
-  const handleLogout = async () => await logout('employer')
+  // const handleLogout = async () => await logout('employer')
 
   return (
     <SidebarMenu>
@@ -81,10 +81,10 @@ export function NavUser({ user, role }: NavUserProps) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
+            {/* <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
