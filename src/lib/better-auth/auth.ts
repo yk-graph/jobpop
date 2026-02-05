@@ -1,9 +1,11 @@
 import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { nextCookies } from 'better-auth/next-js'
+import { customSession } from 'better-auth/plugins'
 
 import { prisma } from '@/lib/prisma'
 import { sendVerificationEmail } from '@/lib/resend'
+import { getRolesByUserId } from '@/services'
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -45,15 +47,17 @@ export const auth = betterAuth({
     },
   },
 
-  session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7日間
-    updateAge: 60 * 60 * 24, // 1日ごとに更新
-    cookieCache: {
-      enabled: true,
-      maxAge: 60 * 60, // キャッシュ(JWT)の有効期間（60分）
-      strategy: 'jwt', // JWT形式でCookieに保存
-    },
-  },
-
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    customSession(async ({ user, session }) => {
+      const roles = await getRolesByUserId(session.userId)
+      return {
+        user: {
+          ...user,
+          roles,
+        },
+        session,
+      }
+    }),
+  ],
 })
