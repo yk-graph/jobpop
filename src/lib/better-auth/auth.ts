@@ -51,12 +51,12 @@ export const auth = betterAuth({
       firstName: {
         type: 'string',
         required: true,
-        fieldName: 'first_name',
+        fieldName: 'firstName',
       },
       lastName: {
         type: 'string',
         required: true,
-        fieldName: 'last_name',
+        fieldName: 'lastName',
       },
     },
   },
