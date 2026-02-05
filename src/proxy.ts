@@ -7,6 +7,14 @@ const publicRoutes = ['/', '/login', '/register']
 export async function proxy(request: NextRequest) {
   const { nextUrl } = request
 
+  const hasErrorParams = nextUrl.searchParams.get('error')
+  // メール認証エラー時は/loginにリダイレクト
+  if (hasErrorParams === 'invalid_token') {
+    const loginUrl = new URL('/login', request.url) // /loginの完全なURLを生成 | /?error=invalid_token -> /login に変更
+    loginUrl.searchParams.set('error', 'invalid_token') // エラー情報をクエリパラメータに付与 | /login?error=invalid_token を生成
+    return NextResponse.redirect(loginUrl)
+  }
+
   const cookies = getSessionCookie(request)
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname)
 

@@ -22,12 +22,14 @@ export const auth = betterAuth({
   emailVerification: {
     sendOnSignUp: true, // 会員登録時に自動でメール送信する場合は true に設定
     autoSignInAfterVerification: true, // 認証完了後に自動ログインする場合は true に設定
+    expiresIn: 60 * 60 * 24, // 認証メールの有効期限（24時間）
+    callbackURL: '/', // 認証完了後のリダイレクト先URL（エラー時はproxy.tsで/loginにリダイレクト）
 
     sendVerificationEmail: async ({ user, url }) => {
       void sendVerificationEmail({
         to: user.email,
         verificationUrl: url,
-        userName: user.name || user.email,
+        userName: user.name,
       })
     },
   },
@@ -58,6 +60,17 @@ export const auth = betterAuth({
         required: true,
         fieldName: 'lastName',
       },
+    },
+  },
+
+  // セッション管理
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // セッションの有効期限（7日間）
+    updateAge: 60 * 60 * 24, // セッションの更新間隔（1日ごとに更新）
+    cookieCache: {
+      enabled: true, // CookieにJWTキャッシュを保存
+      maxAge: 60 * 60, // JWTキャッシュの有効期限（60分）
+      strategy: 'jwt', // JWT形式で保存
     },
   },
 
