@@ -86,6 +86,8 @@ enum EmployeeRole {
 model User {
   id            String   @id // Better Authがアプリケーション側でIDを生成
   name          String // ユーザー名（必須）
+  firstName     String   @map("first_name") // 名
+  lastName      String   @map("last_name") // 姓
   email         String   @unique // メールアドレス（必須・一意）
   emailVerified Boolean  @default(false) @map("email_verified") // メール認証済みかどうか（Boolean）
   image         String?  @db.Text // プロフィール画像URL

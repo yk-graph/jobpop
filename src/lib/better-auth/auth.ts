@@ -37,6 +37,27 @@ export const auth = betterAuth({
       prompt: 'select_account', // アカウント選択を促す場合に設定
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      // Tips: GoogleプロファイルからUserテーブルの追加フィールドにマッピング FYI: https://www.better-auth.com/docs/concepts/oauth#mapprofiletouser
+      mapProfileToUser: (profile) => ({
+        firstName: profile.given_name,
+        lastName: profile.family_name,
+      }),
+    },
+  },
+
+  // Tips: Userテーブルの追加フィールド FYI: https://www.better-auth.com/docs/concepts/typescript#additional-fields
+  user: {
+    additionalFields: {
+      firstName: {
+        type: 'string',
+        required: true,
+        fieldName: 'first_name',
+      },
+      lastName: {
+        type: 'string',
+        required: true,
+        fieldName: 'last_name',
+      },
     },
   },
 
