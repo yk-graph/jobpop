@@ -1,80 +1,100 @@
 'use client'
 
-import { useTransition } from 'react'
-import { useFormContext } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Search, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useTransition } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
-import { getAddressFromPostalCode } from '@/actions'
+import { createCompany, getAddressFromPostalCode } from '@/actions'
 import { Button } from '@/components/ui/button'
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Spinner } from '@/components/ui/spinner'
 import { Textarea } from '@/components/ui/textarea'
+import { createCompanySchema, CreateCompanySchemaType } from '@/lib/zod'
 
-export function InitialOwnerForm() {
-  const { control, setValue, watch, setError, clearErrors } = useFormContext()
+export function CreateCompanyForm() {
+  const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const [isSearching, startSearchTransition] = useTransition()
+
+  const form = useForm<CreateCompanySchemaType>({
+    resolver: zodResolver(createCompanySchema),
+    defaultValues: {
+      companyName: '',
+      companyDescription: '',
+      companyWebsite: '',
+      phoneNumber: '',
+      postalCode: '',
+      country: 'Canada',
+      province: '',
+      city: '',
+      streetAddress: '',
+      floor: '',
+      unit: '',
+    },
+    mode: 'onBlur',
+  })
 
   const handleSearchAddress = () => {
-    const postalCode = watch('postalCode')
+    const postalCode = form.getValues('postalCode')
 
-    clearErrors('postalCode')
+    form.clearErrors('postalCode')
 
-    startTransition(async () => {
+    startSearchTransition(async () => {
       const result = await getAddressFromPostalCode({ postalCode }, 'CA')
 
       if (!result.success || !result.data) {
-        setError('postalCode', {
+        form.setError('postalCode', {
           type: 'manual',
           message: result.message || 'Could not find address',
         })
         return
       }
 
-      // フォームに住所を自動入力
-      setValue('country', result.data.country)
-      setValue('province', result.data.provinceShort)
-      setValue('city', result.data.city)
-      setValue('streetAddress', result.data.streetAddress)
-      clearErrors('postalCode')
+      form.setValue('country', result.data.country)
+      form.setValue('province', result.data.provinceShort)
+      form.setValue('city', result.data.city)
+      form.setValue('streetAddress', result.data.streetAddress)
+      form.clearErrors('postalCode')
     })
   }
 
   const handleResetAddress = () => {
-    setValue('postalCode', '')
-    setValue('country', '')
-    setValue('province', '')
-    setValue('city', '')
-    setValue('streetAddress', '')
-    setValue('floor', '')
-    setValue('unit', '')
-    clearErrors('postalCode')
+    form.setValue('postalCode', '')
+    form.setValue('country', '')
+    form.setValue('province', '')
+    form.setValue('city', '')
+    form.setValue('streetAddress', '')
+    form.setValue('floor', '')
+    form.setValue('unit', '')
+    form.clearErrors('postalCode')
+  }
+
+  const onSubmit = (values: CreateCompanySchemaType) => {
+    startTransition(async () => {
+      const result = await createCompany(values)
+
+      if (!result.success) {
+        toast.error('Failed to create company', {
+          description: result.message,
+        })
+        return
+      }
+
+      toast.success('Company created successfully!')
+      router.push('/employer')
+    })
   }
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-0.5">
-        <h1 className="text-lg font-bold text-center">Company Information</h1>
-        <p className="text-sm text-center text-muted-foreground">Please provide your company details.</p>
-      </div>
-
-      {/* Company Section */}
-      <div className="space-y-4">
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        {/* Company Name */}
         <FormField
-          control={control}
-          name="userName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>User Name *</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., John Doe" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
+          control={form.control}
           name="companyName"
           render={({ field }) => (
             <FormItem>
@@ -87,8 +107,9 @@ export function InitialOwnerForm() {
           )}
         />
 
+        {/* Company Description */}
         <FormField
-          control={control}
+          control={form.control}
           name="companyDescription"
           render={({ field }) => (
             <FormItem>
@@ -102,8 +123,9 @@ export function InitialOwnerForm() {
           )}
         />
 
+        {/* Company Website */}
         <FormField
-          control={control}
+          control={form.control}
           name="companyWebsite"
           render={({ field }) => (
             <FormItem>
@@ -117,8 +139,9 @@ export function InitialOwnerForm() {
           )}
         />
 
+        {/* Phone Number */}
         <FormField
-          control={control}
+          control={form.control}
           name="phoneNumber"
           render={({ field }) => (
             <FormItem>
@@ -131,9 +154,13 @@ export function InitialOwnerForm() {
           )}
         />
 
+        {/* Address Section */}
         <div className="space-y-4 pt-4 border-t">
+          <h2 className="text-base font-semibold">Company Address</h2>
+
+          {/* Postal Code with Search */}
           <FormField
-            control={control}
+            control={form.control}
             name="postalCode"
             render={({ field }) => (
               <FormItem>
@@ -144,17 +171,17 @@ export function InitialOwnerForm() {
                   </FormControl>
                   <Button
                     onClick={handleSearchAddress}
-                    disabled={isPending}
+                    disabled={isSearching}
                     type="button"
                     variant="outline"
                     size="icon"
                     className="h-10 w-10 shrink-0"
                   >
-                    <Search className="h-4 w-4" />
+                    {isSearching ? <Spinner className="h-4 w-4" /> : <Search className="h-4 w-4" />}
                   </Button>
                   <Button
                     onClick={handleResetAddress}
-                    disabled={isPending}
+                    disabled={isSearching}
                     type="button"
                     variant="outline"
                     size="icon"
@@ -163,6 +190,7 @@ export function InitialOwnerForm() {
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
+                <FormDescription>Enter postal code and click search to auto-fill address</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -170,7 +198,7 @@ export function InitialOwnerForm() {
 
           {/* Country */}
           <FormField
-            control={control}
+            control={form.control}
             name="country"
             render={({ field }) => (
               <FormItem>
@@ -185,7 +213,7 @@ export function InitialOwnerForm() {
 
           {/* Province */}
           <FormField
-            control={control}
+            control={form.control}
             name="province"
             render={({ field }) => (
               <FormItem>
@@ -200,7 +228,7 @@ export function InitialOwnerForm() {
 
           {/* City */}
           <FormField
-            control={control}
+            control={form.control}
             name="city"
             render={({ field }) => (
               <FormItem>
@@ -215,7 +243,7 @@ export function InitialOwnerForm() {
 
           {/* Street Address */}
           <FormField
-            control={control}
+            control={form.control}
             name="streetAddress"
             render={({ field }) => (
               <FormItem>
@@ -228,39 +256,43 @@ export function InitialOwnerForm() {
             )}
           />
 
-          {/* Floor */}
-          <FormField
-            control={control}
-            name="floor"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Floor</FormLabel>
-                <FormControl>
-                  <Input placeholder="B1, Ground Floor, etc." {...field} />
-                </FormControl>
-                <FormDescription>Optional</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Floor & Unit - Side by Side */}
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="floor"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Floor</FormLabel>
+                  <FormControl>
+                    <Input placeholder="B1, Ground Floor" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Unit */}
-          <FormField
-            control={control}
-            name="unit"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Unit</FormLabel>
-                <FormControl>
-                  <Input placeholder="Shop 205" {...field} />
-                </FormControl>
-                <FormDescription>Optional</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="unit"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Unit</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Shop 205" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
-      </div>
-    </div>
+
+        {/* Submit Button */}
+        <Button type="submit" variant="secondary" className="w-full" disabled={isPending}>
+          {isPending ? <Spinner /> : 'Create Company'}
+        </Button>
+      </form>
+    </Form>
   )
 }

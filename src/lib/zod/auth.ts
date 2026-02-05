@@ -1,7 +1,10 @@
 import { z } from 'zod'
 
-const emailValidation = z.email('email is invalid').min(1, 'email is required')
+import { emailField, firstNameField, lastNameField } from './fields'
 
+// 認証専用バリデーション
+
+/** 強力なパスワードバリデーション（小文字・大文字・数字必須） */
 export const passwordValidation = z
   .string()
   .min(8, 'password must be at least 8 characters long')
@@ -10,19 +13,17 @@ export const passwordValidation = z
   .regex(/(?=.*[A-Z])/, 'password must contain at least one uppercase letter')
   .regex(/(?=.*[0-9])/, 'password must contain at least one number')
 
+const confirmPasswordField = z.string().min(1, 'confirm password is required')
+
+// 認証スキーマ
+
 export const registerSchema = z
   .object({
-    firstName: z
-      .string()
-      .min(1, 'first name is required')
-      .max(50, 'first name must be at most 50 characters'),
-    lastName: z
-      .string()
-      .min(1, 'last name is required')
-      .max(50, 'last name must be at most 50 characters'),
-    email: emailValidation,
+    firstName: firstNameField,
+    lastName: lastNameField,
+    email: emailField,
     password: passwordValidation,
-    confirmPassword: z.string().min(1, 'confirm password is required'),
+    confirmPassword: confirmPasswordField,
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'passwords do not match',
@@ -30,22 +31,22 @@ export const registerSchema = z
   })
 
 export const loginSchema = z.object({
-  email: emailValidation,
+  email: emailField,
   password: passwordValidation,
 })
 
 export const resendSchema = z.object({
-  email: emailValidation,
+  email: emailField,
 })
 
 export const forgotPasswordSchema = z.object({
-  email: emailValidation,
+  email: emailField,
 })
 
 export const resetPasswordSchema = z
   .object({
     password: passwordValidation,
-    confirmPassword: z.string().min(1, 'confirm password is required'),
+    confirmPassword: confirmPasswordField,
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'passwords do not match',

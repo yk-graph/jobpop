@@ -1,3 +1,4 @@
+export * from './company'
 export * from './employee'
 export * from './job/get-jobs'
 export * from './map/geocoding'

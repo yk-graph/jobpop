@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
-import { Montserrat, Geist_Mono } from 'next/font/google'
+import { Geist_Mono, Montserrat } from 'next/font/google'
 import '../globals.css'
 
+import { FullScreenContainer } from '@/components/containers'
 import { Toaster } from '@/components/ui/sonner'
 import { ThemeProvider } from '@/providers'
 
@@ -26,7 +27,7 @@ export default function AuthLayout({ children }: Readonly<{ children: React.Reac
       <body className={`${montserrat.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" disableTransitionOnChange>
           <Toaster />
-          {children}
+          <FullScreenContainer>{children}</FullScreenContainer>
         </ThemeProvider>
       </body>
     </html>
