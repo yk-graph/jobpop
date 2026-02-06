@@ -1,8 +1,9 @@
 'use client'
 
-import { BarChart3, Briefcase, Building2, FileText, LifeBuoy, Mail, Store, Users } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import { BarChart3, Briefcase, Building2, FileText, LifeBuoy, Mail, Store, Users } from 'lucide-react'
 
 import { NavPrimary, NavSecondary, NavUser } from '@/components/templates/employer'
 import {
@@ -26,37 +27,37 @@ const data = {
   primaryItems: [
     {
       name: 'Stores',
-      url: '/employer/stores',
+      url: 'stores',
       icon: Store,
       isMenuTrigger: false,
     },
     {
       name: 'Members',
-      url: '/employer/members',
+      url: 'members',
       icon: Users,
       isMenuTrigger: false,
     },
     {
       name: 'Jobs',
-      url: '/employer/jobs',
+      url: 'jobs',
       icon: Briefcase,
       isMenuTrigger: false,
     },
     {
       name: 'Applicants',
-      url: '/employer/applicants',
+      url: 'applicants',
       icon: FileText,
       isMenuTrigger: false,
     },
     {
       name: 'Messages',
-      url: '/employer/messages',
+      url: 'messages',
       icon: Mail,
       isMenuTrigger: false,
     },
     {
       name: 'Analytics',
-      url: '/employer/analytics',
+      url: 'analytics',
       icon: BarChart3,
       isMenuTrigger: false,
     },
@@ -64,12 +65,12 @@ const data = {
   secondaryItems: [
     {
       title: 'Company',
-      url: '/employer/company',
+      url: 'company',
       icon: Building2,
     },
     {
       title: 'Support',
-      url: '/employer/support',
+      url: 'support',
       icon: LifeBuoy,
     },
   ],
@@ -80,13 +81,15 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 }
 
 export function AppSidebar({ user, ...props }: AppSidebarProps) {
+  const params = useParams()
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/employer/dashboard">
+              <Link href={`/employer/companies/${params.companyId}`}>
                 <Image
                   height={80}
                   width={80}

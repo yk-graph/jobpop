@@ -1,5 +1,6 @@
 'use client'
 
+import { useParams } from 'next/navigation'
 import { Folder, MoreHorizontal, Share, Trash2, type LucideIcon } from 'lucide-react'
 
 import {
@@ -29,6 +30,7 @@ interface NavPrimaryProps {
 
 export function NavPrimary({ items }: NavPrimaryProps) {
   const { isMobile } = useSidebar()
+  const params = useParams()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -36,7 +38,7 @@ export function NavPrimary({ items }: NavPrimaryProps) {
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
-              <a href={item.url}>
+              <a href={`/employer/companies/${params.companyId}/${item.url}`}>
                 <item.icon />
                 <span>{item.name}</span>
               </a>
