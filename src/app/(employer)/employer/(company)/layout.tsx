@@ -14,8 +14,14 @@ export default async function EmployerMainLayout({ children }: { children: React
 
   const pathname = await getPathname()
 
+  // ログインしていない場合はログインページへリダイレクト（companies以下のすべてのページで適用）
   if (!session) {
     redirect(`/login?error=authentication_required&redirectTo=${pathname}`)
+  }
+
+  // roles が null の場合（EmployerではなくSeekerの場合）はトップページにリダイレクト（companies以下のすべてのページで適用）
+  if (!session.user.roles || session.user.roles.length === 0) {
+    redirect('/')
   }
 
   return (
