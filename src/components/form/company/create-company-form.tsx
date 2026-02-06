@@ -80,12 +80,13 @@ export function CreateCompanyForm() {
       if (!result.success) {
         toast.error('Failed to create company', {
           description: result.message,
+          duration: 5000,
         })
         return
       }
 
       toast.success('Company created successfully!')
-      router.push('/employer')
+      router.push('/employer/dashboard')
     })
   }
 

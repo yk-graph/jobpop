@@ -1,6 +1,5 @@
 'use client'
 
-import { EmployeeRole, User } from '@prisma/client'
 import { ArrowRightLeft, BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -14,13 +13,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
+import { SessionUser } from '@/types'
 
 interface NavUserProps {
-  user: User
-  role: EmployeeRole
+  user: SessionUser
 }
 
-export function NavUser({ user, role }: NavUserProps) {
+export function NavUser({ user }: NavUserProps) {
   const { isMobile } = useSidebar()
 
   // const handleLogout = async () => await logout('employer')
@@ -40,7 +39,7 @@ export function NavUser({ user, role }: NavUserProps) {
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{role}</span>
+                <span className="truncate text-xs">{user.roles?.[0] ?? 'Member'}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>

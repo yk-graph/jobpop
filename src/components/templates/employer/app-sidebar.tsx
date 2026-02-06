@@ -1,9 +1,8 @@
 'use client'
 
+import { BarChart3, Briefcase, Building2, FileText, LifeBuoy, Mail, Store, Users } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { EmployeeRole, User } from '@prisma/client'
-import { BarChart3, Briefcase, Building2, FileText, LifeBuoy, Mail, Store, Users } from 'lucide-react'
 
 import { NavPrimary, NavSecondary, NavUser } from '@/components/templates/employer'
 import {
@@ -15,6 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { SessionUser } from '@/types'
 
 const data = {
   user: {
@@ -76,11 +76,10 @@ const data = {
 }
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  user: User
-  role: EmployeeRole
+  user: SessionUser
 }
 
-export function AppSidebar({ user, role, ...props }: AppSidebarProps) {
+export function AppSidebar({ user, ...props }: AppSidebarProps) {
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -109,7 +108,7 @@ export function AppSidebar({ user, role, ...props }: AppSidebarProps) {
         <NavSecondary items={data.secondaryItems} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} role={role} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   )

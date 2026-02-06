@@ -13,7 +13,13 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
-  return NextResponse.next()
+  // 現在のパスをヘッダーに設定（Server Componentで取得可能にする）
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-pathname', nextUrl.pathname)
+
+  return NextResponse.next({
+    request: { headers: requestHeaders },
+  })
 }
 
 export const config = {
