@@ -1,17 +1,14 @@
 import Link from 'next/link'
-import { MapPin } from 'lucide-react'
 
-import { getStoresByCompanyId } from '@/actions/store'
-import { StoreCard } from '@/components/card/store-card'
+import { StoreCard } from '@/components/card'
 import { PageHeader } from '@/components/common'
 import { EmployerMainContainer } from '@/components/containers'
 import { Button } from '@/components/ui/button'
+import { getStoresByCompanyId } from '@/services'
 
 export default async function StoresPage({ params }: { params: Promise<{ companyId: string }> }) {
   const companyId = (await params).companyId
-
-  const storesResult = await getStoresByCompanyId(companyId)
-  const stores = storesResult.success ? storesResult.data || [] : []
+  const stores = await getStoresByCompanyId(companyId)
 
   return (
     <EmployerMainContainer>
@@ -25,16 +22,13 @@ export default async function StoresPage({ params }: { params: Promise<{ company
         }
       />
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {stores.map((store) => (
-          <StoreCard key={store.id} store={store} />
-        ))}
-      </div>
-
-      {stores.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-12">
-          <MapPin className="h-12 w-12 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground">No stores found</p>
+      {!stores ? (
+        <p className="text-muted-foreground">No stores registered yet.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(480px,1fr))] gap-4">
+          {stores.map((store) => (
+            <StoreCard key={store.id} store={store} companyId={companyId} />
+          ))}
         </div>
       )}
     </EmployerMainContainer>

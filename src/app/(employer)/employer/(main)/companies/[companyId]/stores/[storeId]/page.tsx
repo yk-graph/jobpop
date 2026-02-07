@@ -1,44 +1,19 @@
-import { redirect } from 'next/navigation'
 import Image from 'next/image'
 import { MapPin, Phone, Store as StoreIcon, Users } from 'lucide-react'
 
-import { getCurrentCompany } from '@/actions/company'
-import { getStoreById } from '@/actions/store'
 import { CardHeader } from '@/components/card'
 import { InfoDescription, InfoItem, InfoWrapper, PageHeader } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { auth } from '@/lib/auth'
+import { getStoreById } from '@/services'
 
-interface StoreDetailPageProps {
-  params: Promise<{ storeId: string }>
-}
-
-export default async function StoreDetailPage({ params }: StoreDetailPageProps) {
-  const session = await auth()
-
-  if (!session?.user?.id) {
-    redirect('/employer/login')
-  }
-
-  const companyResult = await getCurrentCompany(session.user.id)
-
-  if (!companyResult.success || !companyResult.data) {
-    redirect('/employer/initialize')
-  }
-
+export default async function StoreDetailPage({ params }: { params: Promise<{ storeId: string }> }) {
   const { storeId } = await params
-  const storeResult = await getStoreById(storeId)
+  const store = await getStoreById(storeId)
 
-  if (!storeResult.success || !storeResult.data) {
-    redirect('/employer/stores')
-  }
-
-  const store = storeResult.data
-
-  if (store.companyId !== companyResult.data.id) {
-    redirect('/employer/stores')
+  if (!store) {
+    throw new Error('Store not found')
   }
 
   const fullAddress = [
@@ -129,7 +104,7 @@ export default async function StoreDetailPage({ params }: StoreDetailPageProps) 
         </CardContent>
       </Card>
 
-      <Card className="border-none">
+      {/* <Card className="border-none">
         <CardHeader title="Employees" description={`${store.employees.length} employees`} icon={Users} titleSize="lg" />
         <CardContent>
           {store.employees.length > 0 ? (
@@ -147,7 +122,7 @@ export default async function StoreDetailPage({ params }: StoreDetailPageProps) 
             <p className="text-sm text-muted-foreground">No employees assigned to this store</p>
           )}
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   )
 }

@@ -1,5 +1,6 @@
-import { Employee, Store } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 
-export type StoreWithEmployees = Store & {
-  employees: Employee[]
-}
+// Tips: StoreGetPayloadを使うとPrismaクエリの結果の型を簡単に定義できる
+export type StoreWithJobs = Prisma.StoreGetPayload<{
+  include: { jobs: { include: { _count: { select: { applications: true } } } } }
+}>

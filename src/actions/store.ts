@@ -6,43 +6,8 @@ import { headers } from 'next/headers'
 import { auth } from '@/lib/better-auth/auth'
 import { prisma } from '@/lib/prisma'
 import { createStoreSchema, CreateStoreSchemaType, updateStoreSchema, UpdateStoreSchemaType } from '@/lib/zod'
-import { ServerActionResult, StoreWithEmployees } from '@/types'
+import { ServerActionResult } from '@/types'
 import { handleError, handleRedirectError } from '@/utils'
-
-export async function getStoresByCompanyId(companyId: string): Promise<ServerActionResult<StoreWithEmployees[]>> {
-  try {
-    const stores = await prisma.store.findMany({
-      where: { companyId },
-      include: {
-        employees: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    })
-
-    return { success: true, message: 'Stores retrieved successfully', data: stores }
-  } catch (error) {
-    return handleError(error, 'getStoresByCompanyId')
-  }
-}
-
-export async function getStoreById(storeId: string): Promise<ServerActionResult<StoreWithEmployees>> {
-  try {
-    const store = await prisma.store.findUnique({
-      where: { id: storeId },
-      include: {
-        employees: true,
-      },
-    })
-
-    if (!store) {
-      return { success: false, message: 'Store not found' }
-    }
-
-    return { success: true, message: 'Store retrieved successfully', data: store }
-  } catch (error) {
-    return handleError(error, 'getStoreById')
-  }
-}
 
 export async function createStore(
   companyId: string,
@@ -107,10 +72,7 @@ export async function createStore(
   }
 }
 
-export async function updateStore(
-  storeId: string,
-  values: UpdateStoreSchemaType
-): Promise<ServerActionResult<Store>> {
+export async function updateStore(storeId: string, values: UpdateStoreSchemaType): Promise<ServerActionResult<Store>> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),

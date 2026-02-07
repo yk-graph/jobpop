@@ -1,65 +1,59 @@
-'use client'
-
+import { ChevronRight, ImageOff } from 'lucide-react'
 import Image from 'next/image'
-import { MapPin, Phone } from 'lucide-react'
-import { Store } from '@prisma/client'
-
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { StoreWithJobs } from '@/types'
+
 interface StoreCardProps {
-  store: Store
+  store: StoreWithJobs
+  companyId: string
 }
 
-export function StoreCard({ store }: StoreCardProps) {
-  const fullAddress = [
-    store.streetAddress,
-    store.floor && `Floor: ${store.floor}`,
-    store.unit && `Unit: ${store.unit}`,
-    store.city,
-    store.province,
-    store.postalCode,
-  ]
-    .filter(Boolean)
-    .join(', ')
+export function StoreCard({ store, companyId }: StoreCardProps) {
+  const totalApplicants = store.jobs.reduce((sum, job) => sum + job._count.applications, 0)
+  const basePath = `/employer/companies/${companyId}`
 
   return (
-    <Card className="border-none py-0 sm:flex-row sm:gap-0">
-      <CardContent className="grow px-0">
+    <Card className="relative flex-row gap-0 overflow-hidden py-0 transition-colors hover:bg-muted/50">
+      {/* Stretched link - カード全体をクリック可能にする */}
+      <Link href={`${basePath}/stores/${store.id}`} className="absolute inset-0 z-0" aria-label={store.name} />
+
+      <div className="relative min-w-[25%] max-w-[40%] shrink-0 bg-muted">
         {store.thumbnailUrl ? (
-          <div className="relative aspect-video w-full sm:h-full sm:aspect-auto">
-            <Image src={store.thumbnailUrl} alt={store.name} fill className="rounded-l-xl object-cover" />
-          </div>
+          <Image src={store.thumbnailUrl} alt={store.name} fill className="object-cover" />
         ) : (
-          <div className="flex aspect-video w-full items-center justify-center bg-muted sm:h-full sm:aspect-auto">
-            <MapPin className="h-12 w-12 text-muted-foreground" />
+          <div className="flex h-full items-center justify-center">
+            <ImageOff className="h-8 w-8 text-muted-foreground" />
           </div>
         )}
-      </CardContent>
-      <div className="sm:min-w-54">
-        <CardHeader className="pt-6">
-          <CardTitle>{store.name}</CardTitle>
-          {store.description && <CardDescription className="line-clamp-2">{store.description}</CardDescription>}
-        </CardHeader>
-        <CardContent className="space-y-2 pb-4">
-          <div className="flex items-start gap-2">
-            <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-            <p className="text-sm text-muted-foreground">{fullAddress}</p>
-          </div>
+      </div>
 
-          {store.phoneNumber && (
-            <div className="flex items-start gap-2">
-              <Phone className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-              <p className="text-sm text-muted-foreground">{store.phoneNumber}</p>
-            </div>
-          )}
+      <div className="flex flex-1 flex-col py-4">
+        <CardHeader>
+          <CardTitle>{store.name}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-1 text-sm">
+          <div className="flex items-center">
+            <span className="w-24 text-muted-foreground">Open Jobs</span>
+            <span>{store.jobs.length}</span>
+            <Button variant="ghost" size="icon" className="relative z-10 ml-auto h-6 w-6" asChild>
+              <Link href={`${basePath}/jobs`}>
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+          <div className="flex items-center">
+            <span className="w-24 text-muted-foreground">Applicants</span>
+            <span>{totalApplicants}</span>
+            <Button variant="ghost" size="icon" className="relative z-10 ml-auto h-6 w-6" asChild>
+              <Link href={`${basePath}/Applicants`}>
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </CardContent>
-        <CardFooter className="gap-3 py-6">
-          <Button variant="outline" className="w-full" asChild>
-            <Link href={`/employer/stores/${store.id}`}>View Details</Link>
-          </Button>
-        </CardFooter>
       </div>
     </Card>
   )
