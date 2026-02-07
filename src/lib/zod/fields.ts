@@ -41,15 +41,17 @@ export const storeNameField = z
   .min(2, 'store name must be at least 2 characters')
   .max(255, 'store name must be at most 255 characters')
 
-// 連絡先フィールド
+// 連絡先フィールド（カナダ国際電話番号形式: +1XXXXXXXXXX）
+const canadianPhoneRegex = /^\+1\d{10}$/
+
 export const phoneNumberField = z
   .string()
   .min(1, 'phone number is required')
-  .max(50, 'phone number must be at most 50 characters')
+  .regex(canadianPhoneRegex, 'invalid phone number format (e.g., +16041234567)')
 
 export const phoneNumberOptionalField = z
   .string()
-  .max(50, 'phone number must be at most 50 characters')
+  .refine((val) => val === '' || canadianPhoneRegex.test(val), 'invalid phone number format (e.g., +16041234567)')
   .optional()
   .or(z.literal(''))
 

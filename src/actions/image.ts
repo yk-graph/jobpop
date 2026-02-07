@@ -3,19 +3,23 @@
 import { PutObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
-import { s3Client } from '@/lib/s3'
+import { s3Client } from '@/lib/aws'
 import { ServerActionResult } from '@/types'
 import { handleError } from '@/utils'
 
 export type UploadImageResult = {
   uploadUrl: string
   fileKey: string
+  publicUrl: string
 }
+
+export type Visibility = 'public' | 'private'
 
 export type FileData = {
   dir: string
   type: string
   size: number
+  visibility: Visibility
 }
 
 // 許可するファイルタイプ
@@ -46,22 +50,23 @@ export async function generatePresignedUploadUrl(
         }
       }
 
-      // ディレクトリ名のサニタイズ
-      if (!/^[a-zA-Z0-9_-]+$/.test(fileData.dir)) {
+      // ディレクトリ名のサニタイズ（スラッシュでネスト可、先頭・末尾・連続スラッシュは不可）
+      if (!/^[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*$/.test(fileData.dir)) {
         return {
           success: false,
-          message: 'Invalid directory name. Only alphanumeric characters, hyphens, and underscores are allowed.',
+          message: 'Invalid directory name. Use alphanumeric characters, hyphens, underscores, and slashes (e.g., "company/logos").',
         }
       }
     }
 
     const uploadUrls = await Promise.all(
       fileDatas.map(async (fileData) => {
-        const dir = fileData.dir
+        const { visibility, dir } = fileData
         const fileType = fileData.type.split('/')[1] // e.g., 'image/png' -> 'png'
 
         const bucketName = process.env.AWS_S3_BUCKET_NAME!
-        const fileKey = `${dir}/${crypto.randomUUID()}.${fileType}`
+        // visibility/dir/uuid.ext の形式でファイルキーを生成
+        const fileKey = `${visibility}/${dir}/${crypto.randomUUID()}.${fileType}`
 
         const command = new PutObjectCommand({
           Bucket: bucketName,
@@ -70,10 +75,12 @@ export async function generatePresignedUploadUrl(
         })
 
         const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 })
+        const publicUrl = `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`
 
         return {
           uploadUrl, // s3に保存する際に使用するAPIのエンドポイント（署名付きURL）
           fileKey, // DBに保存するためのS3キー
+          publicUrl, // 公開URL（DBに保存・表示用）
         }
       })
     )

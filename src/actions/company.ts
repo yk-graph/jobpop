@@ -91,6 +91,7 @@ export async function createCompany(
           id: data.companyName.replace(/\s+/g, '_').trim().toLowerCase(), // company id を会社名から生成
           name: data.companyName,
           description: data.companyDescription || null,
+          logoUrl: data.companyLogo || null,
           website: data.companyWebsite || null,
           phoneNumber: data.phoneNumber,
           postalCode: data.postalCode,

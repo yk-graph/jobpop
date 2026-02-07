@@ -10,7 +10,9 @@ import { toast } from 'sonner'
 import { createCompany, getAddressFromPostalCode } from '@/actions'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { ImageUpload } from '@/components/ui/image-upload'
 import { Input } from '@/components/ui/input'
+import { PhoneInput } from '@/components/ui/phone-input'
 import { Spinner } from '@/components/ui/spinner'
 import { Textarea } from '@/components/ui/textarea'
 import { createCompanySchema, CreateCompanySchemaType } from '@/lib/zod'
@@ -25,6 +27,7 @@ export function CreateCompanyForm() {
     defaultValues: {
       companyName: '',
       companyDescription: '',
+      companyLogo: '',
       companyWebsite: '',
       phoneNumber: '',
       postalCode: '',
@@ -124,6 +127,22 @@ export function CreateCompanyForm() {
           )}
         />
 
+        {/* Company Logo */}
+        <FormField
+          control={form.control}
+          name="companyLogo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Company Logo</FormLabel>
+              <FormControl>
+                <ImageUpload dir="company/logos" visibility="public" value={field.value} onChange={field.onChange} />
+              </FormControl>
+              <FormDescription>Optional: Upload your company logo (max 5MB)</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         {/* Company Website */}
         <FormField
           control={form.control}
@@ -148,8 +167,9 @@ export function CreateCompanyForm() {
             <FormItem>
               <FormLabel>Phone Number *</FormLabel>
               <FormControl>
-                <Input placeholder="+1 (604) 123-4567" type="tel" {...field} />
+                <PhoneInput {...field} />
               </FormControl>
+              <FormDescription>Enter a phone number valid for use in Canada</FormDescription>
               <FormMessage />
             </FormItem>
           )}

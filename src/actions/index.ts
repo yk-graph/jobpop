@@ -1,5 +1,6 @@
 export * from './company'
 export * from './employee'
+export * from './image'
 export * from './job/get-jobs'
 export * from './map/geocoding'
 export * from './profile'

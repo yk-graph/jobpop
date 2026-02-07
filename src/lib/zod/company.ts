@@ -6,6 +6,7 @@ import { addressFields, companyNameField, descriptionField, phoneNumberField, ur
 export const createCompanySchema = z.object({
   companyName: companyNameField,
   companyDescription: descriptionField,
+  companyLogo: urlOptionalField,
   companyWebsite: urlOptionalField,
   phoneNumber: phoneNumberField,
   ...addressFields,
