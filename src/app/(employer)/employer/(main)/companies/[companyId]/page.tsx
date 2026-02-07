@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 import { NoticeCard } from './notice-card'
 
-export default function DashboardPage() {
+export default function EmployerDashboardPage() {
   return (
     <EmployerMainContainer>
       <Suspense fallback={<Skeleton className="h-10 w-full" />}>

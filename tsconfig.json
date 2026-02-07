@@ -28,7 +28,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "src/app/(employer)/employer/(company)/companies/[companyId]"
+    "src/app/(employer)/employer/(main)/companies/[companyId]"
   ],
   "exclude": ["node_modules"]
 }
