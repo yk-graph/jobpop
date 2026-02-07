@@ -55,7 +55,7 @@ export function CreateStoreForm({ companyId }: CreateStoreFormProps) {
         return
       }
 
-      toast.success('Store created successfully!')
+      toast.success(result.message)
       router.push(`/employer/companies/${companyId}/stores/${result.data.storeId}`)
     })
   }

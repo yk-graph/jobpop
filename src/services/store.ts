@@ -1,18 +1,11 @@
+import { Store } from '@prisma/client'
+
 import { prisma } from '@/lib/prisma'
 import { StoreWithJobs } from '@/types'
 
-export async function getStoreById(storeId: string): Promise<StoreWithJobs | null> {
+export async function getStoreById(storeId: string): Promise<Store | null> {
   const store = await prisma.store.findUnique({
     where: { id: storeId },
-    include: {
-      jobs: {
-        include: {
-          _count: {
-            select: { applications: true },
-          },
-        },
-      },
-    },
   })
 
   if (!store) return null

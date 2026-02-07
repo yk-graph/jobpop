@@ -1,5 +1,6 @@
+import Link from 'next/link'
 import Image from 'next/image'
-import { MapPin, Phone, Store as StoreIcon, Users } from 'lucide-react'
+import { MapPin, Phone, Store as StoreIcon } from 'lucide-react'
 
 import { CardHeader } from '@/components/card'
 import { InfoDescription, InfoItem, InfoWrapper, PageHeader } from '@/components/common'
@@ -33,7 +34,11 @@ export default async function StoreDetailPage({ params }: { params: Promise<{ st
       <PageHeader
         title="Store Details"
         description="View and manage your store information"
-        action={<Button variant="outline">Edit Store</Button>}
+        action={
+          <Button asChild>
+            <Link href={`/employer/companies/${store.companyId}/stores/${store.id}/edit`}>Edit Store</Link>
+          </Button>
+        }
       />
 
       <Card className="border-none">
@@ -103,26 +108,6 @@ export default async function StoreDetailPage({ params }: { params: Promise<{ st
           </InfoWrapper>
         </CardContent>
       </Card>
-
-      {/* <Card className="border-none">
-        <CardHeader title="Employees" description={`${store.employees.length} employees`} icon={Users} titleSize="lg" />
-        <CardContent>
-          {store.employees.length > 0 ? (
-            <div className="space-y-2">
-              {store.employees.map((employee) => (
-                <div key={employee.id} className="flex items-center justify-between rounded-lg border p-3">
-                  <div>
-                    <p className="font-medium">{employee.id}</p>
-                    <p className="text-sm text-muted-foreground">{employee.role}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">No employees assigned to this store</p>
-          )}
-        </CardContent>
-      </Card> */}
     </div>
   )
 }

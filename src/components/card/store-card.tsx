@@ -18,11 +18,13 @@ export function StoreCard({ store, companyId }: StoreCardProps) {
   return (
     <Card className="relative flex-row gap-0 overflow-hidden py-0 transition-colors hover:bg-muted/50">
       {/* Stretched link - カード全体をクリック可能にする */}
-      <Link href={`${basePath}/stores/${store.id}`} className="absolute inset-0 z-0" aria-label={store.name} />
+      <Link href={`${basePath}/stores/${store.id}`} className="absolute inset-0 z-10" aria-label={store.name} />
 
-      <div className="relative min-w-[25%] max-w-[40%] shrink-0 bg-muted">
+      <div className="min-w-[25%] max-w-[40%] shrink-0 bg-muted">
         {store.thumbnailUrl ? (
-          <Image src={store.thumbnailUrl} alt={store.name} fill className="object-cover" />
+          <div className="relative h-full w-full">
+            <Image src={store.thumbnailUrl} alt={store.name} fill className="object-cover" />
+          </div>
         ) : (
           <div className="flex h-full items-center justify-center">
             <ImageOff className="h-8 w-8 text-muted-foreground" />
@@ -38,7 +40,7 @@ export function StoreCard({ store, companyId }: StoreCardProps) {
           <div className="flex items-center">
             <span className="w-24 text-muted-foreground">Open Jobs</span>
             <span>{store.jobs.length}</span>
-            <Button variant="ghost" size="icon" className="relative z-10 ml-auto h-6 w-6" asChild>
+            <Button variant="ghost" size="icon" className="relative z-20 ml-auto h-6 w-6" asChild>
               <Link href={`${basePath}/jobs`}>
                 <ChevronRight className="h-4 w-4" />
               </Link>
@@ -47,8 +49,8 @@ export function StoreCard({ store, companyId }: StoreCardProps) {
           <div className="flex items-center">
             <span className="w-24 text-muted-foreground">Applicants</span>
             <span>{totalApplicants}</span>
-            <Button variant="ghost" size="icon" className="relative z-10 ml-auto h-6 w-6" asChild>
-              <Link href={`${basePath}/Applicants`}>
+            <Button variant="ghost" size="icon" className="relative z-20 ml-auto h-6 w-6" asChild>
+              <Link href={`${basePath}/applicants`}>
                 <ChevronRight className="h-4 w-4" />
               </Link>
             </Button>

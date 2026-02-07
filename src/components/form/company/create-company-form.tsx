@@ -88,7 +88,7 @@ export function CreateCompanyForm() {
         return
       }
 
-      toast.success('Company created successfully!')
+      toast.success(result.message)
       router.push(`/employer/companies/${result.data.companyId}`)
     })
   }

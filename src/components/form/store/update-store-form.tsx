@@ -56,9 +56,8 @@ export function UpdateStoreForm({ store }: UpdateStoreFormProps) {
         return
       }
 
-      toast.success('Store updated successfully!')
+      toast.success(result.message)
       router.push(`/employer/companies/${store.companyId}/stores/${store.id}`)
-      router.refresh()
     })
   }
 
