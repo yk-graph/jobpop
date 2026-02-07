@@ -1,6 +1,9 @@
 'use client'
 
-import { ArrowRightLeft, BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { EmployeeRole } from '@prisma/client'
+import { ArrowRightLeft, BadgeCheck, Bell, ChevronsUpDown, CreditCard } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -13,16 +16,24 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
+import { authClient } from '@/lib/better-auth/client'
 import { SessionUser } from '@/types'
 
 interface NavUserProps {
   user: SessionUser
+  role: EmployeeRole
 }
 
-export function NavUser({ user }: NavUserProps) {
+export function NavUser({ user, role }: NavUserProps) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
 
-  // const handleLogout = async () => await logout('employer')
+  const handleLogout = async () => {
+    await authClient.signOut().then(() => {
+      toast.success('Successfully logged out.')
+      router.push('/')
+    })
+  }
 
   return (
     <SidebarMenu>
@@ -39,7 +50,7 @@ export function NavUser({ user }: NavUserProps) {
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.roles?.[0] ?? 'Member'}</span>
+                <span className="truncate text-xs">{role}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -79,10 +90,7 @@ export function NavUser({ user }: NavUserProps) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            {/* <DropdownMenuItem onClick={handleLogout}>
-              <LogOut />
-              Log out
-            </DropdownMenuItem> */}
+            <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

@@ -36,7 +36,7 @@ export default async function EmployerCompanyLayout({
 
   return (
     <SidebarProvider>
-      <AppSidebar user={session.user} />
+      <AppSidebar user={session.user} role={role} />
       <SidebarInset>
         <Header />
         <div className="flex flex-1 flex-col p-4 overflow-auto">{children}</div>
