@@ -14,8 +14,11 @@ import {
 export const createStoreSchema = z.object({
   storeName: storeNameField,
   storeDescription: descriptionField,
+  storeThumbnail: urlOptionalField,
   storeWebsite: urlOptionalField,
   phoneNumber: phoneNumberOptionalField,
+  lat: z.number().optional(),
+  lng: z.number().optional(),
   ...addressFields,
 })
 
@@ -25,8 +28,11 @@ export type CreateStoreSchemaType = z.infer<typeof createStoreSchema>
 export const updateStoreSchema = z.object({
   storeName: storeNameField.optional(),
   storeDescription: descriptionField,
+  storeThumbnail: urlOptionalField,
   storeWebsite: urlOptionalField,
   phoneNumber: phoneNumberOptionalField,
+  lat: z.number().optional(),
+  lng: z.number().optional(),
   postalCode: addressFields.postalCode.optional(),
   country: addressFields.country.optional(),
   province: addressFields.province.optional(),

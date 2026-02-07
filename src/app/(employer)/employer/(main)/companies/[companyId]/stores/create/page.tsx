@@ -1,9 +1,15 @@
+import { PageHeader } from '@/components/common'
+import { EmployerMainContainer } from '@/components/containers'
+import { CreateStoreForm } from '@/components/form'
+
 export default async function CreateStorePage({ params }: { params: Promise<{ companyId: string }> }) {
   const companyId = (await params).companyId
 
   return (
-    <div>
-      <h1>Create Store for Company ID: {companyId}</h1>
-    </div>
+    <EmployerMainContainer>
+      <PageHeader title="Create Store" description="Create and manage your store locations here." />
+
+      <CreateStoreForm companyId={companyId} />
+    </EmployerMainContainer>
   )
 }
