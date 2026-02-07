@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 export default function AuthLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${montserrat.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${montserrat.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" disableTransitionOnChange>
           <Toaster />
           <FullScreenContainer>{children}</FullScreenContainer>
