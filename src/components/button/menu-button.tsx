@@ -1,17 +1,20 @@
 'use client'
 
 import { useState } from 'react'
-import { ChartNoAxesGantt, LogIn, LogOut, Settings, User, X } from 'lucide-react'
 import Link from 'next/link'
+import { ArrowRightLeft, ChartNoAxesGantt, LogIn, LogOut, Settings, User, X } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { authClient } from '@/lib/better-auth/client'
 import { Button } from '@/components/ui/button'
+import { authClient } from '@/lib/better-auth/client'
 import { cn } from '@/lib/utils'
 
-export function MenuButton() {
-  const { data: session } = authClient.useSession()
+interface MenuButtonProps {
+  isLoggedIn: boolean
+  isEmployer: boolean
+}
 
+export function MenuButton({ isLoggedIn, isEmployer }: MenuButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleToggle = () => setIsOpen(!isOpen)
@@ -76,7 +79,7 @@ export function MenuButton() {
               Settings
             </Button>
 
-            {!session ? (
+            {!isLoggedIn ? (
               <Link href="/login" className="flex">
                 <Button variant="ghost" className="flex items-center gap-4 text-base group">
                   <LogIn className="group-hover:scale-110 transition-transform" />
@@ -88,6 +91,15 @@ export function MenuButton() {
                 <LogOut className="group-hover:scale-110 transition-transform" />
                 Logout
               </Button>
+            )}
+
+            {isLoggedIn && isEmployer && (
+              <Link href="/employer/companies" className="flex">
+                <Button variant="ghost" className="flex items-center gap-4 text-base group">
+                  <ArrowRightLeft className="group-hover:scale-110 transition-transform" />
+                  Switch Employer Page
+                </Button>
+              </Link>
             )}
           </nav>
         </div>

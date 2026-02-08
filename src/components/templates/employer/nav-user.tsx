@@ -69,7 +69,7 @@ export function NavUser({ user, role }: NavUserProps) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/')}>
                 <ArrowRightLeft />
                 Switch Seeker Page
               </DropdownMenuItem>
