@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 import { Spinner } from '@/components/ui/spinner'
 import { authClient } from '@/lib/better-auth/client'
 import { loginSchema, LoginSchemaType } from '@/lib/zod'
@@ -79,7 +80,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="••••••••" {...field} />
+                <PasswordInput placeholder="••••••••" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
