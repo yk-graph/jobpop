@@ -135,7 +135,15 @@ export function CreateCompanyForm() {
             <FormItem>
               <FormLabel>Company Logo</FormLabel>
               <FormControl>
-                <ImageUpload dir="company/logos" visibility="public" value={field.value} onChange={field.onChange} />
+                <ImageUpload
+                  dir="company/logos"
+                  visibility="public"
+                  size="md"
+                  aspect="square"
+                  rounded="lg"
+                  value={field.value}
+                  onChange={field.onChange}
+                />
               </FormControl>
               <FormDescription>Optional: Upload your company logo (max 5MB)</FormDescription>
               <FormMessage />

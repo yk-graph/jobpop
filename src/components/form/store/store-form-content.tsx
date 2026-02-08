@@ -106,7 +106,15 @@ export function StoreFormContent({ form }: StoreFormContentProps) {
           <FormItem>
             <FormLabel>Store Image</FormLabel>
             <FormControl>
-              <ImageUpload dir="store/thumbnails" visibility="public" value={field.value} onChange={field.onChange} />
+              <ImageUpload
+                dir="store/thumbnails"
+                visibility="public"
+                size="lg"
+                aspect="video"
+                rounded="lg"
+                value={field.value}
+                onChange={field.onChange}
+              />
             </FormControl>
             <FormDescription>Optional: Upload a store image (max 5MB)</FormDescription>
             <FormMessage />

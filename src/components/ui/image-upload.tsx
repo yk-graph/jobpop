@@ -9,17 +9,42 @@ import { generatePresignedUploadUrl, UploadImageResult, Visibility } from '@/act
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
+type ImageUploadSize = 'sm' | 'md' | 'lg' | 'xl'
+type ImageUploadAspect = 'square' | 'video'
+type ImageUploadRounded = 'none' | 'lg' | 'full'
+
 interface ImageUploadProps {
   value?: string
   onChange?: (url: string) => void
   dir: string
   visibility: Visibility
+  size: ImageUploadSize
+  aspect: ImageUploadAspect
+  rounded: ImageUploadRounded
   className?: string
   disabled?: boolean
 }
 
+const sizeClasses: Record<ImageUploadSize, string> = {
+  sm: 'w-24',
+  md: 'w-32',
+  lg: 'w-48',
+  xl: 'w-64',
+}
+
+const aspectClasses: Record<ImageUploadAspect, string> = {
+  square: 'aspect-square',
+  video: 'aspect-video',
+}
+
+const roundedClasses: Record<ImageUploadRounded, string> = {
+  none: 'rounded-none',
+  lg: 'rounded-lg',
+  full: 'rounded-full',
+}
+
 const ImageUpload = React.forwardRef<HTMLInputElement, ImageUploadProps>(
-  ({ value, onChange, dir, visibility, className, disabled }, ref) => {
+  ({ value, onChange, dir, visibility, size, aspect, rounded, className, disabled }, ref) => {
     const [preview, setPreview] = React.useState<string | null>(value || null)
     const [isUploading, setIsUploading] = React.useState(false)
     const inputRef = React.useRef<HTMLInputElement>(null)
@@ -111,6 +136,8 @@ const ImageUpload = React.forwardRef<HTMLInputElement, ImageUploadProps>(
       }
     }
 
+    const containerClasses = cn(sizeClasses[size], aspectClasses[aspect], roundedClasses[rounded])
+
     return (
       <div className={cn('relative', className)}>
         <input
@@ -131,7 +158,7 @@ const ImageUpload = React.forwardRef<HTMLInputElement, ImageUploadProps>(
         />
 
         {preview ? (
-          <div className="relative aspect-square w-32 overflow-hidden rounded-lg border bg-muted">
+          <div className={cn('relative overflow-hidden border bg-muted', containerClasses)}>
             <Image src={preview} alt="Preview" fill className="object-cover" />
             {isUploading && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/50">
@@ -156,9 +183,10 @@ const ImageUpload = React.forwardRef<HTMLInputElement, ImageUploadProps>(
             onClick={handleClick}
             disabled={disabled || isUploading}
             className={cn(
-              'flex aspect-square w-32 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed',
+              'flex flex-col items-center justify-center gap-2 border-2 border-dashed',
               'text-muted-foreground transition-colors hover:border-primary hover:text-primary',
-              'disabled:cursor-not-allowed disabled:opacity-50'
+              'disabled:cursor-not-allowed disabled:opacity-50',
+              containerClasses
             )}
           >
             {isUploading ? (
@@ -178,3 +206,4 @@ const ImageUpload = React.forwardRef<HTMLInputElement, ImageUploadProps>(
 ImageUpload.displayName = 'ImageUpload'
 
 export { ImageUpload }
+export type { ImageUploadSize, ImageUploadAspect, ImageUploadRounded }
