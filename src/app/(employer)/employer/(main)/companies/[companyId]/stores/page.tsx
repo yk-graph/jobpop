@@ -25,7 +25,7 @@ export default async function StoresPage({ params }: { params: Promise<{ company
       {!stores ? (
         <p className="text-muted-foreground">No stores registered yet.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(480px,1fr))] gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {stores.map((store) => (
             <StoreCard key={store.id} store={store} companyId={companyId} />
           ))}

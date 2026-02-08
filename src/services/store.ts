@@ -18,6 +18,7 @@ export async function getStoresByCompanyId(companyId: string): Promise<StoreWith
     where: { companyId },
     include: {
       jobs: {
+        where: { isActive: true }, // アクティブな求人のみをカウント
         include: {
           _count: {
             select: { applications: true },
