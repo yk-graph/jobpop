@@ -10,7 +10,8 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   })
 
   const isLoggedIn = !!session
-  const isEmployer = session ? !session.user.roles?.includes(EmployeeRole.STAFF) : false
+  // スタッフは企業側のページにアクセスできないため、スタッフでない＝企業側のユーザーと判断する
+  const isEmployer = session && session.user.roles ? !session.user.roles.includes(EmployeeRole.STAFF) : false
 
   return (
     <div className="h-svh w-full flex justify-center items-center p-6">

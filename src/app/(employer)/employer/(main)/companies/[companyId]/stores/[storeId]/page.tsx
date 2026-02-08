@@ -1,113 +1,23 @@
-import Link from 'next/link'
-import Image from 'next/image'
-import { MapPin, Phone, Store as StoreIcon } from 'lucide-react'
+import { notFound } from 'next/navigation'
 
-import { CardHeader } from '@/components/card'
-import { InfoDescription, InfoItem, InfoWrapper, PageHeader } from '@/components/common'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+import { PageHeader } from '@/components/common'
+import { EmployerMainContainer } from '@/components/containers'
 import { getStoreById } from '@/services'
 
-export default async function StoreDetailPage({ params }: { params: Promise<{ storeId: string }> }) {
+import { StoreDetailContents } from './store-detail-contents'
+
+export default async function StoreDetailPage({ params }: { params: Promise<{ companyId: string; storeId: string }> }) {
   const { storeId } = await params
   const store = await getStoreById(storeId)
 
   if (!store) {
-    throw new Error('Store not found')
+    notFound()
   }
 
-  const fullAddress = [
-    store.streetAddress,
-    store.floor && `Floor: ${store.floor}`,
-    store.unit && `Unit: ${store.unit}`,
-    store.city,
-    store.province,
-    store.postalCode,
-    store.country,
-  ]
-    .filter(Boolean)
-    .join(', ')
-
   return (
-    <div className="container max-w-full space-y-6">
-      <PageHeader
-        title="Store Details"
-        description="View and manage your store information"
-        action={
-          <Button asChild>
-            <Link href={`/employer/companies/${store.companyId}/stores/${store.id}/edit`}>Edit Store</Link>
-          </Button>
-        }
-      />
-
-      <Card className="border-none">
-        <CardHeader
-          title={store.name}
-          description={`Store ID: ${store.id}`}
-          icon={StoreIcon}
-          titleSize="2xl"
-          copyValue={store.id}
-        />
-        <CardContent className="space-y-6">
-          {store.thumbnailUrl && (
-            <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-              <Image src={store.thumbnailUrl} alt={store.name} fill className="object-cover" />
-            </div>
-          )}
-
-          {store.description && (
-            <div className="space-y-1">
-              <h3 className="font-semibold">Description</h3>
-              <p className="text-sm text-muted-foreground">{store.description}</p>
-            </div>
-          )}
-
-          <Separator />
-
-          <div className="space-y-4">
-            <h3 className="font-semibold">Contact Information</h3>
-
-            <div className="grid gap-3">
-              <InfoItem icon={Phone} label="Phone" value={store.phoneNumber} />
-              <InfoItem icon={MapPin} label="Address" value={fullAddress} />
-            </div>
-          </div>
-
-          <Separator />
-
-          <div className="space-y-4">
-            <h3 className="font-semibold">Location</h3>
-
-            <InfoWrapper responsive={false}>
-              <InfoDescription label="Latitude" value={store.lat.toString()} />
-              <InfoDescription label="Longitude" value={store.lng.toString()} />
-            </InfoWrapper>
-          </div>
-
-          <Separator />
-
-          <InfoWrapper responsive={false}>
-            <InfoDescription label="Created" value={new Date(store.createdAt).toLocaleDateString()} />
-            <InfoDescription label="Last Updated" value={new Date(store.updatedAt).toLocaleDateString()} />
-          </InfoWrapper>
-        </CardContent>
-      </Card>
-
-      <Card className="border-none">
-        <CardHeader title="Address Details" titleSize="lg" />
-        <CardContent>
-          <InfoWrapper>
-            <InfoDescription label="Street Address" value={store.streetAddress} />
-            <InfoDescription label="Floor" value={store.floor} />
-            <InfoDescription label="Unit" value={store.unit} />
-            <InfoDescription label="City" value={store.city} />
-            <InfoDescription label="Province" value={store.province} />
-            <InfoDescription label="Postal Code" value={store.postalCode} />
-            <InfoDescription label="Country" value={store.country} />
-          </InfoWrapper>
-        </CardContent>
-      </Card>
-    </div>
+    <EmployerMainContainer>
+      <PageHeader title="Store Details" />
+      <StoreDetailContents store={store} />
+    </EmployerMainContainer>
   )
 }
