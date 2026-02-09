@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
@@ -6,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import { auth } from '@/lib/better-auth/auth'
 import { getCompanyByUserId } from '@/services'
 import { getPathname } from '@/utils'
-import Link from 'next/link'
 
 export default async function EmployerCompanyPage() {
   const session = await auth.api.getSession({

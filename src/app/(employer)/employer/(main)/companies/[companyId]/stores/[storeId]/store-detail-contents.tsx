@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Store } from '@prisma/client'
+import { EmployeeRole, Store } from '@prisma/client'
 import { MapPin, Phone, Store as StoreIcon } from 'lucide-react'
 import { Element } from 'react-scroll'
 
@@ -11,6 +11,7 @@ import { InfoDescription, InfoItem, InfoWrapper, ScrollNav } from '@/components/
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { isAdminOrAbove } from '@/utils'
 
 const navItems = [
   { label: 'Detail', to: 'detail' },
@@ -21,9 +22,10 @@ const navItems = [
 interface StoreDetailContentsProps {
   store: Store
   companyId: string
+  currentRole: EmployeeRole | null
 }
 
-export function StoreDetailContents({ store, companyId }: StoreDetailContentsProps) {
+export function StoreDetailContents({ store, companyId, currentRole }: StoreDetailContentsProps) {
   const fullAddress = [
     store.streetAddress,
     store.floor && `Floor: ${store.floor}`,
@@ -49,9 +51,11 @@ export function StoreDetailContents({ store, companyId }: StoreDetailContentsPro
             icon={StoreIcon}
             copyValue={store.id}
             action={
-              <Button size={'sm'} asChild>
-                <Link href={`/employer/companies/${companyId}/stores/${store.id}/edit`}>Edit</Link>
-              </Button>
+              currentRole && isAdminOrAbove(currentRole) ? (
+                <Button size={'sm'} asChild>
+                  <Link href={`/employer/companies/${companyId}/stores/${store.id}/edit`}>Edit</Link>
+                </Button>
+              ) : null
             }
           />
           <CardContent className="space-y-6">
