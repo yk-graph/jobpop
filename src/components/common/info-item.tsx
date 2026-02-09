@@ -7,7 +7,7 @@ interface InfoItemProps {
   label: string
   value: string | ReactNode
   icon?: LucideIcon
-  copyValue?: string
+  copyValue?: string | null
 }
 
 export function InfoItem({ label, value, icon: Icon, copyValue }: InfoItemProps) {
@@ -18,17 +18,14 @@ export function InfoItem({ label, value, icon: Icon, copyValue }: InfoItemProps)
       {Icon && <Icon className="h-4 w-4 text-muted-foreground mt-0.5" />}
       <div className="flex-1">
         <p className="text-sm font-medium">{label}</p>
-        {typeof displayValue === 'string' ? (
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          {typeof displayValue === 'string' ? (
             <p className="text-sm text-muted-foreground">{displayValue}</p>
-            {copyValue && <Clipboard value={copyValue} className="text-muted-foreground" />}
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            {displayValue}
-            {copyValue && <Clipboard value={copyValue} className="text-muted-foreground" />}
-          </div>
-        )}
+          ) : (
+            displayValue
+          )}
+          {copyValue && <Clipboard value={copyValue} className="text-muted-foreground" />}
+        </div>
       </div>
     </div>
   )

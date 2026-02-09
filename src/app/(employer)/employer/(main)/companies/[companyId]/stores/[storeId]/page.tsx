@@ -7,7 +7,7 @@ import { getStoreById } from '@/services'
 import { StoreDetailContents } from './store-detail-contents'
 
 export default async function StoreDetailPage({ params }: { params: Promise<{ companyId: string; storeId: string }> }) {
-  const { storeId } = await params
+  const { companyId, storeId } = await params
   const store = await getStoreById(storeId)
 
   if (!store) {
@@ -17,7 +17,7 @@ export default async function StoreDetailPage({ params }: { params: Promise<{ co
   return (
     <EmployerMainContainer>
       <PageHeader title="Store Details" />
-      <StoreDetailContents store={store} />
+      <StoreDetailContents store={store} companyId={companyId} />
     </EmployerMainContainer>
   )
 }
