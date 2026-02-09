@@ -1,11 +1,9 @@
-import { headers } from 'next/headers'
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 
 import { PageHeader } from '@/components/common'
 import { EmployerMainContainer } from '@/components/containers'
-import { auth } from '@/lib/better-auth/auth'
+import { getRequiredSession } from '@/lib/better-auth/server'
 import { getRoleByCompanyIdAndUserId, getStoreById } from '@/services'
-import { getPathname } from '@/utils'
 
 import { StoreDetailContents } from './store-detail-contents'
 
@@ -14,15 +12,7 @@ export default async function EmployerStoreDetailPage({
 }: {
   params: Promise<{ companyId: string; storeId: string }>
 }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
-  const pathname = await getPathname()
-
-  if (!session) {
-    redirect(`/login?error=authentication_required&redirectTo=${pathname}`)
-  }
-
+  const session = await getRequiredSession()
   const { companyId, storeId } = await params
   const store = await getStoreById(storeId)
 
@@ -30,12 +20,12 @@ export default async function EmployerStoreDetailPage({
     notFound()
   }
 
-  const currentRole = await getRoleByCompanyIdAndUserId(companyId, session.user.id)
+  const role = await getRoleByCompanyIdAndUserId(companyId, session.user.id)
 
   return (
     <EmployerMainContainer>
       <PageHeader title="Store Details" />
-      <StoreDetailContents store={store} companyId={companyId} currentRole={currentRole} />
+      <StoreDetailContents store={store} companyId={companyId} role={role} />
     </EmployerMainContainer>
   )
 }

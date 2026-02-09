@@ -22,10 +22,10 @@ const navItems = [
 interface StoreDetailContentsProps {
   store: Store
   companyId: string
-  currentRole: EmployeeRole | null
+  role: EmployeeRole | null
 }
 
-export function StoreDetailContents({ store, companyId, currentRole }: StoreDetailContentsProps) {
+export function StoreDetailContents({ store, companyId, role }: StoreDetailContentsProps) {
   const fullAddress = [
     store.streetAddress,
     store.floor && `Floor: ${store.floor}`,
@@ -51,7 +51,7 @@ export function StoreDetailContents({ store, companyId, currentRole }: StoreDeta
             icon={StoreIcon}
             copyValue={store.id}
             action={
-              currentRole && isAdminOrAbove(currentRole) ? (
+              role && isAdminOrAbove(role) ? (
                 <Button size={'sm'} asChild>
                   <Link href={`/employer/companies/${companyId}/stores/${store.id}/edit`}>Edit</Link>
                 </Button>

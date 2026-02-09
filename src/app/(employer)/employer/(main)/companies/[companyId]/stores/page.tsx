@@ -17,7 +17,7 @@ export default async function EmployerStoresPage({ params }: { params: Promise<{
         description="Manage your store lists"
         action={
           <Button asChild>
-            <Link href={`/employer/companies/${companyId}/stores/create`}>Add Store</Link>
+            <Link href={`/employer/companies/${companyId}/stores/create`}>Create</Link>
           </Button>
         }
       />

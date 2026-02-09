@@ -1,17 +1,21 @@
 import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
+
+import { getPathname } from '@/utils'
 
 import { auth } from './auth'
 
-export const authSession = async () => {
-  try {
-    const session = auth.api.getSession({ headers: await headers() })
+/**
+ * 認証済みセッションを取得
+ * 未認証の場合はログインページへリダイレクト
+ */
+export const getRequiredSession = async () => {
+  const session = await auth.api.getSession({ headers: await headers() })
 
-    if (!session) {
-      throw new Error('Unauthorized: No valid session found')
-    }
-
-    return session
-  } catch {
-    throw new Error('Authentication failed')
+  if (!session) {
+    const pathname = await getPathname()
+    redirect(`/login?error=authentication_required&redirectTo=${pathname}`)
   }
+
+  return session
 }

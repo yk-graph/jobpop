@@ -21,10 +21,10 @@ const navItems = [
 
 interface CompanyDetailContentsProps {
   company: Company
-  currentRole: EmployeeRole | null
+  role: EmployeeRole | null
 }
 
-export function CompanyDetailContents({ company, currentRole }: CompanyDetailContentsProps) {
+export function CompanyDetailContents({ company, role }: CompanyDetailContentsProps) {
   const fullAddress = [
     company.streetAddress,
     company.floor && `Floor: ${company.floor}`,
@@ -51,7 +51,7 @@ export function CompanyDetailContents({ company, currentRole }: CompanyDetailCon
             titleSize="2xl"
             copyValue={company.id}
             action={
-              currentRole && isAdminOrAbove(currentRole) ? (
+              role && isAdminOrAbove(role) ? (
                 <Button size={'sm'} asChild>
                   <Link href={`/employer/companies/${company.id}/edit`}>Edit</Link>
                 </Button>
