@@ -1,22 +1,13 @@
 import Link from 'next/link'
-import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 import { FullScreenContainer, MiddleScreenContainer } from '@/components/containers'
 import { Button } from '@/components/ui/button'
-import { auth } from '@/lib/better-auth/auth'
+import { getRequiredSession } from '@/lib/better-auth/server'
 import { getCompanyByUserId } from '@/services'
-import { getPathname } from '@/utils'
 
 export default async function EmployerCompanyPage() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
-  const pathname = await getPathname()
-
-  if (!session) {
-    redirect(`/login?error=authentication_required&redirectTo=${pathname}`)
-  }
+  const session = await getRequiredSession()
 
   // STAFF ロールを持っているユーザーは企業ページにアクセスできないようにする
   if (!session.user.roles || session.user.roles.includes('STAFF')) {

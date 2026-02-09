@@ -19,7 +19,7 @@ export default async function EmployerCompanyLayout({
   const role = await getRoleByCompanyIdAndUserId(companyId, session.user.id)
 
   // role が null の場合（EmployerではなくSeekerの場合）Role が Staff の場合はトップページにリダイレクト（companies以下のすべてのページで適用）
-  if (!role || isManagerOrAbove(role)) {
+  if (!role || !isManagerOrAbove(role)) {
     redirect('/')
   }
 
