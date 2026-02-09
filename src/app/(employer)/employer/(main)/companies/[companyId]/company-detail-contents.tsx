@@ -1,12 +1,14 @@
 'use client'
 
+import Image from 'next/image'
+import Link from 'next/link'
 import { Company } from '@prisma/client'
 import { Building2, Globe, MapPin, Phone } from 'lucide-react'
-import Image from 'next/image'
 import { Element } from 'react-scroll'
 
 import { CardHeader } from '@/components/card'
 import { InfoDescription, InfoItem, InfoWrapper, ScrollNav } from '@/components/common'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 
@@ -46,12 +48,16 @@ export function CompanyDetailContents({ company }: CompanyDetailContentsProps) {
             icon={Building2}
             titleSize="2xl"
             copyValue={company.id}
+            action={
+              <Button size={'sm'} asChild>
+                <Link href={`/employer/companies/${company.id}/edit`}>Edit</Link>
+              </Button>
+            }
           />
           <CardContent className="space-y-6">
-            {/* Logo + Description: 横並びレイアウト */}
-            <div className="grid gap-6 md:grid-cols-[280px_1fr] lg:grid-cols-[320px_1fr]">
+            <div className="flex flex-col md:flex-row gap-6">
               {/* Logo */}
-              <div className="relative aspect-video overflow-hidden rounded-lg bg-muted md:aspect-square">
+              <div className="relative w-full md:w-64 aspect-video overflow-hidden rounded-lg md:aspect-square">
                 {company.logoUrl ? (
                   <Image src={company.logoUrl} alt={company.name} fill className="object-cover" />
                 ) : (
@@ -62,7 +68,7 @@ export function CompanyDetailContents({ company }: CompanyDetailContentsProps) {
               </div>
 
               {/* Description & Contact */}
-              <div className="space-y-4">
+              <div className="flex-1 space-y-4">
                 {company.description && (
                   <div className="space-y-1">
                     <h3 className="font-semibold">Description</h3>

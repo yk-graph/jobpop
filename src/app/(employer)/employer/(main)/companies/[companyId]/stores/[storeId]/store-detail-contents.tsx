@@ -50,14 +50,14 @@ export function StoreDetailContents({ store, companyId }: StoreDetailContentsPro
             copyValue={store.id}
             action={
               <Button size={'sm'} asChild>
-                <Link href={`/employer/companies/${companyId}/stores/${store.id}/edit`}>Edit Store</Link>
+                <Link href={`/employer/companies/${companyId}/stores/${store.id}/edit`}>Edit</Link>
               </Button>
             }
           />
           <CardContent className="space-y-6">
             <div className="flex flex-col md:flex-row gap-6">
               {/* Thumbnail */}
-              <div className="relative w-full md:w-2/5 md:max-w-lg aspect-video overflow-hidden rounded-lg bg-muted">
+              <div className="relative w-full md:w-2/5 md:max-w-lg aspect-video overflow-hidden rounded-lg">
                 {store.thumbnailUrl ? (
                   <Image src={store.thumbnailUrl} alt={store.name} fill className="object-cover" />
                 ) : (
