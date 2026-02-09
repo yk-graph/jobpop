@@ -6,7 +6,7 @@ import { EmployerMainContainer } from '@/components/containers'
 import { Button } from '@/components/ui/button'
 import { getStoresByCompanyId } from '@/services'
 
-export default async function StoresPage({ params }: { params: Promise<{ companyId: string }> }) {
+export default async function EmployerStoresPage({ params }: { params: Promise<{ companyId: string }> }) {
   const companyId = (await params).companyId
   const stores = await getStoresByCompanyId(companyId)
 

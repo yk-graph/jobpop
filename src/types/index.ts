@@ -1,3 +1,4 @@
+export * from './company'
 export * from './country'
 export * from './employee'
 export * from './experience'

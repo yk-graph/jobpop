@@ -6,7 +6,11 @@ import { getStoreById } from '@/services'
 
 import { StoreDetailContents } from './store-detail-contents'
 
-export default async function StoreDetailPage({ params }: { params: Promise<{ companyId: string; storeId: string }> }) {
+export default async function EmployerStoreDetailPage({
+  params,
+}: {
+  params: Promise<{ companyId: string; storeId: string }>
+}) {
   const { companyId, storeId } = await params
   const store = await getStoreById(storeId)
 

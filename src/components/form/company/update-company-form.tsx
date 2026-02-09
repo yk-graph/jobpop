@@ -1,12 +1,13 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Company } from '@prisma/client'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-import { createCompany } from '@/actions'
+import { updateCompany } from '@/actions'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { Spinner } from '@/components/ui/spinner'
@@ -14,35 +15,39 @@ import { createCompanySchema, CreateCompanySchemaType } from '@/lib/zod'
 
 import { CompanyFormContent } from './company-form-content'
 
-export function CreateCompanyForm() {
+interface UpdateCompanyFormProps {
+  company: Company
+}
+
+export function UpdateCompanyForm({ company }: UpdateCompanyFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
   const form = useForm<CreateCompanySchemaType>({
     resolver: zodResolver(createCompanySchema),
     defaultValues: {
-      companyName: '',
-      companyDescription: '',
-      companyLogo: '',
-      companyWebsite: '',
-      phoneNumber: '',
-      postalCode: '',
-      country: 'Canada',
-      province: '',
-      city: '',
-      streetAddress: '',
-      floor: '',
-      unit: '',
+      companyName: company.name,
+      companyDescription: company.description || '',
+      companyLogo: company.logoUrl || '',
+      companyWebsite: company.website || '',
+      phoneNumber: company.phoneNumber,
+      postalCode: company.postalCode,
+      country: company.country,
+      province: company.province,
+      city: company.city,
+      streetAddress: company.streetAddress,
+      floor: company.floor || '',
+      unit: company.unit || '',
     },
     mode: 'onBlur',
   })
 
   const onSubmit = (values: CreateCompanySchemaType) => {
     startTransition(async () => {
-      const result = await createCompany(values)
+      const result = await updateCompany(company.id, values)
 
       if (!result.success) {
-        toast.error('Failed to create company', {
+        toast.error('Failed to update company', {
           description: result.message,
           duration: 5000,
         })
@@ -50,18 +55,17 @@ export function CreateCompanyForm() {
       }
 
       toast.success(result.message)
-      router.push(`/employer/companies/${result.data.companyId}`)
+      router.push(`/employer/companies/${company.id}`)
     })
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <CompanyFormContent form={form} />
+        <CompanyFormContent form={form} showLogo={false} />
 
-        {/* Submit Button */}
         <Button type="submit" variant="secondary" className="w-full" disabled={isPending}>
-          {isPending ? <Spinner /> : 'Create Company'}
+          {isPending ? <Spinner /> : 'Update Company'}
         </Button>
       </form>
     </Form>

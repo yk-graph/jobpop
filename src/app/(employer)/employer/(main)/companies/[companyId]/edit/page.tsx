@@ -2,13 +2,11 @@ import { notFound } from 'next/navigation'
 
 import { PageHeader } from '@/components/common'
 import { EmployerMainContainer } from '@/components/containers'
+import { UpdateCompanyForm } from '@/components/form'
 import { getCompanyById } from '@/services'
 
-import { CompanyDetailContents } from './company-detail-contents'
-
-export default async function EmployerCompanyDetailPage({ params }: { params: Promise<{ companyId: string }> }) {
+export default async function EditCompanyPage({ params }: { params: Promise<{ companyId: string }> }) {
   const { companyId } = await params
-
   const company = await getCompanyById(companyId)
 
   if (!company) {
@@ -17,8 +15,9 @@ export default async function EmployerCompanyDetailPage({ params }: { params: Pr
 
   return (
     <EmployerMainContainer>
-      <PageHeader title="Company Details" />
-      <CompanyDetailContents company={company} />
+      <PageHeader title="Edit Company" description="Update your company information." />
+
+      <UpdateCompanyForm company={company} />
     </EmployerMainContainer>
   )
 }

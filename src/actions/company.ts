@@ -130,3 +130,77 @@ export async function createCompany(
     return handleError(error, 'createCompany')
   }
 }
+
+export async function updateCompany(
+  companyId: string,
+  values: CreateCompanySchemaType
+): Promise<ServerActionResult<{ companyId: string }>> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    })
+
+    if (!session) {
+      return {
+        success: false,
+        message: 'Unauthorized - Please log in',
+      }
+    }
+
+    const userId = session.user.id
+
+    // ユーザーがこの会社のOWNERまたはADMINであることを確認
+    const employee = await prisma.employee.findFirst({
+      where: {
+        userId,
+        companyId,
+        role: { in: [EmployeeRole.OWNER, EmployeeRole.ADMIN] },
+      },
+    })
+
+    if (!employee) {
+      return {
+        success: false,
+        message: 'You do not have permission to update this company',
+      }
+    }
+
+    const validatedFields = createCompanySchema.safeParse(values)
+
+    if (!validatedFields.success) {
+      return {
+        success: false,
+        message: 'Invalid input data',
+      }
+    }
+
+    const data = validatedFields.data
+
+    await prisma.company.update({
+      where: { id: companyId },
+      data: {
+        name: data.companyName,
+        description: data.companyDescription || null,
+        logoUrl: data.companyLogo || null,
+        website: data.companyWebsite || null,
+        phoneNumber: data.phoneNumber,
+        postalCode: data.postalCode,
+        country: data.country,
+        province: data.province,
+        city: data.city,
+        streetAddress: data.streetAddress,
+        floor: data.floor || null,
+        unit: data.unit || null,
+      },
+    })
+
+    return {
+      success: true,
+      message: 'Company updated successfully!',
+      data: { companyId },
+    }
+  } catch (error) {
+    handleRedirectError(error, 'updateCompany')
+    return handleError(error, 'updateCompany')
+  }
+}
