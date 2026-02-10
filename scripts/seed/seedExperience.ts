@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 
 import { PrismaClient } from '@prisma/client'
-import { INDUSTRY_EXPERIENCES } from '../src/constants/experiences'
+import { INDUSTRY_EXPERIENCES } from '../../src/constants/experiences'
 
 const prisma = new PrismaClient()
 
