@@ -16,7 +16,7 @@ import { isAdminOrAbove } from '@/utils'
 const navItems = [
   { label: 'Detail', to: 'detail' },
   { label: 'Open Jobs', to: 'jobs' },
-  { label: 'Members', to: 'members' },
+  { label: 'Applicants', to: 'applicants' },
 ]
 
 interface StoreDetailContentsProps {
@@ -130,12 +130,12 @@ export function StoreDetailContents({ store, companyId, role }: StoreDetailConte
         </Card>
       </Element>
 
-      {/* Members Section */}
-      <Element name="members">
+      {/* Applicants Section */}
+      <Element name="applicants">
         <Card className="border-none">
-          <CardHeader title="Members" titleSize="lg" />
+          <CardHeader title="Applicants" titleSize="lg" />
           <CardContent>
-            <p className="text-muted-foreground">No members assigned yet.</p>
+            <p className="text-muted-foreground">No applicants assigned yet.</p>
           </CardContent>
         </Card>
       </Element>

@@ -4,6 +4,10 @@ import { Prisma } from '@prisma/client'
 export type CompanyWithStoresAndEmployees = Prisma.CompanyGetPayload<{
   include: {
     stores: true
-    employees: true
+    employees: {
+      include: {
+        user: true
+      }
+    }
   }
 }>

@@ -2,25 +2,26 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Company, EmployeeRole } from '@prisma/client'
-import { Building2, Globe, MapPin, Phone } from 'lucide-react'
+import { EmployeeRole } from '@prisma/client'
+import { Building2, Globe, MapPin, Phone, Store, User } from 'lucide-react'
 import { Element } from 'react-scroll'
 
-import { CardHeader } from '@/components/card'
+import { CardHeader, ThumbnailWithNameCard } from '@/components/card'
 import { InfoDescription, InfoItem, InfoWrapper, ScrollNav } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { CompanyWithStoresAndEmployees } from '@/types'
 import { isAdminOrAbove } from '@/utils'
 
 const navItems = [
   { label: 'Detail', to: 'detail' },
   { label: 'Stores', to: 'stores' },
-  { label: 'Employees', to: 'employees' },
+  { label: 'Members', to: 'members' },
 ]
 
 interface CompanyDetailContentsProps {
-  company: Company
+  company: CompanyWithStoresAndEmployees
   role: EmployeeRole | null
 }
 
@@ -61,9 +62,9 @@ export function CompanyDetailContents({ company, role }: CompanyDetailContentsPr
           <CardContent className="space-y-6">
             <div className="flex flex-col md:flex-row gap-6">
               {/* Logo */}
-              <div className="relative w-full md:w-64 aspect-video overflow-hidden rounded-lg md:aspect-square">
+              <div className="relative w-full max-h-40 md:w-64 md:h-64 aspect-video overflow-hidden rounded-lg md:aspect-square">
                 {company.logoUrl ? (
-                  <Image src={company.logoUrl} alt={company.name} fill className="object-cover" />
+                  <Image src={company.logoUrl} alt={company.name} fill className="object-contain" />
                 ) : (
                   <div className="flex h-full items-center justify-center">
                     <Building2 className="h-12 w-12 text-muted-foreground" />
@@ -121,19 +122,52 @@ export function CompanyDetailContents({ company, role }: CompanyDetailContentsPr
       {/* Stores Section */}
       <Element name="stores">
         <Card className="border-none">
-          <CardHeader title="Stores" titleSize="lg" />
+          <CardHeader title="Stores" titleSize="lg" description={`Total Stores: ${company.stores.length}`} />
           <CardContent>
-            <p className="text-muted-foreground">No stores registered yet.</p>
+            {company.stores.length > 0 ? (
+              <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
+                {[...company.stores].map((store) => (
+                  <ThumbnailWithNameCard
+                    key={store.id}
+                    name={store.name}
+                    thumbnailUrl={store.thumbnailUrl}
+                    href={`/employer/companies/${company.id}/stores/${store.id}`}
+                    size="lg"
+                    aspect="video"
+                    rounded="lg"
+                    fallbackIcon={Store}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted-foreground">No stores registered yet.</p>
+            )}
           </CardContent>
         </Card>
       </Element>
 
-      {/* Employees Section */}
-      <Element name="employees">
+      {/* Members Section */}
+      <Element name="members">
         <Card className="border-none">
-          <CardHeader title="Employees" titleSize="lg" />
+          <CardHeader title="Members" titleSize="lg" description={`Total Members: ${company.employees.length}`} />
           <CardContent>
-            <p className="text-muted-foreground">No employees assigned yet.</p>
+            {company.employees.length > 0 ? (
+              <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
+                {company.employees.map((employee) => (
+                  <ThumbnailWithNameCard
+                    key={employee.id}
+                    name={employee.user.name}
+                    thumbnailUrl={employee.user.image}
+                    size="sm"
+                    aspect="square"
+                    rounded="full"
+                    fallbackIcon={User}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted-foreground">No employees assigned yet.</p>
+            )}
           </CardContent>
         </Card>
       </Element>

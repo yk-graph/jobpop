@@ -21,7 +21,7 @@ export default async function EmployerCompanyPage() {
   }
 
   if (companies.length === 1) {
-    redirect(`/employer/companies/${companies[0].id}`)
+    redirect(`/employer/companies/${companies[0].id}/dashboard`)
   }
 
   return (
@@ -34,7 +34,7 @@ export default async function EmployerCompanyPage() {
         <div className="space-y-4">
           {companies.map((company) => (
             <Button key={company.id} variant="outline" className="p-10" asChild>
-              <Link href={`/employer/companies/${company.id}`} className="text-xl font-semibold">
+              <Link href={`/employer/companies/${company.id}/dashboard`} className="text-xl font-semibold">
                 {company.name}
               </Link>
             </Button>

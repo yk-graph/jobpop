@@ -6,7 +6,11 @@ export async function getCompanyById(companyId: string): Promise<CompanyWithStor
     where: { id: companyId },
     include: {
       stores: true,
-      employees: true,
+      employees: {
+        include: {
+          user: true,
+        },
+      },
     },
   })
 
