@@ -83,5 +83,10 @@
   // YAML用
   "[yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // Prisma拡張機能：生成されたスキーマ（node_modules内）を無視し、ソースのみを対象にする
+  "files.exclude": {
+    "**/node_modules/.prisma": true
   }
 }
