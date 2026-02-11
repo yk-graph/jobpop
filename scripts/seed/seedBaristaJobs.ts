@@ -8,9 +8,10 @@
  *   1. data/search-result.filtered-location.json から住所のある求人を10件抽出
  *   2. jobpop_inc. の会社にStoreを10件作成
  *   3. 各StoreにJobを作成
+ *   4. 各StoreにEmployeeを作成（EMPLOYEE_USER_ID, EMPLOYEE_ROLEで設定）
  */
 
-import { PrismaClient, EmploymentType, SalaryType, JobStatus } from '@prisma/client'
+import { PrismaClient, EmploymentType, SalaryType, JobStatus, EmployeeRole } from '@prisma/client'
 import * as fs from 'fs'
 import * as path from 'path'
 import 'dotenv/config'
@@ -20,6 +21,10 @@ const GOOGLE_MAPS_API_KEY = process.env.PRIVATE_GOOGLE_MAPS_API_KEY
 
 const INPUT_FILE = path.join(__dirname, '../../data/search-result.filtered-location.json')
 const COMPANY_ID = 'jobpop_inc.'
+
+// Employee設定（必要に応じて変更）
+const EMPLOYEE_USER_ID = 'JzDbOjFzHABNDH3d03lUvJcjRXEGLCQJ'
+const EMPLOYEE_ROLE = EmployeeRole.OWNER
 
 interface JobListing {
   id: string
@@ -219,6 +224,17 @@ async function main() {
         },
       })
       console.log(`   求人: ${jobRecord.title} (ID: ${jobRecord.id})`)
+
+      // 5. Employee を作成（Storeに紐付け）
+      const employee = await prisma.employee.create({
+        data: {
+          userId: EMPLOYEE_USER_ID,
+          companyId: COMPANY_ID,
+          storeId: store.id,
+          role: EMPLOYEE_ROLE,
+        },
+      })
+      console.log(`   従業員: ${employee.id} (Role: ${employee.role})`)
 
       successCount++
       console.log(`   ✅ 登録完了\n`)
