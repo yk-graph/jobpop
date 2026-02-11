@@ -3,6 +3,7 @@
 import { Job, JobStatus, MstExperienceType, Store } from '@prisma/client'
 
 import { prisma } from '@/lib/prisma'
+import { handleServerError } from '@/utils'
 
 export type GetJobsResult = Job & {
   experience: MstExperienceType
@@ -20,7 +21,6 @@ export async function getJobs(): Promise<GetJobsResult[]> {
     })
     return jobs
   } catch (error) {
-    console.error('Error fetching jobs:', error)
-    throw new Error('failed to fetch')
+    throw handleServerError(error, 'getJobs')
   }
 }

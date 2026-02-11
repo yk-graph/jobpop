@@ -50,7 +50,7 @@ export const auth = betterAuth({
 
   // Tips: Userテーブルの追加フィールド FYI: https://www.better-auth.com/docs/concepts/typescript#additional-fields
   user: {
-    modelName: 'users', // DBテーブル名を "users" に変更（デフォルトは "User"）
+    modelName: 'user', // Prismaクライアントのアクセサ名（prisma.user）を指定。DBテーブル名（users）ではない
     additionalFields: {
       firstName: {
         type: 'string',
@@ -67,7 +67,7 @@ export const auth = betterAuth({
 
   // セッション管理
   session: {
-    modelName: 'sessions', // DBテーブル名を "sessions" に変更（デフォルトは "Session"）
+    modelName: 'session',
     expiresIn: 60 * 60 * 24 * 7, // セッションの有効期限（7日間）
     updateAge: 60 * 60 * 24, // セッションの更新間隔（1日ごとに更新）
     cookieCache: {
@@ -79,14 +79,14 @@ export const auth = betterAuth({
 
   // 同じメールアドレスで複数の認証方法を許可（メール/パスワード + Google など）
   account: {
-    modelName: 'accounts', // DBテーブル名を "accounts" に変更（デフォルトは "Account"）
+    modelName: 'account',
     accountLinking: {
       enabled: true,
     },
   },
 
   verification: {
-    modelName: 'verifications', // DBテーブル名を "verifications" に変更（デフォルトは "Verification"）
+    modelName: 'verification', // Prismaクライアントのアクセサ名（prisma.verification）を指定。DBテーブル名（verifications）ではない
   },
 
   plugins: [
