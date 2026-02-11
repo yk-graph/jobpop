@@ -1,4 +1,4 @@
-import { Store } from '@prisma/client'
+import { JobStatus, Store } from '@prisma/client'
 
 import { prisma } from '@/lib/prisma'
 import { StoreWithJobs } from '@/types'
@@ -18,7 +18,7 @@ export async function getStoresByCompanyId(companyId: string): Promise<StoreWith
     where: { companyId },
     include: {
       jobs: {
-        where: { isActive: true }, // アクティブな求人のみをカウント
+        where: { status: JobStatus.PUBLISHED }, // 公開中の求人のみを含める
         include: {
           _count: {
             select: { applications: true },

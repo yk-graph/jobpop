@@ -1,6 +1,6 @@
 'use server'
 
-import { Job, MstExperienceType, Store } from '@prisma/client'
+import { Job, JobStatus, MstExperienceType, Store } from '@prisma/client'
 
 import { prisma } from '@/lib/prisma'
 
@@ -12,7 +12,7 @@ export type GetJobsResult = Job & {
 export async function getJobs(): Promise<GetJobsResult[]> {
   try {
     const jobs = await prisma.job.findMany({
-      where: { isActive: true },
+      where: { status: JobStatus.PUBLISHED }, // 公開中の求人のみを取得
       include: {
         experience: true,
         store: true,
@@ -21,6 +21,6 @@ export async function getJobs(): Promise<GetJobsResult[]> {
     return jobs
   } catch (error) {
     console.error('Error fetching jobs:', error)
-    throw new Error('fait to fetch')
+    throw new Error('failed to fetch')
   }
 }
