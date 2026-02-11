@@ -45,6 +45,8 @@ next-env.d.ts
 certificates
 
 # scraper
-scripts/scraper/*.json
 scripts/scraper/debug-*.html
 debug-page-*.html
+
+# data
+data/**/*.json
