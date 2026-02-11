@@ -1,0 +1,70 @@
+// ============================================
+// 求人アプリ機能テーブル
+// ============================================
+
+model Job {
+  id              String         @id @default(nanoid(8)) // 求人の一意識別子
+  storeId         String         @map("store_id") // 求人を掲載した店舗ID
+  mstExperienceId String         @db.VarChar(50)
+  title           String         @db.VarChar(255) // 求人タイトル ex: Looking for opening staff and experienced barista!
+  description     String         @db.Text // 求人の詳細説明
+  thumbnailUrl    String         @map("thumbnail_url") @db.VarChar(255) // 求人のサムネイル画像URL
+  salary          String         @db.VarChar(100) // 給与情報 ex: $18/hour, $4000/month
+  salaryType      SalaryType     @map("salary_type") // 給与タイプ（時給、月給、年俸）
+  employmentType  EmploymentType @map("employment_type") // 雇用形態（正社員、契約社員など）
+  weeklyHoursMin  Int?           @map("weekly_hours_min") // 週の労働時間（最小）
+  weeklyHoursMax  Int?           @map("weekly_hours_max") // 週の労働時間（最大）
+  status          JobStatus      @default(DRAFT) @map("status") // 下書き/公開/停止/終了
+  publishedAt     DateTime?      @map("published_at") // 公開開始（PUBLISHEDになった日時）
+  expiresAt       DateTime?      @map("expires_at") // 掲載終了（自動で非公開にするなら使用）
+  createdAt       DateTime       @default(now()) @map("created_at") // 求人作成日時
+  updatedAt       DateTime       @updatedAt @map("updated_at") // 求人更新日時
+
+  // リレーション
+  store                Store                 @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  experience           MstExperienceType     @relation(fields: [mstExperienceId], references: [id])
+  applications         JobApplication[] // この求人への応募一覧
+  scheduleRequirements ScheduleRequirement[] // この求人のスケジュール要件一覧
+
+  @@index([storeId, status]) // 店舗ごとに「公開中(PUBLISHED)の求人一覧」を取得する検索が高速になる
+  @@index([status, publishedAt]) // 公開中求人を「新着順」で一覧表示する検索が高速になる
+  @@index([expiresAt]) // 掲載期限が切れた求人を抽出する検索が高速になる（バッチ処理向け）
+  @@map("jobs")
+}
+
+model ScheduleRequirement {
+  id    Int    @id @default(autoincrement()) // スケジュール要件の一意識別子
+  jobId String @map("job_id") // 求人ID
+
+  dayGroup  DayGroup            @map("day_group") // 縦軸（平日/週末/祝日）
+  timeOfDay TimeOfDay           @map("time_of_day") // 横軸（朝/昼/夕方/夜）
+  priority  RequirementPriority @map("priority") // NICE/NEED/MUST
+
+  createdAt DateTime @default(now()) @map("created_at") // 作成日時
+  updatedAt DateTime @updatedAt @map("updated_at") // 更新日時
+
+  // リレーション
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, dayGroup, timeOfDay]) // 1求人につき同じセルは1つだけ
+  @@index([jobId])
+  @@index([dayGroup, timeOfDay, priority]) // 検索・フィルタ用インデックス
+  @@map("schedule_requirements")
+}
+
+model JobApplication {
+  id        Int               @id @default(autoincrement()) // 応募履歴の一意識別子
+  userId    String            @map("user_id") // 応募したユーザーID
+  jobId     String            @map("job_id") // 応募先の求人ID
+  status    ApplicationStatus @default(APPLIED) // 応募のステータス（応募済み、選考中など）
+  appliedAt DateTime          @default(now()) @map("applied_at") // 応募日時
+
+  // リレーション
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade) // ユーザー削除時に応募履歴も削除
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade) // 求人削除時に応募履歴も削除
+
+  @@unique([userId, jobId]) // 同じユーザーが同じ求人に複数回応募することを防ぐ
+  @@index([userId]) // ユーザーの応募履歴を検索しやすくするインデックス
+  @@index([jobId]) // 求人への応募者一覧を検索しやすくするインデックス
+  @@map("job_applications")
+}

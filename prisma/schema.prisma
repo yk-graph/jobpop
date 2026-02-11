@@ -79,277 +79,38 @@ enum EmployeeRole {
   STAFF // スタッフ（閲覧のみ、または限定的な編集権限）
 }
 
-// ============================================
-// Better Auth 認証テーブル
-// ============================================
-
-model User {
-  id            String   @id // Better Authがアプリケーション側でIDを生成
-  name          String // ユーザー名（必須）
-  firstName     String   @map("first_name") // 名
-  lastName      String   @map("last_name") // 姓
-  email         String   @unique // メールアドレス（必須・一意）
-  emailVerified Boolean  @default(false) @map("email_verified") // メール認証済みかどうか（Boolean）
-  image         String?  @db.Text // プロフィール画像URL
-  createdAt     DateTime @default(now()) @map("created_at") // アカウント作成日時
-  updatedAt     DateTime @updatedAt @map("updated_at") // アカウント更新日時
-
-  // リレーション
-  accounts        Account[] // 紐付けられた認証アカウント（Google, Facebook, credentials等）
-  sessions        Session[] // アクティブなセッション情報
-  profile         Profile? // ユーザープロフィール情報
-  userExperiences UserExperience[] // ユーザーの職務経験一覧
-  softSkills      UserSoftSkill[] // ユーザーのソフトスキル一覧
-  applications    JobApplication[] // ユーザーが応募した求人
-  employees       Employee[] // 雇用者として所属する企業・店舗一覧
-
-  @@map("user")
+enum DayOfWeek {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
 }
 
-model Session {
-  id        String   @id // Better Authがアプリケーション側でIDを生成
-  token     String   @unique // セッション識別用トークン
-  expiresAt DateTime @map("expires_at") // セッションの有効期限
-  ipAddress String?  @map("ip_address") // 接続元IPアドレス
-  userAgent String?  @map("user_agent") @db.Text // ユーザーエージェント情報
-  userId    String   @map("user_id") // セッションに紐付くユーザーID
-  createdAt DateTime @default(now()) @map("created_at") // セッション作成日時
-  updatedAt DateTime @updatedAt @map("updated_at") // セッション更新日時
-
-  // リレーション
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("session")
+enum DayGroup {
+  WEEKDAYS // Mon-Fri
+  WEEKENDS // Sat-Sun
+  HOLIDAYS // Holidays (as a concept)
 }
 
-model Account {
-  id                    String    @id // Better Authがアプリケーション側でIDを生成
-  accountId             String    @map("account_id") // プロバイダー側のアカウントID（OAuthの場合）またはuserId（credentials）
-  providerId            String    @map("provider_id") // 認証プロバイダーID（"google", "facebook", "credential"等）
-  userId                String    @map("user_id") // 紐付けられるユーザーID
-  accessToken           String?   @map("access_token") @db.Text // OAuthアクセストークン
-  refreshToken          String?   @map("refresh_token") @db.Text // OAuthリフレッシュトークン
-  idToken               String?   @map("id_token") @db.Text // OpenID ConnectのIDトークン
-  accessTokenExpiresAt  DateTime? @map("access_token_expires_at") // アクセストークンの有効期限
-  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at") // リフレッシュトークンの有効期限
-  scope                 String? // 許可されたスコープ（権限範囲）
-  password              String? // ハッシュ化されたパスワード（credentials認証の場合）
-  createdAt             DateTime  @default(now()) @map("created_at") // アカウント作成日時
-  updatedAt             DateTime  @updatedAt @map("updated_at") // アカウント更新日時
-
-  // リレーション
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("account")
+enum TimeOfDay {
+  MORNING
+  AFTERNOON
+  EVENING
+  NIGHT
 }
 
-model Verification {
-  id         String    @id // Better Authがアプリケーション側でIDを生成
-  identifier String // トークンの識別子（メールアドレス等）
-  value      String    @db.Text // 検証値（トークン文字列）
-  expiresAt  DateTime  @map("expires_at") // トークンの有効期限
-  createdAt  DateTime? @default(now()) @map("created_at") // 作成日時
-  updatedAt  DateTime? @updatedAt @map("updated_at") // 更新日時
-
-  @@map("verification")
+enum RequirementPriority {
+  NICE
+  NEED
+  MUST
 }
 
-// ============================================
-// ユーザープロフィール
-// ============================================
-
-model Profile {
-  id          Int      @id @default(autoincrement()) // プロフィールの一意識別子
-  userId      String   @unique @map("user_id") // 紐付けられるユーザーID
-  countryCode String   @map("country_code") @db.Char(2) // "JP", "US", "CA"などの国コード
-  birthYear   Int      @map("birth_year") // 生年
-  visaType    VisaType @map("visa_type") // ビザの種類
-  bio         String?  @db.Text // 自己紹介文（任意）
-  linkedin    String?  @db.VarChar(100) // LinkedInプロフィール（任意）
-  instagram   String?  @db.VarChar(100) // Instagramハンドル（任意）
-  whatsapp    String?  @db.VarChar(100) // WhatsApp連絡先（任意）
-  createdAt   DateTime @default(now()) @map("created_at") // プロフィール作成日時
-  updatedAt   DateTime @updatedAt @map("updated_at") // プロフィール更新日時
-
-  // リレーション
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("profiles")
-}
-
-// ============================================
-// 求職者の経験・スキル管理
-// ============================================
-
-// 経験タイプのマスタテーブル
-model MstExperienceType {
-  id       String       @id @db.VarChar(50) // 経験タイプの一意識別子（例: "food_barista"）
-  industry IndustryType @map("industry_type") // 業界タイプ
-  title    String       @db.VarChar(255) // 職務タイトル（例: "Barista"）
-
-  // リレーション
-  userExperiences UserExperience[] // このタイプの経験を持つユーザー一覧
-  jobs            Job[] // この経験タイプが必要な求人一覧
-
-  @@index([industry]) // 業界別での検索用インデックス
-  @@map("mst_experience_types")
-}
-
-// ユーザーの経験（中間テーブル）
-model UserExperience {
-  id               Int      @id @default(autoincrement()) // ユーザー経験の一意識別子
-  userId           String   @map("user_id") // ユーザーID
-  experienceTypeId String   @map("experience_type_id") @db.VarChar(50) // 経験タイプID
-  createdAt        DateTime @default(now()) @map("created_at") // 作成日時
-
-  // リレーション
-  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  experienceType MstExperienceType @relation(fields: [experienceTypeId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, experienceTypeId]) // 同じユーザーが同じ経験タイプを重複登録することを防ぐ
-  @@index([userId]) // ユーザーごとの検索用インデックス
-  @@map("user_experiences")
-}
-
-model UserSoftSkill {
-  id          Int       @id @default(autoincrement()) // ユーザー経験の一意識別子
-  userId      String    @map("user_id") // ユーザーID
-  skill       SoftSkill // ソフトスキルの種類
-  description String?   @db.Text // スキルの説明（任意）
-  createdAt   DateTime  @default(now()) @map("created_at") // 作成日時
-
-  // リレーション
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, skill]) // 同じユーザーが同じソフトスキルを重複登録することを防ぐ
-  @@index([userId]) // ユーザーごとの検索用インデックス
-  @@map("user_soft_skills")
-}
-
-// ============================================
-// 雇用者側（Company/Store/Employee）
-// ============================================
-
-// 企業・ブランド（例: Starbucks, Tim Hortons）
-model Company {
-  id            String   @id @db.VarChar(32) // 会社名が一意識別子となる
-  name          String   @db.VarChar(255) // 企業名（例: "Starbucks"）
-  description   String?  @db.Text // 企業説明
-  logoUrl       String?  @map("logo_url") @db.VarChar(255)
-  website       String?  @db.VarChar(255)
-  postalCode    String   @map("postal_code") @db.VarChar(20) // "V5H 4J2"
-  country       String   @default("Canada") @db.VarChar(100) // "Canada"
-  province      String   @db.VarChar(100) // "BC"
-  city          String   @db.VarChar(100) // "Burnaby"
-  streetAddress String   @map("street_address") @db.VarChar(255) // "4800 Kingsway"
-  floor         String?  @db.VarChar(50) // "B1", "Ground Floor"
-  unit          String?  @db.VarChar(50) // "Shop 205"
-  phoneNumber   String   @map("phone_number") @db.VarChar(50)
-  isActive      Boolean  @default(true) @map("is_active")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-
-  // リレーション
-  stores    Store[] // この企業が運営する店舗一覧
-  employees Employee[] // この企業に所属する従業員一覧
-
-  @@map("companies")
-}
-
-// 店舗（例: Starbucks Robson Street Store）
-model Store {
-  id            String   @id @default(nanoid(8))
-  companyId     String   @map("company_id")
-  name          String   @db.VarChar(255) // 店舗名（例: "Robson Street Store"）
-  description   String?  @db.Text // 店舗情報の説明
-  thumbnailUrl  String?  @map("thumbnail_url") @db.VarChar(255)
-  lat           Float // 店舗の緯度
-  lng           Float // 店舗の経度
-  postalCode    String   @map("postal_code") @db.VarChar(20) // "V5H 4J2"
-  country       String   @default("Canada") @db.VarChar(100) // "Canada"
-  province      String   @db.VarChar(100) // "BC"
-  city          String   @db.VarChar(100) // "Burnaby"
-  streetAddress String   @map("street_address") @db.VarChar(255) // "4800 Kingsway"
-  floor         String?  @db.VarChar(50) // "B1", "Ground Floor"
-  unit          String?  @db.VarChar(50) // "Shop 205"
-  phoneNumber   String?  @map("phone_number") @db.VarChar(50)
-  isActive      Boolean  @default(true) @map("is_active")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-
-  // リレーション
-  company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  jobs      Job[] // この店舗が掲載する求人一覧
-  employees Employee[] // この店舗で働く従業員一覧
-
-  @@index([companyId])
-  @@index([lat, lng]) // 地図検索用インデックス
-  @@index([postalCode]) // 郵便番号検索用
-  @@map("stores")
-}
-
-// 従業員（企業・店舗への所属を管理）
-model Employee {
-  id        String       @id @db.VarChar(48) // StoreId_UserId を組み合わせた一意識別子 ex: "store123_user456"
-  userId    String       @map("user_id")
-  companyId String       @map("company_id")
-  storeId   String?      @map("store_id") // NULLの場合は企業全体の従業員
-  role      EmployeeRole @default(STAFF)
-  createdAt DateTime     @default(now()) @map("created_at")
-  updatedAt DateTime     @updatedAt @map("updated_at")
-
-  // リレーション
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, companyId, storeId]) // この組み合わせでのみユニーク
-  @@index([userId])
-  @@index([companyId])
-  @@index([storeId])
-  @@map("employees")
-}
-
-// ============================================
-// 求人アプリ機能テーブル
-// ============================================
-
-model Job {
-  id              String         @id @default(nanoid(8)) // 求人の一意識別子
-  storeId         String         @map("store_id") // 求人を掲載した店舗ID
-  mstExperienceId String         @db.VarChar(50)
-  title           String         @db.VarChar(255) // 求人タイトル ex: Looking for opening staff and experienced barista!
-  description     String         @db.Text // 求人の詳細説明
-  thumbnailUrl    String         @map("thumbnail_url") @db.VarChar(255) // 求人のサムネイル画像URL
-  salary          String         @db.VarChar(100) // 給与情報 ex: $18/hour, $4000/month
-  salaryType      SalaryType     @map("salary_type") // 給与タイプ（時給、月給、年俸）
-  employmentType  EmploymentType @map("employment_type") // 雇用形態（正社員、契約社員など）
-  isActive        Boolean        @default(true) @map("is_active") // 求人の公開状態（true: 公開中、false: 非公開）
-  createdAt       DateTime       @default(now()) @map("created_at") // 求人作成日時
-  updatedAt       DateTime       @updatedAt @map("updated_at") // 求人更新日時
-
-  // リレーション
-  store        Store             @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  experience   MstExperienceType @relation(fields: [mstExperienceId], references: [id])
-  applications JobApplication[] // この求人への応募一覧
-
-  @@index([storeId, isActive]) // 店舗ごとの公開中求人を検索しやすくするインデックス
-  @@map("jobs")
-}
-
-model JobApplication {
-  id        Int               @id @default(autoincrement()) // 応募履歴の一意識別子
-  userId    String            @map("user_id") // 応募したユーザーID
-  jobId     String            @map("job_id") // 応募先の求人ID
-  status    ApplicationStatus @default(APPLIED) // 応募のステータス（応募済み、選考中など）
-  appliedAt DateTime          @default(now()) @map("applied_at") // 応募日時
-
-  // リレーション
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade) // ユーザー削除時に応募履歴も削除
-  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade) // 求人削除時に応募履歴も削除
-
-  @@unique([userId, jobId]) // 同じユーザーが同じ求人に複数回応募することを防ぐ
-  @@index([userId]) // ユーザーの応募履歴を検索しやすくするインデックス
-  @@index([jobId]) // 求人への応募者一覧を検索しやすくするインデックス
-  @@map("job_applications")
+enum JobStatus {
+  DRAFT // 下書き（非公開）
+  PUBLISHED // 公開中
+  PAUSED // 一時停止（非公開）
+  CLOSED // 募集終了（非公開）
 }

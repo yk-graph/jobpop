@@ -1,0 +1,104 @@
+// ============================================
+// 雇用者側（Company/Store/Employee）
+// ============================================
+
+// 企業・ブランド（例: Starbucks, Tim Hortons）
+model Company {
+  id            String   @id @db.VarChar(32) // 会社名が一意識別子となる
+  name          String   @db.VarChar(255) // 企業名（例: "Starbucks"）
+  description   String?  @db.Text // 企業説明
+  logoUrl       String?  @map("logo_url") @db.VarChar(255)
+  website       String?  @db.VarChar(255)
+  postalCode    String   @map("postal_code") @db.VarChar(20) // "V5H 4J2"
+  country       String   @default("Canada") @db.VarChar(100) // "Canada"
+  province      String   @db.VarChar(100) // "BC"
+  city          String   @db.VarChar(100) // "Burnaby"
+  streetAddress String   @map("street_address") @db.VarChar(255) // "4800 Kingsway"
+  floor         String?  @db.VarChar(50) // "B1", "Ground Floor"
+  unit          String?  @db.VarChar(50) // "Shop 205"
+  phoneNumber   String   @map("phone_number") @db.VarChar(50)
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // リレーション
+  stores    Store[] // この企業が運営する店舗一覧
+  employees Employee[] // この企業に所属する従業員一覧
+
+  @@map("companies")
+}
+
+// 店舗（例: Starbucks Robson Street Store）
+model Store {
+  id            String   @id @default(nanoid(8))
+  companyId     String   @map("company_id")
+  name          String   @db.VarChar(255) // 店舗名（例: "Robson Street Store"）
+  description   String?  @db.Text // 店舗情報の説明
+  thumbnailUrl  String?  @map("thumbnail_url") @db.VarChar(255)
+  website       String?  @db.VarChar(255)
+  lat           Float // 店舗の緯度
+  lng           Float // 店舗の経度
+  postalCode    String   @map("postal_code") @db.VarChar(20) // "V5H 4J2"
+  country       String   @default("Canada") @db.VarChar(100) // "Canada"
+  province      String   @db.VarChar(100) // "BC"
+  city          String   @db.VarChar(100) // "Burnaby"
+  streetAddress String   @map("street_address") @db.VarChar(255) // "4800 Kingsway"
+  floor         String?  @db.VarChar(50) // "B1", "Ground Floor"
+  unit          String?  @db.VarChar(50) // "Shop 205"
+  phoneNumber   String?  @map("phone_number") @db.VarChar(50)
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // リレーション
+  company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  jobs          Job[] // この店舗が掲載する求人一覧
+  employees     Employee[] // この店舗で働く従業員一覧
+  businessHours BusinessHour[] // この店舗の営業時間
+
+  @@index([companyId])
+  @@index([lat, lng]) // 地図検索用インデックス
+  @@index([postalCode]) // 郵便番号検索用
+  @@map("stores")
+}
+
+model BusinessHour {
+  id          Int       @id @default(autoincrement()) // 営業時間の一意識別子
+  storeId     String    @map("store_id") // 店舗ID
+  dayOfWeek   DayOfWeek @map("day_of_week") // 曜日
+  isClosed    Boolean   @default(false) @map("is_closed") // trueの場合、その曜日は定休日
+  openTime    DateTime? @map("open_time") @db.Time // 開店時間（TIME型）
+  closeTime   DateTime? @map("close_time") @db.Time // 閉店時間（TIME型）
+  isOvernight Boolean   @default(false) @map("is_overnight") // 閉店時間が翌日に跨ぐ場合 true（例: 18:00-02:00）
+  createdAt   DateTime  @default(now()) @map("created_at") // 作成日時
+  updatedAt   DateTime  @updatedAt @map("updated_at") // 更新日時
+
+  // リレーション
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@unique([storeId, dayOfWeek]) // 1店舗につき曜日ごとに1レコード
+  @@index([storeId])
+  @@map("business_hours")
+}
+
+// 従業員（企業・店舗への所属を管理）
+model Employee {
+  id        String       @id @db.VarChar(48) // StoreId_UserId を組み合わせた一意識別子 ex: "store123_user456"
+  userId    String       @map("user_id")
+  companyId String       @map("company_id")
+  storeId   String?      @map("store_id") // NULLの場合は企業全体の従業員
+  role      EmployeeRole @default(STAFF)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  // リレーション
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, companyId, storeId]) // この組み合わせでのみユニーク
+  @@index([userId])
+  @@index([companyId])
+  @@index([storeId])
+  @@map("employees")
+}

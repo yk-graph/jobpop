@@ -1,0 +1,74 @@
+// ============================================
+// Better Auth 認証テーブル
+// ============================================
+
+model User {
+  id            String   @id // Better Authがアプリケーション側でIDを生成
+  name          String // ユーザー名（必須）
+  firstName     String   @map("first_name") // 名
+  lastName      String   @map("last_name") // 姓
+  email         String   @unique // メールアドレス（必須・一意）
+  emailVerified Boolean  @default(false) @map("email_verified") // メール認証済みかどうか（Boolean）
+  image         String?  @db.Text // プロフィール画像URL
+  createdAt     DateTime @default(now()) @map("created_at") // アカウント作成日時
+  updatedAt     DateTime @updatedAt @map("updated_at") // アカウント更新日時
+
+  // リレーション
+  accounts        Account[] // 紐付けられた認証アカウント（Google, Facebook, credentials等）
+  sessions        Session[] // アクティブなセッション情報
+  profile         Profile? // ユーザープロフィール情報
+  userExperiences UserExperience[] // ユーザーの職務経験一覧
+  softSkills      UserSoftSkill[] // ユーザーのソフトスキル一覧
+  applications    JobApplication[] // ユーザーが応募した求人
+  employees       Employee[] // 雇用者として所属する企業・店舗一覧
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id // Better Authがアプリケーション側でIDを生成
+  token     String   @unique // セッション識別用トークン
+  expiresAt DateTime @map("expires_at") // セッションの有効期限
+  ipAddress String?  @map("ip_address") // 接続元IPアドレス
+  userAgent String?  @map("user_agent") @db.Text // ユーザーエージェント情報
+  userId    String   @map("user_id") // セッションに紐付くユーザーID
+  createdAt DateTime @default(now()) @map("created_at") // セッション作成日時
+  updatedAt DateTime @updatedAt @map("updated_at") // セッション更新日時
+
+  // リレーション
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id // Better Authがアプリケーション側でIDを生成
+  accountId             String    @map("account_id") // プロバイダー側のアカウントID（OAuthの場合）またはuserId（credentials）
+  providerId            String    @map("provider_id") // 認証プロバイダーID（"google", "facebook", "credential"等）
+  userId                String    @map("user_id") // 紐付けられるユーザーID
+  accessToken           String?   @map("access_token") @db.Text // OAuthアクセストークン
+  refreshToken          String?   @map("refresh_token") @db.Text // OAuthリフレッシュトークン
+  idToken               String?   @map("id_token") @db.Text // OpenID ConnectのIDトークン
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at") // アクセストークンの有効期限
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at") // リフレッシュトークンの有効期限
+  scope                 String? // 許可されたスコープ（権限範囲）
+  password              String? // ハッシュ化されたパスワード（credentials認証の場合）
+  createdAt             DateTime  @default(now()) @map("created_at") // アカウント作成日時
+  updatedAt             DateTime  @updatedAt @map("updated_at") // アカウント更新日時
+
+  // リレーション
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
+}
+
+model Verification {
+  id         String    @id // Better Authがアプリケーション側でIDを生成
+  identifier String // トークンの識別子（メールアドレス等）
+  value      String    @db.Text // 検証値（トークン文字列）
+  expiresAt  DateTime  @map("expires_at") // トークンの有効期限
+  createdAt  DateTime? @default(now()) @map("created_at") // 作成日時
+  updatedAt  DateTime? @updatedAt @map("updated_at") // 更新日時
+
+  @@map("verifications")
+}

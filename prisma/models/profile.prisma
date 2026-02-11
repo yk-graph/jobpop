@@ -1,0 +1,67 @@
+// ============================================
+// ユーザープロフィール・経験・スキル管理
+// ============================================
+
+model Profile {
+  id          Int      @id @default(autoincrement()) // プロフィールの一意識別子
+  userId      String   @unique @map("user_id") // 紐付けられるユーザーID
+  countryCode String   @map("country_code") @db.Char(2) // "JP", "US", "CA"などの国コード
+  birthYear   Int      @map("birth_year") // 生年
+  visaType    VisaType @map("visa_type") // ビザの種類
+  bio         String?  @db.Text // 自己紹介文（任意）
+  linkedin    String?  @db.VarChar(100) // LinkedInプロフィール（任意）
+  instagram   String?  @db.VarChar(100) // Instagramハンドル（任意）
+  whatsapp    String?  @db.VarChar(100) // WhatsApp連絡先（任意）
+  createdAt   DateTime @default(now()) @map("created_at") // プロフィール作成日時
+  updatedAt   DateTime @updatedAt @map("updated_at") // プロフィール更新日時
+
+  // リレーション
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+// 経験タイプのマスタテーブル
+model MstExperienceType {
+  id       String       @id @db.VarChar(50) // 経験タイプの一意識別子（例: "food_barista"）
+  industry IndustryType @map("industry_type") // 業界タイプ
+  title    String       @db.VarChar(255) // 職務タイトル（例: "Barista"）
+
+  // リレーション
+  userExperiences UserExperience[] // このタイプの経験を持つユーザー一覧
+  jobs            Job[] // この経験タイプが必要な求人一覧
+
+  @@index([industry]) // 業界別での検索用インデックス
+  @@map("mst_experience_types")
+}
+
+// ユーザーの経験（中間テーブル）
+model UserExperience {
+  id               Int      @id @default(autoincrement()) // ユーザー経験の一意識別子
+  userId           String   @map("user_id") // ユーザーID
+  experienceTypeId String   @map("experience_type_id") @db.VarChar(50) // 経験タイプID
+  createdAt        DateTime @default(now()) @map("created_at") // 作成日時
+
+  // リレーション
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experienceType MstExperienceType @relation(fields: [experienceTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, experienceTypeId]) // 同じユーザーが同じ経験タイプを重複登録することを防ぐ
+  @@index([userId]) // ユーザーごとの検索用インデックス
+  @@map("user_experiences")
+}
+
+model UserSoftSkill {
+  id          Int       @id @default(autoincrement()) // ユーザー経験の一意識別子
+  userId      String    @map("user_id") // ユーザーID
+  skill       SoftSkill // ソフトスキルの種類
+  description String?   @db.Text // スキルの説明（任意）
+  createdAt   DateTime  @default(now()) @map("created_at") // 作成日時
+
+  // リレーション
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skill]) // 同じユーザーが同じソフトスキルを重複登録することを防ぐ
+  @@index([userId]) // ユーザーごとの検索用インデックス
+  @@map("user_soft_skills")
+}
