@@ -34,7 +34,7 @@ export async function createStore(
     const employee = await prisma.employee.findFirst({
       where: {
         userId: session.user.id,
-        companyId: companyId,
+        companyId,
       },
     })
 
@@ -42,23 +42,47 @@ export async function createStore(
       return { success: false, message: 'You are not authorized to create stores for this company' }
     }
 
-    const store = await prisma.store.create({
-      data: {
-        companyId: companyId,
-        name: data.storeName,
-        description: data.storeDescription || null,
-        thumbnailUrl: data.storeThumbnail || null,
-        lat: data.lat || 0,
-        lng: data.lng || 0,
-        postalCode: data.postalCode,
-        country: data.country,
-        province: data.province,
-        city: data.city,
-        streetAddress: data.streetAddress,
-        floor: data.floor || null,
-        unit: data.unit || null,
-        phoneNumber: data.phoneNumber || null,
-      },
+    const store = await prisma.$transaction(async (tx) => {
+      // Step 1: Storeを作成
+      const newStore = await tx.store.create({
+        data: {
+          companyId,
+          name: data.storeName,
+          description: data.storeDescription || null,
+          thumbnailUrl: data.storeThumbnail || null,
+          lat: data.lat || 0,
+          lng: data.lng || 0,
+          postalCode: data.postalCode,
+          country: data.country,
+          province: data.province,
+          city: data.city,
+          streetAddress: data.streetAddress,
+          floor: data.floor || null,
+          unit: data.unit || null,
+          phoneNumber: data.phoneNumber || null,
+        },
+      })
+
+      // Step 2: 作成者のEmployeeを新しいStoreに紐付け
+      if (employee.storeId === null) {
+        // storeIdがnull（企業全体の従業員）→ 既存レコードを更新
+        await tx.employee.update({
+          where: { id: employee.id },
+          data: { storeId: newStore.id },
+        })
+      } else {
+        // 既に別のStoreに所属 → 新しいEmployeeレコードを作成（roleをコピー）
+        await tx.employee.create({
+          data: {
+            userId: session.user.id,
+            companyId,
+            storeId: newStore.id,
+            role: employee.role,
+          },
+        })
+      }
+
+      return newStore
     })
 
     return {

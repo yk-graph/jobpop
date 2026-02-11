@@ -107,7 +107,6 @@ export async function createCompany(
       // Step 2: Create Employee record for current user as OWNER
       await tx.employee.create({
         data: {
-          id: `${company.id}_${userId}`, // StoreId_UserId を組み合わせた一意識別子
           userId: userId,
           companyId: company.id,
           storeId: null,

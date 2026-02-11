@@ -83,7 +83,7 @@ model BusinessHour {
 
 // 従業員（企業・店舗への所属を管理）
 model Employee {
-  id        String       @id @db.VarChar(48) // StoreId_UserId を組み合わせた一意識別子 ex: "store123_user456"
+  id        String       @id @default(nanoid(8))
   userId    String       @map("user_id")
   companyId String       @map("company_id")
   storeId   String?      @map("store_id") // NULLの場合は企業全体の従業員
