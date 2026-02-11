@@ -1,6 +1,7 @@
-import { Company, EmployeeRole } from '@prisma/client'
+import { EmployeeRole } from '@prisma/client'
 
 import { prisma } from '@/lib/prisma'
+import { EmployeeWithUser } from '@/types'
 
 export async function getRolesByUserId(userId: string): Promise<EmployeeRole[] | null> {
   const employees = await prisma.employee.findMany({
@@ -12,7 +13,8 @@ export async function getRolesByUserId(userId: string): Promise<EmployeeRole[] |
     return null
   }
 
-  return employees.map((employee) => employee.role)
+  const roles = employees.map((employee) => employee.role)
+  return roles
 }
 
 export async function getRoleByCompanyIdAndUserId(companyId: string, userId: string): Promise<EmployeeRole | null> {
@@ -33,17 +35,15 @@ export async function getRoleByCompanyIdAndUserId(companyId: string, userId: str
   return employee.role
 }
 
-export async function getCompanyByUserId(userId: string): Promise<Company[] | null> {
+export async function getEmployeesByCompanyId(companyId: string): Promise<EmployeeWithUser[] | null> {
   const employees = await prisma.employee.findMany({
-    where: { userId },
-    select: {
-      company: true,
-    },
+    where: { companyId },
+    include: { user: true },
   })
 
   if (!employees.length) {
     return null
   }
 
-  return employees.map((employee) => employee.company)
+  return employees
 }

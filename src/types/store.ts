@@ -4,3 +4,13 @@ import { Prisma } from '@prisma/client'
 export type StoreWithJobs = Prisma.StoreGetPayload<{
   include: { jobs: { include: { _count: { select: { applications: true } } } } }
 }>
+
+export type StoreDetail = Prisma.StoreGetPayload<{
+  include: {
+    jobs: true
+    businessHours: true
+    employees: {
+      include: { user: { select: { name: true } } }
+    }
+  }
+}>
