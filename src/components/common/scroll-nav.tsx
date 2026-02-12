@@ -1,6 +1,6 @@
 'use client'
 
-import { Link } from 'react-scroll'
+import { useCallback } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -12,18 +12,38 @@ interface ScrollNavItem {
 
 interface ScrollNavProps {
   items: ScrollNavItem[]
-  containerId?: string
+  containerId: string
+  offset?: number
   className?: string
 }
 
-export function ScrollNav({ items, containerId = 'main-scroll-container', className }: ScrollNavProps) {
+export function ScrollNav({ items, containerId, offset = -20, className }: ScrollNavProps) {
+  const handleClick = useCallback(
+    (targetId: string) => {
+      const element = document.getElementById(targetId)
+      const container = document.getElementById(containerId)
+
+      if (!element) return
+
+      if (container) {
+        // コンテナ内でのスクロール
+        const elementPosition = element.offsetTop - container.offsetTop
+        container.scrollTo({
+          top: elementPosition + offset,
+          behavior: 'smooth',
+        })
+      } else {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    },
+    [containerId, offset]
+  )
+
   return (
     <div className={cn('flex gap-4 overflow-x-auto scrollbar-hide', className)}>
       {items.map((item) => (
-        <Button variant="outline" key={item.to}>
-          <Link to={item.to} containerId={containerId} spy={true} smooth="easeInOutQuint" offset={-20} duration={1000}>
-            {item.label}
-          </Link>
+        <Button variant="outline" key={item.to} onClick={() => handleClick(item.to)}>
+          {item.label}
         </Button>
       ))}
     </div>
