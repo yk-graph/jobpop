@@ -36,14 +36,17 @@ export async function getRoleByCompanyIdAndUserId(companyId: string, userId: str
 }
 
 export async function getEmployeesByCompanyId(companyId: string): Promise<EmployeeWithUser[] | null> {
-  const employees = await prisma.employee.findMany({
+  const results = await prisma.employee.findMany({
     where: { companyId },
     include: { user: true },
   })
 
-  if (!employees.length) {
+  if (!results.length) {
     return null
   }
+
+  // Tips: new Map を使って重複を排除するテクニック
+  const employees = Array.from(new Map(results.map((result) => [result.userId, result])).values())
 
   return employees
 }

@@ -1,10 +1,7 @@
-'use client'
-
 import Image from 'next/image'
 import Link from 'next/link'
 import { EmployeeRole, Store } from '@prisma/client'
 import { MapPin, Phone, Store as StoreIcon } from 'lucide-react'
-import { Element } from 'react-scroll'
 
 import { CardHeader } from '@/components/card'
 import { InfoDescription, InfoItem, InfoWrapper, ScrollNav } from '@/components/common'
@@ -43,7 +40,7 @@ export function StoreDetailContents({ store, companyId, role }: StoreDetailConte
       <ScrollNav items={navItems} />
 
       {/* Detail Section */}
-      <Element name="detail">
+      <section id="detail">
         <Card className="border-none">
           <CardHeader
             title={store.name}
@@ -118,27 +115,27 @@ export function StoreDetailContents({ store, companyId, role }: StoreDetailConte
             </div>
           </CardContent>
         </Card>
-      </Element>
+      </section>
 
       {/* Jobs Section */}
-      <Element name="jobs">
+      <section id="jobs">
         <Card className="border-none">
           <CardHeader title="Open Jobs" titleSize="lg" />
           <CardContent>
             <p className="text-muted-foreground">No jobs posted yet.</p>
           </CardContent>
         </Card>
-      </Element>
+      </section>
 
       {/* Applicants Section */}
-      <Element name="applicants">
+      <section id="applicants">
         <Card className="border-none">
           <CardHeader title="Applicants" titleSize="lg" />
           <CardContent>
             <p className="text-muted-foreground">No applicants assigned yet.</p>
           </CardContent>
         </Card>
-      </Element>
+      </section>
     </>
   )
 }
