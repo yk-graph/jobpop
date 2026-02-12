@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { FullScreenContainer, MiddleScreenContainer } from '@/components/containers'
 import { Button } from '@/components/ui/button'
 import { getRequiredSession } from '@/lib/better-auth/server'
-import { getCompanyByUserId } from '@/services'
+import { getCompaniesByUserId } from '@/services'
 
 export default async function EmployerCompanyPage() {
   const session = await getRequiredSession()
@@ -14,7 +14,7 @@ export default async function EmployerCompanyPage() {
     redirect('/')
   }
 
-  const companies = await getCompanyByUserId(session.user.id)
+  const companies = await getCompaniesByUserId(session.user.id)
 
   if (!companies) {
     redirect('/')
