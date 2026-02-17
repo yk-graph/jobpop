@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-import { Input } from '@/components/ui/input'
+import { Input } from './input'
 import { cn } from '../utils'
 
 interface PhoneInputProps extends Omit<React.ComponentProps<'input'>, 'onChange' | 'value'> {

@@ -29,7 +29,7 @@ export function InitialProfileProvider({ children }: InitialProfileProviderProps
       name: '',
       countryCode: '',
       birthYear: new Date().getFullYear() - 20,
-      visaType: 'VISITOR',
+      visaType: 'STUDY_PERMIT',
       experienceTypeIds: [],
       softSkills: [],
     },

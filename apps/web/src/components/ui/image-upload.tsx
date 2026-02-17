@@ -6,8 +6,7 @@ import * as React from 'react'
 import { toast } from 'sonner'
 
 import { generatePresignedUploadUrl, UploadImageResult, Visibility } from '@/actions/image'
-import { Button } from '@/components/ui/button'
-import { cn } from '../utils'
+import { Button, cn } from '@jobpop/ui'
 
 type ImageUploadSize = 'sm' | 'md' | 'lg' | 'xl'
 type ImageUploadAspect = 'square' | 'video'

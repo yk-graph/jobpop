@@ -37,7 +37,7 @@ export function StoreDetailContents({ store, companyId, role }: StoreDetailConte
 
   return (
     <>
-      <ScrollNav items={navItems} />
+      <ScrollNav items={navItems} containerId="employer-main-container" />
 
       {/* Detail Section */}
       <section id="detail">

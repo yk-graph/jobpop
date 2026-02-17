@@ -35,13 +35,14 @@ export default async function EmployerStoreDetailPage({
         <DetailSection companyId={companyId} storeId={storeId} role={role} />
       </Suspense>
 
-      <Suspense fallback={<Skeleton className="h-20 sm:h-40 w-full" />}>
+      {/* TODO: Implement JobsSection and ApplicantsSection */}
+      {/* <Suspense fallback={<Skeleton className="h-20 sm:h-40 w-full" />}>
         <JobsSection companyId={companyId} />
       </Suspense>
 
       <Suspense fallback={<Skeleton className="h-20 sm:h-40 w-full" />}>
         <ApplicantsSection companyId={companyId} />
-      </Suspense>
+      </Suspense> */}
     </EmployerMainContainer>
   )
 }

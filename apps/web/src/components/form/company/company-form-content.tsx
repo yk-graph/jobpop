@@ -5,13 +5,20 @@ import { useTransition } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 import { getAddressFromPostalCode } from '@/actions'
-import { Button } from '@jobpop/ui'
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@jobpop/ui'
-import { ImageUpload } from '@jobpop/ui'
-import { Input } from '@jobpop/ui'
-import { PhoneInput } from '@jobpop/ui'
-import { Spinner } from '@jobpop/ui'
-import { Textarea } from '@jobpop/ui'
+import {
+  Button,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  PhoneInput,
+  Spinner,
+  Textarea,
+} from '@jobpop/ui'
+import { ImageUpload } from '@/components/ui/image-upload'
 import { CreateCompanySchemaType } from '@/lib/zod'
 
 interface CompanyFormContentProps {

@@ -1,6 +1,9 @@
 // Utilities
 export { cn } from './utils'
 
+// Hooks
+export * from './hooks/use-mobile'
+
 // Components
 export * from './components/avatar'
 export * from './components/badge'
@@ -16,7 +19,6 @@ export * from './components/date-picker'
 export * from './components/dialog'
 export * from './components/dropdown-menu'
 export * from './components/form'
-export * from './components/image-upload'
 export * from './components/input'
 export * from './components/label'
 export * from './components/password-input'
