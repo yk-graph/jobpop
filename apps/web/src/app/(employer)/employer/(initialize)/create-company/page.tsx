@@ -1,8 +1,8 @@
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
-import { FullScreenContainer, MiddleScreenContainer } from '@/components/containers'
 import { CreateCompanyForm } from '@/components/form'
+import { FullScreenContainer, MiddleScreenContainer } from '@jobpop/ui'
 import { auth } from '@/lib/better-auth/auth'
 import { getPathname } from '@/utils'
 

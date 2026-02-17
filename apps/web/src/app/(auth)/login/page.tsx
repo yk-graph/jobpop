@@ -2,9 +2,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import { GoogleLogin } from '@/components/button'
-import { MiddleScreenContainer } from '@/components/containers'
 import { LoginForm } from '@/components/form'
-import { Button, DividerLine } from '@jobpop/ui'
+import { Button, DividerLine, MiddleScreenContainer } from '@jobpop/ui'
 
 export default async function LoginPage({
   searchParams,

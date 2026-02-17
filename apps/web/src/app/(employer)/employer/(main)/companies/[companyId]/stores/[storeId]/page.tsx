@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 
-import { MainContainer } from '@/components/containers'
-import { PageHeader, ScrollNav, Skeleton } from '@jobpop/ui'
+import { MainContainer, PageHeader, ScrollNav, Skeleton } from '@jobpop/ui'
 import { getRequiredSession } from '@/lib/better-auth/server'
 import { getRoleByCompanyIdAndUserId } from '@/services'
 

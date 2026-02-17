@@ -1,9 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { MiddleScreenContainer } from '@/components/containers'
 import { RegisterForm } from '@/components/form'
-import { Button } from '@jobpop/ui'
+import { Button, MiddleScreenContainer } from '@jobpop/ui'
 
 export default function RegisterPage() {
   return (

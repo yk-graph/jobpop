@@ -1,4 +1,4 @@
-import { LoadingUI } from '@/components/common'
+import { LoadingUI } from '@jobpop/ui'
 
 export default function Loading() {
   return (

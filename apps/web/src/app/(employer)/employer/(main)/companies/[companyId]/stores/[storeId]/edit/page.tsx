@@ -1,8 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 
-import { MainContainer } from '@/components/containers'
 import { UpdateStoreForm } from '@/components/form'
-import { PageHeader } from '@jobpop/ui'
+import { MainContainer, PageHeader } from '@jobpop/ui'
 import { getRequiredSession } from '@/lib/better-auth/server'
 import { getRoleByCompanyIdAndUserId, getStoreById } from '@/services'
 import { isAdminOrAbove } from '@/utils'

@@ -1,8 +1,6 @@
 import { Suspense } from 'react'
 
-import { MainContainer } from '@/components/containers'
-import { Card, CardContent } from '@jobpop/ui'
-import { Skeleton } from '@jobpop/ui'
+import { Card, CardContent, MainContainer, Skeleton } from '@jobpop/ui'
 
 import { NoticeCard } from './notice-card'
 

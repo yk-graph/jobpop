@@ -1,6 +1,5 @@
-import { MainContainer } from '@/components/containers'
 import { CreateStoreForm } from '@/components/form'
-import { PageHeader } from '@jobpop/ui'
+import { MainContainer, PageHeader } from '@jobpop/ui'
 
 export default async function CreateStorePage({ params }: { params: Promise<{ companyId: string }> }) {
   const companyId = (await params).companyId
