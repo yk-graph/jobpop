@@ -7,8 +7,9 @@ model Profile {
   userId      String   @unique @map("user_id") // 紐付けられるユーザーID
   countryCode String   @map("country_code") @db.Char(2) // "JP", "US", "CA"などの国コード
   birthYear   Int      @map("birth_year") // 生年
-  visaType    VisaType @map("visa_type") // ビザの種類
-  bio         String?  @db.Text // 自己紹介文（任意）
+  visaType       VisaType  @map("visa_type") // ビザの種類
+  visaExpiryDate DateTime? @map("visa_expiry_date") // ビザ有効期限（PR・市民は不要）
+  bio            String?   @db.Text // 自己紹介文（任意）
   linkedin    String?  @db.VarChar(100) // LinkedInプロフィール（任意）
   instagram   String?  @db.VarChar(100) // Instagramハンドル（任意）
   whatsapp    String?  @db.VarChar(100) // WhatsApp連絡先（任意）

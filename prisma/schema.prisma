@@ -12,13 +12,14 @@ datasource db {
 // ============================================
 
 enum VisaType {
-  VISITOR // 訪問者・観光・短期滞在
-  WORK_PERMIT // 就労許可（ワークビザ）
-  STUDY_PERMIT // 学生許可（学生ビザ）
-  WORK_HOLIDAY // ワーキングホリデー（就労＋旅行目的）
-  PERMANENT_RESIDENT // 永住者・定住者ビザ
-  FAMILY_SPONSORSHIP // 家族／配偶者を通じた滞在・移民
-  OTHER // その他（ビジネス目的、難民・人道目的、特別プログラム等）
+  WORK_HOLIDAY // ワーキングホリデー（IEC）- フルタイム就労可
+  STUDY_PERMIT // 学生ビザ - 週24時間まで就労可
+  COOP_STUDY // Coop留学 - 実習期間はフルタイム就労可
+  PGWP // 卒業後就労ビザ（Post-Graduation Work Permit）- フルタイム就労可
+  WORK_PERMIT // その他の就労ビザ（LMIA経由など）- フルタイム就労可
+  PERMANENT_RESIDENT // 永住者（PR）- 就労制限なし
+  CITIZEN // カナダ市民 - 就労制限なし
+  OTHER // その他
 }
 
 enum EmploymentType {
