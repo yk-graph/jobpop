@@ -1,16 +1,12 @@
 {
-  "name": "jobpop",
+  "name": "@jobpop/root",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "prisma generate && next build",
-    "start": "next start",
-    "check": "eslint . && prettier --check .",
-    "format": "eslint . --fix && prettier --write .",
-    "seed:experience": "tsx scripts/seed/seedExperience.ts",
-    "seed:job": "tsx scripts/seed/seedDummyJobs.ts",
-    "scrape:indeed": "tsx scripts/scraper/indeed.ts"
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\""
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.958.0",
@@ -58,6 +54,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
+    "turbo": "^2",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.19.24",
