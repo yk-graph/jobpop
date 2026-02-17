@@ -1,6 +1,6 @@
 'use server'
 
-import { EmployeeRole } from '@prisma/client'
+import { EmployeeRole } from '@jobpop/database'
 import { redirect } from 'next/navigation'
 
 import { prisma } from '@/lib/prisma'

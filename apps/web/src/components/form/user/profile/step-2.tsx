@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { X } from 'lucide-react'
-import type { IndustryType } from '@prisma/client'
+import type { IndustryType } from '@jobpop/database'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'

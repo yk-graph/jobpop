@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client'
+import { Prisma } from '@jobpop/database'
 import { ZodError } from 'zod'
 
 import { ServerActionResult } from '@/types'

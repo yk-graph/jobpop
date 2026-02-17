@@ -1,4 +1,4 @@
-import { Company } from '@prisma/client'
+import { Company } from '@jobpop/database'
 
 import { prisma } from '@/lib/prisma'
 

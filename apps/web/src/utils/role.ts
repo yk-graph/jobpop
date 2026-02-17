@@ -1,4 +1,4 @@
-import { EmployeeRole } from '@prisma/client'
+import { EmployeeRole } from '@jobpop/database'
 
 /**
  * ロールの階層レベル

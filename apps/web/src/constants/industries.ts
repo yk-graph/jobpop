@@ -1,4 +1,4 @@
-import type { IndustryType } from '@prisma/client'
+import type { IndustryType } from '@jobpop/database'
 import type { LucideIcon } from 'lucide-react'
 
 import {

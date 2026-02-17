@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { EmployeeRole } from '@prisma/client'
+import { EmployeeRole } from '@jobpop/database'
 import { ArrowRightLeft, BadgeCheck, Bell, ChevronsUpDown, CreditCard } from 'lucide-react'
 import { toast } from 'sonner'
 

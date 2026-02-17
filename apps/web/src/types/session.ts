@@ -1,4 +1,4 @@
-import { EmployeeRole } from '@prisma/client'
+import { EmployeeRole } from '@jobpop/database'
 
 import { auth } from '@/lib/better-auth/auth'
 

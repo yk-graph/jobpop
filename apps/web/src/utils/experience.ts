@@ -1,4 +1,4 @@
-import type { IndustryType } from '@prisma/client'
+import type { IndustryType } from '@jobpop/database'
 import { INDUSTRY_EXPERIENCES, INDUSTRY_LABELS } from '@/constants'
 import type { ExperienceOption } from '@/types'
 import type { ExperienceTypeData } from '@/constants/experiences'

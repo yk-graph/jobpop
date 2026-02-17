@@ -1,6 +1,6 @@
 // 'use server'
 
-// import { Profile } from '@prisma/client'
+// import { Profile } from '@jobpop/database'
 // import { redirect } from 'next/navigation'
 
 // import { auth } from '@/lib/auth'

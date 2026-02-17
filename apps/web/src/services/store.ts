@@ -1,4 +1,4 @@
-import { JobStatus } from '@prisma/client'
+import { JobStatus } from '@jobpop/database'
 
 import { prisma } from '@/lib/prisma'
 import { StoreDetail, StoreWithJobs } from '@/types'

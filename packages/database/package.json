@@ -1,0 +1,21 @@
+{
+  "name": "@jobpop/database",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.18.0",
+    "@prisma/extension-accelerate": "^2.0.2"
+  },
+  "devDependencies": {
+    "prisma": "^6.18.0",
+    "typescript": "^5.9.3"
+  }
+}

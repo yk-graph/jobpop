@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { VisaType } from '@prisma/client'
+import { VisaType } from '@jobpop/database'
 
 import { Button } from '@/components/ui/button'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'

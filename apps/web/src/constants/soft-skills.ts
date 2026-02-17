@@ -1,4 +1,4 @@
-import type { SoftSkill } from '@prisma/client'
+import type { SoftSkill } from '@jobpop/database'
 
 export interface SoftSkillData {
   id: SoftSkill

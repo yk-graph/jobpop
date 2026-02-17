@@ -1,6 +1,6 @@
 'use server'
 
-import { Company, EmployeeRole } from '@prisma/client'
+import { Company, EmployeeRole } from '@jobpop/database'
 import { headers } from 'next/headers'
 
 import { auth } from '@/lib/better-auth/auth'

@@ -1,4 +1,4 @@
-import { VisaType } from '@prisma/client'
+import { VisaType } from '@jobpop/database'
 
 export const VISA_LABELS = {
   [VisaType.VISITOR]: 'Visitor / Tourist',

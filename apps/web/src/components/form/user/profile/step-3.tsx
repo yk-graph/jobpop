@@ -2,7 +2,7 @@
 
 import { useFormContext } from 'react-hook-form'
 import { X } from 'lucide-react'
-import type { SoftSkill } from '@prisma/client'
+import type { SoftSkill } from '@jobpop/database'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'

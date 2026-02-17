@@ -1,4 +1,4 @@
-import { VisaType } from '@prisma/client'
+import { VisaType } from '@jobpop/database'
 import { CountryCode } from './country'
 
 export interface ProfileFormData {

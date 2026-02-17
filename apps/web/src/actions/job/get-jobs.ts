@@ -1,6 +1,6 @@
 'use server'
 
-import { Job, JobStatus, MstExperienceType, Store } from '@prisma/client'
+import { Job, JobStatus, MstExperienceType, Store } from '@jobpop/database'
 
 import { prisma } from '@/lib/prisma'
 import { handleServerError } from '@/utils'

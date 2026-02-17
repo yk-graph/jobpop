@@ -1,6 +1,6 @@
 'use server'
 
-import { User } from '@prisma/client'
+import { User } from '@jobpop/database'
 
 import { prisma } from '@/lib/prisma'
 import { ServerActionResult } from '@/types'

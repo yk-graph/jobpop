@@ -1,4 +1,4 @@
-import { VisaType, SoftSkill } from '@prisma/client'
+import { VisaType, SoftSkill } from '@jobpop/database'
 import { z } from 'zod'
 
 export const initialProfileSchema = z.object({

@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { EmployeeRole } from '@prisma/client'
+import { EmployeeRole } from '@jobpop/database'
 import { MapPin, Phone, StoreIcon } from 'lucide-react'
 import { notFound } from 'next/navigation'
 

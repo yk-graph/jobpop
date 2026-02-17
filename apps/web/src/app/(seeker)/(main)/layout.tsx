@@ -2,7 +2,7 @@ import { headers } from 'next/headers'
 
 import { MenuButton } from '@/components/button'
 import { auth } from '@/lib/better-auth/auth'
-import { EmployeeRole } from '@prisma/client'
+import { EmployeeRole } from '@jobpop/database'
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   const session = await auth.api.getSession({

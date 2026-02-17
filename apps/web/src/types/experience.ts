@@ -1,4 +1,4 @@
-import type { IndustryType } from '@prisma/client'
+import type { IndustryType } from '@jobpop/database'
 
 // Combobox用の選択肢型
 export interface ExperienceOption {

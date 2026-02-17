@@ -1,4 +1,4 @@
-import { Company, Employee, Prisma, Store, User } from '@prisma/client'
+import { Company, Employee, Prisma, Store, User } from '@jobpop/database'
 
 export type CurrentEmployee = Employee & {
   user: User

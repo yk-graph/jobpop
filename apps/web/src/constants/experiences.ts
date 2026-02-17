@@ -1,4 +1,4 @@
-import type { IndustryType } from '@prisma/client'
+import type { IndustryType } from '@jobpop/database'
 
 // 経験タイプの定義
 export interface ExperienceTypeData {

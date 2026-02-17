@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client'
+import { Prisma } from '@jobpop/database'
 
 // Tips: StoreGetPayloadを使うとPrismaクエリの結果の型を簡単に定義できる
 export type StoreWithJobs = Prisma.StoreGetPayload<{

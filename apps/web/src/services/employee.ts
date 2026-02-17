@@ -1,4 +1,4 @@
-import { EmployeeRole } from '@prisma/client'
+import { EmployeeRole } from '@jobpop/database'
 
 import { prisma } from '@/lib/prisma'
 import { EmployeeWithUser } from '@/types'
