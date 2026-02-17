@@ -1,4 +1,4 @@
-// import { PrismaClient, EmploymentType, SalaryType } from '@prisma/client'
+// import { PrismaClient, EmploymentType, SalaryType } from '@jobpop/database'
 // import { INDUSTRY_EXPERIENCES } from '../src/constants/experiences'
 
 // const prisma = new PrismaClient()

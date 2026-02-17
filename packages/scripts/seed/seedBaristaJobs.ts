@@ -11,7 +11,7 @@
  *   4. 各StoreにEmployeeを作成（EMPLOYEE_USER_ID, EMPLOYEE_ROLEで設定）
  */
 
-import { PrismaClient, EmploymentType, SalaryType, JobStatus, EmployeeRole } from '@prisma/client'
+import { PrismaClient, EmploymentType, SalaryType, JobStatus, EmployeeRole } from '@jobpop/database'
 import * as fs from 'fs'
 import * as path from 'path'
 import 'dotenv/config'

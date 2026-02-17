@@ -1,0 +1,22 @@
+{
+  "name": "@jobpop/scripts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "seed:experience": "tsx seed/seedExperience.ts",
+    "seed:job": "tsx seed/seedDummyJobs.ts",
+    "seed:barista": "tsx seed/seedBaristaJobs.ts",
+    "scrape:indeed": "tsx scraper/indeed.ts"
+  },
+  "dependencies": {
+    "@jobpop/database": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.24",
+    "playwright": "^1.58.2",
+    "playwright-extra": "^4.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

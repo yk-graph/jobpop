@@ -49,7 +49,7 @@ packages/database/src/generated
 certificates
 
 # scraper
-scripts/scraper/debug-*.html
+packages/scripts/scraper/debug-*.html
 debug-page-*.html
 
 # data
