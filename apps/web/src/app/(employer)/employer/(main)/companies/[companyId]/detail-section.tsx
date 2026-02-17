@@ -4,8 +4,7 @@ import { EmployeeRole } from '@jobpop/database'
 import { Building2, Globe, MapPin, Phone } from 'lucide-react'
 import { notFound } from 'next/navigation'
 
-import { CustomCardHeader } from '@/components/card'
-import { Button, Card, CardContent, InfoDescription, InfoItem, InfoWrapper, Separator } from '@jobpop/ui'
+import { Button, Card, CardContent, CustomCardHeader, InfoDescription, InfoItem, InfoWrapper, Separator } from '@jobpop/ui'
 import { getCompanyById } from '@/services'
 import { isAdminOrAbove } from '@/utils'
 

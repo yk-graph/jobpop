@@ -3,8 +3,7 @@ import Link from 'next/link'
 import { EmployeeRole, Store } from '@jobpop/database'
 import { MapPin, Phone, Store as StoreIcon } from 'lucide-react'
 
-import { CustomCardHeader } from '@/components/card'
-import { Button, Card, CardContent, InfoDescription, InfoItem, InfoWrapper, ScrollNav, Separator } from '@jobpop/ui'
+import { Button, Card, CardContent, CustomCardHeader, InfoDescription, InfoItem, InfoWrapper, ScrollNav, Separator } from '@jobpop/ui'
 import { isAdminOrAbove } from '@/utils'
 
 const navItems = [

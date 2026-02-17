@@ -2,7 +2,7 @@
 
 import { FaGoogle } from 'react-icons/fa'
 
-import { IconButton } from '@/components/button'
+import { IconButton } from '@jobpop/ui'
 import { authClient } from '@/lib/better-auth/client'
 
 interface GoogleLoginProps {
