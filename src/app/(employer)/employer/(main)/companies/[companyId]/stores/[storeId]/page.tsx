@@ -1,31 +1,47 @@
-import { notFound } from 'next/navigation'
+import { Suspense } from 'react'
 
-import { PageHeader } from '@/components/common'
+import { PageHeader, ScrollNav } from '@/components/common'
 import { EmployerMainContainer } from '@/components/containers'
+import { Skeleton } from '@/components/ui/skeleton'
 import { getRequiredSession } from '@/lib/better-auth/server'
-import { getRoleByCompanyIdAndUserId, getStoreById } from '@/services'
+import { getRoleByCompanyIdAndUserId } from '@/services'
 
-import { StoreDetailContents } from './store-detail-contents'
+import DetailSection from './detail-section'
+
+const navItems = [
+  { label: 'Detail', to: 'detail' },
+  { label: 'Open Jobs', to: 'jobs' },
+  { label: 'Applicants', to: 'applicants' },
+]
 
 export default async function EmployerStoreDetailPage({
   params,
 }: {
   params: Promise<{ companyId: string; storeId: string }>
 }) {
-  const session = await getRequiredSession()
   const { companyId, storeId } = await params
-  const store = await getStoreById(storeId)
-
-  if (!store) {
-    notFound()
-  }
+  const session = await getRequiredSession()
 
   const role = await getRoleByCompanyIdAndUserId(companyId, session.user.id)
 
   return (
     <EmployerMainContainer>
       <PageHeader title="Store Details" />
-      <StoreDetailContents store={store} companyId={companyId} role={role} />
+
+      <ScrollNav items={navItems} containerId="employer-main-c
+      ontainer" />
+
+      <Suspense fallback={<Skeleton className="h-20 sm:h-40 w-full" />}>
+        <DetailSection companyId={companyId} storeId={storeId} role={role} />
+      </Suspense>
+
+      <Suspense fallback={<Skeleton className="h-20 sm:h-40 w-full" />}>
+        <JobsSection companyId={companyId} />
+      </Suspense>
+
+      <Suspense fallback={<Skeleton className="h-20 sm:h-40 w-full" />}>
+        <ApplicantsSection companyId={companyId} />
+      </Suspense>
     </EmployerMainContainer>
   )
 }
