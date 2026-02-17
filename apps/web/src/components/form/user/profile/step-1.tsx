@@ -4,11 +4,11 @@ import { useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { VisaType } from '@jobpop/database'
 
-import { Button } from '@/components/ui/button'
-import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Button } from '@jobpop/ui'
+import { Combobox, type ComboboxOption } from '@jobpop/ui'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@jobpop/ui'
+import { Input } from '@jobpop/ui'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@jobpop/ui'
 import { COUNTRIES, COUNTRY_CODES, VISA_LABELS } from '@/constants'
 
 export function InitialProfileStep1() {

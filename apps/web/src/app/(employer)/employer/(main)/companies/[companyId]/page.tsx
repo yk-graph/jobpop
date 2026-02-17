@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 
 import { PageHeader, ScrollNav } from '@/components/common'
 import { EmployerMainContainer } from '@/components/containers'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@jobpop/ui'
 import { getRequiredSession } from '@/lib/better-auth/server'
 import { getRoleByCompanyIdAndUserId } from '@/services'
 

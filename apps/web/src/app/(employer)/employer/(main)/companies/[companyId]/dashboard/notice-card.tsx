@@ -1,4 +1,4 @@
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent } from '@jobpop/ui'
 
 export async function NoticeCard() {
   await new Promise((resolve) => setTimeout(resolve, 5000))

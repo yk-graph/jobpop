@@ -2,7 +2,7 @@ import { LucideIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@jobpop/ui'
 
 type ThumbnailSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 type ThumbnailAspect = 'square' | 'video'

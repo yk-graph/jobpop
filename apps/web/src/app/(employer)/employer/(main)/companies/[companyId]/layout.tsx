@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 
 import { AppSidebar } from '@/components/templates/employer/app-sidebar'
 import { Header } from '@/components/templates/employer/header'
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import { SidebarInset, SidebarProvider } from '@jobpop/ui'
 import { getRequiredSession } from '@/lib/better-auth/server'
 import { getRoleByCompanyIdAndUserId } from '@/services'
 import { isManagerOrAbove } from '@/utils'

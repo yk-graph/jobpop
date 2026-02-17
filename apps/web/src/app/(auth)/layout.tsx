@@ -3,7 +3,7 @@ import { Geist_Mono, Montserrat } from 'next/font/google'
 import '../globals.css'
 
 import { FullScreenContainer } from '@/components/containers'
-import { Toaster } from '@/components/ui/sonner'
+import { Toaster } from '@jobpop/ui'
 import { ThemeProvider } from '@/providers'
 
 const montserrat = Montserrat({

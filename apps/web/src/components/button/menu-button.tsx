@@ -5,9 +5,9 @@ import Link from 'next/link'
 import { ArrowRightLeft, ChartNoAxesGantt, LogIn, LogOut, Settings, User, X } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@jobpop/ui'
 import { authClient } from '@/lib/better-auth/client'
-import { cn } from '@/lib/utils'
+import { cn } from '@jobpop/ui'
 
 interface MenuButtonProps {
   isLoggedIn: boolean

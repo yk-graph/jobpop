@@ -3,7 +3,7 @@ import { AdvancedMarker } from '@vis.gl/react-google-maps'
 import { X, MapPin, Clock, DollarSign } from 'lucide-react'
 
 import { type GetJobsResult } from '@/actions'
-import { cn } from '@/lib/utils'
+import { cn } from '@jobpop/ui'
 
 interface AdvancedMarkerProps {
   job: GetJobsResult

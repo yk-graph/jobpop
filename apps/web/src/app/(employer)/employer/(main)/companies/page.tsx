@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import { FullScreenContainer, MiddleScreenContainer } from '@/components/containers'
-import { Button } from '@/components/ui/button'
+import { Button } from '@jobpop/ui'
 import { getRequiredSession } from '@/lib/better-auth/server'
 import { getCompaniesByUserId } from '@/services'
 

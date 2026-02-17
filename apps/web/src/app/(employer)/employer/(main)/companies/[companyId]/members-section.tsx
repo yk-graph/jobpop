@@ -1,7 +1,7 @@
 import { User } from 'lucide-react'
 
 import { CardHeader, ThumbnailWithNameCard } from '@/components/card'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent } from '@jobpop/ui'
 import { getEmployeesByCompanyId } from '@/services'
 
 interface MembersSectionProps {

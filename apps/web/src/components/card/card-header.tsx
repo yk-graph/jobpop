@@ -2,8 +2,8 @@ import { ReactNode } from 'react'
 import { LucideIcon } from 'lucide-react'
 
 import { Clipboard } from '@/components/common'
-import { CardDescription, CardHeader as CardHeaderPrimitive, CardTitle } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
+import { CardDescription, CardHeader as CardHeaderPrimitive, CardTitle } from '@jobpop/ui'
+import { cn } from '@jobpop/ui'
 
 interface CardHeaderProps {
   title: string

@@ -5,9 +5,9 @@ import { MapPin, Phone, Store as StoreIcon } from 'lucide-react'
 
 import { CardHeader } from '@/components/card'
 import { InfoDescription, InfoItem, InfoWrapper, ScrollNav } from '@/components/common'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+import { Button } from '@jobpop/ui'
+import { Card, CardContent } from '@jobpop/ui'
+import { Separator } from '@jobpop/ui'
 import { isAdminOrAbove } from '@/utils'
 
 const navItems = [

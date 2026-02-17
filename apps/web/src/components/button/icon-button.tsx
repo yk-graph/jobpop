@@ -2,9 +2,9 @@
 
 import { ComponentProps, ComponentType } from 'react'
 
-import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/ui/spinner'
-import { cn } from '@/lib/utils'
+import { Button } from '@jobpop/ui'
+import { Spinner } from '@jobpop/ui'
+import { cn } from '@jobpop/ui'
 
 // Tips: ComponentProps<typeof Button> -> 引用元であるButtonコンポーネントで定義しているpropsを全て継承し、onClick, disabled, variant, size, classNameなど使えるようにする
 interface IconButtonProps extends ComponentProps<typeof Button> {

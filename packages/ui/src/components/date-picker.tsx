@@ -5,7 +5,7 @@ import { format } from 'date-fns'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form'
 
-import { cn } from '@/lib/utils'
+import { cn } from '../utils'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'

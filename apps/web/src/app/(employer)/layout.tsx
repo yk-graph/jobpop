@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Montserrat, Geist_Mono } from 'next/font/google'
 import '../globals.css'
 
-import { Toaster } from '@/components/ui/sonner'
+import { Toaster } from '@jobpop/ui'
 import { ThemeProvider } from '@/providers'
 
 const montserrat = Montserrat({

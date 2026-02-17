@@ -7,9 +7,9 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 import { createCompany } from '@/actions'
-import { Button } from '@/components/ui/button'
-import { Form } from '@/components/ui/form'
-import { Spinner } from '@/components/ui/spinner'
+import { Button } from '@jobpop/ui'
+import { Form } from '@jobpop/ui'
+import { Spinner } from '@jobpop/ui'
 import { createCompanySchema, CreateCompanySchemaType } from '@/lib/zod'
 
 import { CompanyFormContent } from './company-form-content'

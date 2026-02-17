@@ -5,7 +5,7 @@ import { GoogleLogin } from '@/components/button'
 import { DividerLine } from '@/components/common'
 import { MiddleScreenContainer } from '@/components/containers'
 import { LoginForm } from '@/components/form'
-import { Button } from '@/components/ui/button'
+import { Button } from '@jobpop/ui'
 
 export default async function LoginPage({
   searchParams,

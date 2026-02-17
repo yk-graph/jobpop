@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { StoreCard } from '@/components/card'
 import { PageHeader } from '@/components/common'
 import { EmployerMainContainer } from '@/components/containers'
-import { Button } from '@/components/ui/button'
+import { Button } from '@jobpop/ui'
 import { getStoresByCompanyId } from '@/services'
 
 export default async function EmployerStoresPage({ params }: { params: Promise<{ companyId: string }> }) {

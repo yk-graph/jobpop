@@ -15,7 +15,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar'
+} from '@jobpop/ui'
 import { SessionUser } from '@/types'
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {

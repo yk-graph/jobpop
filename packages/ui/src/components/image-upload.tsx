@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 
 import { generatePresignedUploadUrl, UploadImageResult, Visibility } from '@/actions/image'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn } from '../utils'
 
 type ImageUploadSize = 'sm' | 'md' | 'lg' | 'xl'
 type ImageUploadAspect = 'square' | 'video'

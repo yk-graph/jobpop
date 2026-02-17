@@ -1,6 +1,6 @@
 import { Breadcrumb } from '@/components/templates/employer'
-import { Separator } from '@/components/ui/separator'
-import { SidebarTrigger } from '@/components/ui/sidebar'
+import { Separator } from '@jobpop/ui'
+import { SidebarTrigger } from '@jobpop/ui'
 
 export function Header() {
   return (

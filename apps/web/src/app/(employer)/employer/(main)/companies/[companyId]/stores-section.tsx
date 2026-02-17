@@ -1,7 +1,7 @@
 import { Store } from 'lucide-react'
 
 import { CardHeader, ThumbnailWithNameCard } from '@/components/card'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent } from '@jobpop/ui'
 import { getStoresByCompanyId } from '@/services'
 
 interface StoresSectionProps {

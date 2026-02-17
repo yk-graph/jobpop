@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 import { MiddleScreenContainer } from '@/components/containers'
 import { RegisterForm } from '@/components/form'
-import { Button } from '@/components/ui/button'
+import { Button } from '@jobpop/ui'
 
 export default function RegisterPage() {
   return (

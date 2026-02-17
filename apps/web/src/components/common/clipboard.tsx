@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import { Check, Copy } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { cn } from '@/lib/utils'
+import { Button } from '@jobpop/ui'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@jobpop/ui'
+import { cn } from '@jobpop/ui'
 
 interface ClipboardProps {
   value: string

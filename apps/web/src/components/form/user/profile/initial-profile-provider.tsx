@@ -9,9 +9,9 @@ import { Briefcase, Globe, User } from 'lucide-react'
 
 // import { createInitialProfile } from '@/actions'
 import { StepBar } from '@/components/form'
-import { Button } from '@/components/ui/button'
-import { Form } from '@/components/ui/form'
-import { Spinner } from '@/components/ui/spinner'
+import { Button } from '@jobpop/ui'
+import { Form } from '@jobpop/ui'
+import { Spinner } from '@jobpop/ui'
 import { initialProfileSchema, InitialProfileSchemaType } from '@/lib/zod'
 
 interface InitialProfileProviderProps {

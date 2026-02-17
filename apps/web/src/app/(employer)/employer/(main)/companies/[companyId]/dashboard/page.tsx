@@ -1,8 +1,8 @@
 import { Suspense } from 'react'
 
 import { EmployerMainContainer } from '@/components/containers'
-import { Card, CardContent } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Card, CardContent } from '@jobpop/ui'
+import { Skeleton } from '@jobpop/ui'
 
 import { NoticeCard } from './notice-card'
 

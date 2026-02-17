@@ -1,8 +1,8 @@
 import { FormEvent, ReactNode } from 'react'
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
+import { Button } from '@jobpop/ui'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@jobpop/ui'
+import { cn } from '@jobpop/ui'
 
 export interface FormCardProps {
   title?: string

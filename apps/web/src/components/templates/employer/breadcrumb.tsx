@@ -9,7 +9,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
+} from '@jobpop/ui'
 
 // パスから表示用のラベルを生成
 // 例: "jobpop_inc" → "Jobpop Inc", "job-postings" → "Job Postings"

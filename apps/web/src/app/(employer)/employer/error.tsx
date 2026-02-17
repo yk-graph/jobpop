@@ -1,7 +1,7 @@
 'use client'
 
 import { FullScreenContainer } from '@/components/containers'
-import { Button } from '@/components/ui/button'
+import { Button } from '@jobpop/ui'
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
