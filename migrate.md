@@ -1,5 +1,180 @@
 # モノレポ移行作業ログ
 
+## Turborepo とは？なぜ導入するのか？
+
+### Turborepo の役割
+
+**一言で言うと**：モノレポの「タスク実行を賢く管理する司令塔」
+
+複数のパッケージ（apps/web、packages/ui など）があるモノレポで、ビルドやテストを効率的に実行するためのツール。
+
+### 導入のメリット
+
+| メリット | 説明 | 例え |
+|---------|------|------|
+| **キャッシュ** | 変更がないパッケージは前回の結果を再利用 | 作り置き料理。昨日作ったカレーがあるなら今日は作らない |
+| **並列実行** | 依存関係がないパッケージは同時にビルド | 複数のコンロで同時に料理 |
+| **依存関係の自動解決** | ビルド順序を自動で判断 | ui → web の順でビルドが必要なら自動で順序を決める |
+| **一元管理** | ルートで `pnpm dev` するだけで全体が動く | 1つのリモコンで全部操作 |
+
+### ビフォー・アフター
+
+```
+【Before: 単一パッケージ】
+npm run build → 毎回全部ビルド（30秒）
+
+【After: Turborepo】
+pnpm build → 変更分だけビルド
+           → 変更なければキャッシュ利用（0.5秒）
+           → ">>> FULL TURBO" と表示されたらキャッシュ使用中
+```
+
+---
+
+## 設定ファイルの解説
+
+### pnpm-workspace.yaml
+
+**役割**：「どのフォルダがワークスペース（パッケージ）か」を pnpm に教える
+
+```yaml
+packages:
+  - "apps/*"      # apps/ 配下のフォルダをパッケージとして認識
+  - "packages/*"  # packages/ 配下のフォルダをパッケージとして認識
+```
+
+**効果**：
+- `apps/web` → `@jobpop/web` として認識
+- `packages/ui` → `@jobpop/ui` として認識
+- パッケージ間で `"@jobpop/ui": "workspace:*"` のように参照可能に
+
+---
+
+### turbo.json
+
+**役割**：「各タスクをどう実行するか」のルールを定義
+
+```json
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "dist/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    }
+  }
+}
+```
+
+**各設定の意味**：
+
+| 設定 | 値 | 意味 |
+|------|-----|------|
+| `dependsOn: ["^build"]` | `^` = 依存先を先に | web が ui に依存しているなら、ui を先にビルド |
+| `outputs` | `[".next/**", "dist/**"]` | キャッシュ対象のファイル。これらが同じなら再ビルド不要 |
+| `cache: false` | キャッシュしない | dev サーバーは毎回起動が必要なのでキャッシュ無効 |
+| `persistent: true` | 常駐プロセス | dev サーバーのように終了しないプロセス |
+
+**図解**：
+
+```
+pnpm build 実行
+      ↓
+Turborepo が依存関係を解析
+      ↓
+┌────────────────────────────────────┐
+│ 1. packages/database: ビルド       │
+│ 2. packages/ui: ビルド（並列可）    │
+│ 3. apps/web: 1,2 完了後にビルド    │
+└────────────────────────────────────┘
+      ↓
+キャッシュがあれば再利用、なければ実行
+```
+
+---
+
+### package.json（ルート）
+
+**役割**：モノレポ全体の設定と、Turborepo 経由でのコマンド定義
+
+```json
+{
+  "name": "@jobpop/root",
+  "private": true,
+  "packageManager": "pnpm@10.18.2",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\""
+  },
+  "devDependencies": {
+    "turbo": "^2",
+    "prettier": "3.6.2",
+    "typescript": "^5.9.3"
+  }
+}
+```
+
+**各設定の意味**：
+
+| 設定 | 意味 |
+|------|------|
+| `name: "@jobpop/root"` | ルートパッケージの名前（内部管理用） |
+| `private: true` | npm に公開しない |
+| `packageManager` | 使用する pnpm のバージョン。Turborepo がこれを参照 |
+| `turbo run dev` | Turborepo 経由で全パッケージの dev を実行 |
+| `devDependencies` | 全パッケージで共通して使うツール |
+
+---
+
+### 各パッケージの package.json
+
+**例：apps/web/package.json**
+
+```json
+{
+  "name": "@jobpop/web",
+  "dependencies": {
+    "@jobpop/database": "workspace:*",  // 内部パッケージへの依存
+    "@jobpop/ui": "workspace:*",
+    "next": "^16.1.6"
+  }
+}
+```
+
+| 設定 | 意味 |
+|------|------|
+| `workspace:*` | 「同じモノレポ内のパッケージを使う」という指定 |
+
+---
+
+## よく使うコマンド
+
+```bash
+# 開発サーバー起動（全パッケージ）
+pnpm dev
+
+# ビルド（全パッケージ）
+pnpm build
+
+# 特定パッケージだけ実行
+pnpm --filter @jobpop/web dev
+pnpm --filter @jobpop/database db:studio
+
+# 依存関係のインストール
+pnpm install
+```
+
+---
+
 ## 概要
 
 単一パッケージ構成から Turborepo + pnpm を使ったモノレポ構成に移行する。
