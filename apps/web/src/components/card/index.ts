@@ -1,4 +1,2 @@
-export * from './card-header'
-export * from './form-card'
 export * from './store-card'
-export * from './thumbnail-with-name-card'
+export { CustomCardHeader, FormCard, ThumbnailWithNameCard } from '@jobpop/ui'

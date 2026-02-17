@@ -1,6 +1,6 @@
 export * from './auth/login-form'
 export * from './auth/register-form'
-export * from './common/step-bar'
+export { StepBar } from '@jobpop/ui'
 export * from './company/create-company-form'
 export * from './company/update-company-form'
 export * from './store/create-store-form'

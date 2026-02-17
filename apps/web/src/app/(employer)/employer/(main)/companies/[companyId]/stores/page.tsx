@@ -1,9 +1,8 @@
 import Link from 'next/link'
 
 import { StoreCard } from '@/components/card'
-import { PageHeader } from '@/components/common'
-import { EmployerMainContainer } from '@/components/containers'
-import { Button } from '@jobpop/ui'
+import { MainContainer } from '@/components/containers'
+import { Button, PageHeader } from '@jobpop/ui'
 import { getStoresByCompanyId } from '@/services'
 
 export default async function EmployerStoresPage({ params }: { params: Promise<{ companyId: string }> }) {
@@ -11,7 +10,7 @@ export default async function EmployerStoresPage({ params }: { params: Promise<{
   const stores = await getStoresByCompanyId(companyId)
 
   return (
-    <EmployerMainContainer>
+    <MainContainer>
       <PageHeader
         title="Stores"
         description="Manage your store lists"
@@ -31,6 +30,6 @@ export default async function EmployerStoresPage({ params }: { params: Promise<{
           ))}
         </div>
       )}
-    </EmployerMainContainer>
+    </MainContainer>
   )
 }

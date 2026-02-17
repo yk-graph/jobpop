@@ -1,6 +1,6 @@
 import { User } from 'lucide-react'
 
-import { CardHeader, ThumbnailWithNameCard } from '@/components/card'
+import { CustomCardHeader, ThumbnailWithNameCard } from '@/components/card'
 import { Card, CardContent } from '@jobpop/ui'
 import { getEmployeesByCompanyId } from '@/services'
 
@@ -18,7 +18,7 @@ export default async function MembersSection({ companyId }: MembersSectionProps)
   return (
     <section id="members">
       <Card className="border-none">
-        <CardHeader title="Members" titleSize="lg" description={`Total Members: ${employees.length}`} />
+        <CustomCardHeader title="Members" titleSize="lg" description={`Total Members: ${employees.length}`} />
         <CardContent>
           <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
             {employees.map((employee) => (

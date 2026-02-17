@@ -1,8 +1,8 @@
 import { notFound, redirect } from 'next/navigation'
 
-import { PageHeader } from '@/components/common'
-import { EmployerMainContainer } from '@/components/containers'
+import { MainContainer } from '@/components/containers'
 import { UpdateStoreForm } from '@/components/form'
+import { PageHeader } from '@jobpop/ui'
 import { getRequiredSession } from '@/lib/better-auth/server'
 import { getRoleByCompanyIdAndUserId, getStoreById } from '@/services'
 import { isAdminOrAbove } from '@/utils'
@@ -24,10 +24,10 @@ export default async function EditStorePage({ params }: { params: Promise<{ comp
   }
 
   return (
-    <EmployerMainContainer>
+    <MainContainer>
       <PageHeader title="Edit Store" description="Update your store information." />
 
       <UpdateStoreForm store={store} />
-    </EmployerMainContainer>
+    </MainContainer>
   )
 }

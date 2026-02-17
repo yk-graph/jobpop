@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 
-import { EmployerMainContainer } from '@/components/containers'
+import { MainContainer } from '@/components/containers'
 import { Card, CardContent } from '@jobpop/ui'
 import { Skeleton } from '@jobpop/ui'
 
@@ -8,7 +8,7 @@ import { NoticeCard } from './notice-card'
 
 export default function EmployerDashboardPage() {
   return (
-    <EmployerMainContainer>
+    <MainContainer>
       <Suspense fallback={<Skeleton className="h-10 w-full" />}>
         <NoticeCard />
       </Suspense>
@@ -24,6 +24,6 @@ export default function EmployerDashboardPage() {
           <CardContent>hoge</CardContent>
         </Card>
       </div>
-    </EmployerMainContainer>
+    </MainContainer>
   )
 }

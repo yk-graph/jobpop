@@ -1,8 +1,7 @@
 import { Suspense } from 'react'
 
-import { PageHeader, ScrollNav } from '@/components/common'
-import { EmployerMainContainer } from '@/components/containers'
-import { Skeleton } from '@jobpop/ui'
+import { MainContainer } from '@/components/containers'
+import { PageHeader, ScrollNav, Skeleton } from '@jobpop/ui'
 import { getRequiredSession } from '@/lib/better-auth/server'
 import { getRoleByCompanyIdAndUserId } from '@/services'
 
@@ -23,7 +22,7 @@ export default async function EmployerCompanyDetailPage({ params }: { params: Pr
   const role = await getRoleByCompanyIdAndUserId(companyId, session.user.id)
 
   return (
-    <EmployerMainContainer>
+    <MainContainer>
       <PageHeader title="Company Details" />
 
       <ScrollNav items={navItems} containerId="employer-main-container" />
@@ -39,6 +38,6 @@ export default async function EmployerCompanyDetailPage({ params }: { params: Pr
       <Suspense fallback={<Skeleton className="h-20 sm:h-40 w-full" />}>
         <MembersSection companyId={companyId} />
       </Suspense>
-    </EmployerMainContainer>
+    </MainContainer>
   )
 }

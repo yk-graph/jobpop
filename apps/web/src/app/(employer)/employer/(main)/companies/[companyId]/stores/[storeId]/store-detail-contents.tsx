@@ -3,11 +3,8 @@ import Link from 'next/link'
 import { EmployeeRole, Store } from '@jobpop/database'
 import { MapPin, Phone, Store as StoreIcon } from 'lucide-react'
 
-import { CardHeader } from '@/components/card'
-import { InfoDescription, InfoItem, InfoWrapper, ScrollNav } from '@/components/common'
-import { Button } from '@jobpop/ui'
-import { Card, CardContent } from '@jobpop/ui'
-import { Separator } from '@jobpop/ui'
+import { CustomCardHeader } from '@/components/card'
+import { Button, Card, CardContent, InfoDescription, InfoItem, InfoWrapper, ScrollNav, Separator } from '@jobpop/ui'
 import { isAdminOrAbove } from '@/utils'
 
 const navItems = [
@@ -42,7 +39,7 @@ export function StoreDetailContents({ store, companyId, role }: StoreDetailConte
       {/* Detail Section */}
       <section id="detail">
         <Card className="border-none">
-          <CardHeader
+          <CustomCardHeader
             title={store.name}
             description={`Store ID: ${store.id}`}
             icon={StoreIcon}
@@ -120,7 +117,7 @@ export function StoreDetailContents({ store, companyId, role }: StoreDetailConte
       {/* Jobs Section */}
       <section id="jobs">
         <Card className="border-none">
-          <CardHeader title="Open Jobs" titleSize="lg" />
+          <CustomCardHeader title="Open Jobs" titleSize="lg" />
           <CardContent>
             <p className="text-muted-foreground">No jobs posted yet.</p>
           </CardContent>
@@ -130,7 +127,7 @@ export function StoreDetailContents({ store, companyId, role }: StoreDetailConte
       {/* Applicants Section */}
       <section id="applicants">
         <Card className="border-none">
-          <CardHeader title="Applicants" titleSize="lg" />
+          <CustomCardHeader title="Applicants" titleSize="lg" />
           <CardContent>
             <p className="text-muted-foreground">No applicants assigned yet.</p>
           </CardContent>

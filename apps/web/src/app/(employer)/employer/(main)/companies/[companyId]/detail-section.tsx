@@ -4,11 +4,8 @@ import { EmployeeRole } from '@jobpop/database'
 import { Building2, Globe, MapPin, Phone } from 'lucide-react'
 import { notFound } from 'next/navigation'
 
-import { CardHeader } from '@/components/card'
-import { InfoDescription, InfoItem, InfoWrapper } from '@/components/common'
-import { Button } from '@jobpop/ui'
-import { Card, CardContent } from '@jobpop/ui'
-import { Separator } from '@jobpop/ui'
+import { CustomCardHeader } from '@/components/card'
+import { Button, Card, CardContent, InfoDescription, InfoItem, InfoWrapper, Separator } from '@jobpop/ui'
 import { getCompanyById } from '@/services'
 import { isAdminOrAbove } from '@/utils'
 
@@ -39,7 +36,7 @@ export default async function DetailSection({ companyId, role }: DetailSectionPr
   return (
     <section id="detail">
       <Card className="border-none">
-        <CardHeader
+        <CustomCardHeader
           title={company.name}
           description={`Company ID: ${company.id}`}
           icon={Building2}
