@@ -18,7 +18,7 @@ import {
   Spinner,
   Textarea,
 } from '@jobpop/ui'
-import { ImageUpload } from '@/components/ui/image-upload'
+import { ImageUploadButton } from '@/components/button'
 import { CreateCompanySchemaType } from '@/lib/zod'
 
 interface CompanyFormContentProps {
@@ -106,7 +106,7 @@ export function CompanyFormContent({ form, showLogo = true }: CompanyFormContent
             <FormItem>
               <FormLabel>Company Logo</FormLabel>
               <FormControl>
-                <ImageUpload
+                <ImageUploadButton
                   dir="company/logos"
                   visibility="public"
                   size="md"

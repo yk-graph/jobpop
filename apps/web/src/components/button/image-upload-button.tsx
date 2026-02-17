@@ -12,7 +12,7 @@ type ImageUploadSize = 'sm' | 'md' | 'lg' | 'xl'
 type ImageUploadAspect = 'square' | 'video'
 type ImageUploadRounded = 'none' | 'lg' | 'full'
 
-interface ImageUploadProps {
+interface ImageUploadButtonProps {
   value?: string
   onChange?: (url: string) => void
   dir: string
@@ -42,7 +42,7 @@ const roundedClasses: Record<ImageUploadRounded, string> = {
   full: 'rounded-full',
 }
 
-const ImageUpload = React.forwardRef<HTMLInputElement, ImageUploadProps>(
+const ImageUploadButton = React.forwardRef<HTMLInputElement, ImageUploadButtonProps>(
   ({ value, onChange, dir, visibility, size, aspect, rounded, className, disabled }, ref) => {
     const [preview, setPreview] = React.useState<string | null>(value || null)
     const [isUploading, setIsUploading] = React.useState(false)
@@ -202,7 +202,7 @@ const ImageUpload = React.forwardRef<HTMLInputElement, ImageUploadProps>(
     )
   }
 )
-ImageUpload.displayName = 'ImageUpload'
+ImageUploadButton.displayName = 'ImageUploadButton'
 
-export { ImageUpload }
+export { ImageUploadButton }
 export type { ImageUploadSize, ImageUploadAspect, ImageUploadRounded }

@@ -18,7 +18,7 @@ import {
   Spinner,
   Textarea,
 } from '@jobpop/ui'
-import { ImageUpload } from '@/components/ui/image-upload'
+import { ImageUploadButton } from '@/components/button'
 import { CreateStoreSchemaType } from '@/lib/zod'
 
 interface StoreFormContentProps {
@@ -113,7 +113,7 @@ export function StoreFormContent({ form }: StoreFormContentProps) {
           <FormItem>
             <FormLabel>Store Image</FormLabel>
             <FormControl>
-              <ImageUpload
+              <ImageUploadButton
                 dir="store/thumbnails"
                 visibility="public"
                 size="lg"
