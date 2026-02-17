@@ -113,11 +113,14 @@ Turborepo が依存関係を解析
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "check:versions": "syncpack lint",
+    "fix:versions": "syncpack fix"
   },
   "devDependencies": {
     "turbo": "^2",
-    "prettier": "3.6.2",
+    "prettier": "^3.6.2",
+    "syncpack": "^14.0.0",
     "typescript": "^5.9.3"
   }
 }
@@ -156,6 +159,157 @@ Turborepo が依存関係を解析
 
 ---
 
+### .syncpackrc.json
+
+**役割**：パッケージ間のバージョン不整合を検出・修正するツール（syncpack）の設定
+
+#### なぜ必要か？
+
+モノレポでは複数の package.json に同じパッケージが登場する：
+
+```
+apps/web:     react ^19.2.4
+packages/ui:  react ^19.0.0 (peerDependencies)
+```
+
+誰かが間違って別バージョンを入れてしまうと、バグの原因に。syncpack がこれを防ぐ。
+
+#### 設定ファイル
+
+```json
+{
+  "versionGroups": [
+    {
+      "label": "React must be consistent across all packages",
+      "packages": ["**"],
+      "dependencies": ["react", "react-dom"],
+      "dependencyTypes": ["dev", "peer", "prod"],
+      "policy": "sameRange"
+    },
+    {
+      "label": "TypeScript must be consistent",
+      "packages": ["**"],
+      "dependencies": ["typescript"],
+      "dependencyTypes": ["dev", "prod"],
+      "policy": "sameRange"
+    }
+  ],
+  "semverGroups": [
+    {
+      "range": "^",
+      "dependencies": ["**"],
+      "packages": ["**"]
+    }
+  ]
+}
+```
+
+**各設定の意味**：
+
+| 設定 | 意味 |
+|------|------|
+| `versionGroups` | バージョンを揃えるルールを定義 |
+| `packages: ["**"]` | 全パッケージを対象 |
+| `dependencies` | 監視対象のパッケージ名 |
+| `dependencyTypes` | dependencies, devDependencies, peerDependencies |
+| `policy: "sameRange"` | 同じバージョン範囲を強制 |
+| `semverGroups` | セマンティックバージョンの書き方ルール |
+| `range: "^"` | 全パッケージで `^` を使う |
+
+#### 使い方
+
+```bash
+# 不整合をチェック
+pnpm check:versions
+
+# 出力例（問題がある場合）
+✘ react
+   ^19.0.0 → packages/ui/package.json at .peerDependencies
+   ^19.2.4 → apps/web/package.json at .dependencies
+
+# 自動修正
+pnpm fix:versions
+
+# 出力例（修正後）
+✓ react
+   ^19.2.4 ← ^19.0.0 in packages/ui/package.json
+
+# 問題なしの場合
+✓ No issues found
+```
+
+#### CI に組み込む（推奨）
+
+```yaml
+# .github/workflows/ci.yml
+- name: Check version consistency
+  run: pnpm check:versions
+```
+
+**効果**：誰かが間違ったバージョンを追加したら CI が失敗 → マージ前に気づける
+
+---
+
+### peerDependencies の使い方
+
+**役割**：「このパッケージを使うなら、あなたの方で○○を用意してね」という依存関係
+
+#### 図解
+
+```
+┌─────────────────────────────────────────┐
+│  apps/web                               │
+│  └── dependencies                       │
+│       ├── react: "^19.2.4"  ←──────┐   │
+│       └── @jobpop/ui                │   │
+│                                     │   │
+│  packages/ui が使う React ──────────┘   │
+│  (peerDependencies で要求)              │
+└─────────────────────────────────────────┘
+
+┌─────────────────────────────────────────┐
+│  packages/ui                            │
+│  ├── dependencies                       │
+│  │   └── @radix-ui/... （自分で持つ）   │
+│  │                                      │
+│  └── peerDependencies                   │
+│       └── react: "^19.2.4"              │
+│          「使う側が用意してね」           │
+└─────────────────────────────────────────┘
+```
+
+#### なぜ peerDependencies を使うのか？
+
+**問題**：もし packages/ui が dependencies に react を持っていたら
+
+```
+node_modules/
+├── react/  (apps/web 用)
+└── @jobpop/ui/
+    └── node_modules/
+        └── react/  (packages/ui 用) ← 別の React！
+```
+
+React が2つ存在 → エラーや予期しない動作の原因
+
+**解決**：peerDependencies で1つに統一
+
+```
+node_modules/
+├── react/  (1つだけ！apps/web が提供)
+└── @jobpop/ui/  (この react を使う)
+```
+
+#### 使い分け
+
+| 種類 | いつ使う | 例 |
+|------|---------|-----|
+| `dependencies` | 自分専用のライブラリ | @radix-ui, clsx |
+| `peerDependencies` | 使う側と共有すべきもの | react, react-dom |
+| `devDependencies` | 開発時だけ必要 | @types/react, typescript |
+
+---
+
 ## よく使うコマンド
 
 ```bash
@@ -171,6 +325,12 @@ pnpm --filter @jobpop/database db:studio
 
 # 依存関係のインストール
 pnpm install
+
+# バージョン整合性チェック
+pnpm check:versions
+
+# バージョン不整合を自動修正
+pnpm fix:versions
 ```
 
 ---

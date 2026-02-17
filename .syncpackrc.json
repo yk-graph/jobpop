@@ -1,0 +1,25 @@
+{
+  "versionGroups": [
+    {
+      "label": "React must be consistent across all packages",
+      "packages": ["**"],
+      "dependencies": ["react", "react-dom"],
+      "dependencyTypes": ["dev", "peer", "prod"],
+      "policy": "sameRange"
+    },
+    {
+      "label": "TypeScript must be consistent",
+      "packages": ["**"],
+      "dependencies": ["typescript"],
+      "dependencyTypes": ["dev", "prod"],
+      "policy": "sameRange"
+    }
+  ],
+  "semverGroups": [
+    {
+      "range": "^",
+      "dependencies": ["**"],
+      "packages": ["**"]
+    }
+  ]
+}
