@@ -1,8 +1,8 @@
 import * as fs from 'fs'
 import * as path from 'path'
 
-const SEARCH_RESULT_FILE = path.join(__dirname, 'search-result.json')
-const OUTPUT_FILE = path.join(__dirname, 'master-data.json')
+const SEARCH_RESULT_FILE = path.join(__dirname, '..', 'data', 'search-result.json')
+const OUTPUT_FILE = path.join(__dirname, '..', 'data', 'master-data.json')
 
 interface JobListing {
   skills: string[]

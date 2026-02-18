@@ -7,7 +7,8 @@
     "seed:job": "tsx seed/seedDummyJobs.ts",
     "seed:barista": "tsx seed/seedBaristaJobs.ts",
     "scrape:indeed": "tsx scraper/indeed.ts",
-    "scrape:login": "tsx scraper/login.ts"
+    "scrape:login": "tsx scraper/login.ts",
+    "scrape:extract-master": "tsx scraper/extract-master.ts"
   },
   "dependencies": {
     "@jobpop/database": "workspace:*"

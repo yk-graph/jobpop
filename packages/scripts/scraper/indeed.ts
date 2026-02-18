@@ -353,8 +353,13 @@ async function main() {
   console.log(`\nTotal: ${jobs.length} jobs found\n`)
 
   // 結果をJSONファイルに保存（既存データに追加）
+  // クエリをファイル名に使用（小文字、スペースをハイフンに、特殊文字を除去）
+  const sanitizedQuery = query
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
   const outputDir = path.join(__dirname, '..', 'data')
-  const outputPath = path.join(outputDir, 'search-result.json')
+  const outputPath = path.join(outputDir, `search-result-${sanitizedQuery}.json`)
 
   // ディレクトリが存在しない場合は作成
   if (!fs.existsSync(outputDir)) {
