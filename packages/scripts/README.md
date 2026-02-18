@@ -19,7 +19,7 @@ pnpm install
 スキル情報はIndeedにログインしないと表示されません。以下のコマンドでセッションを保存してください。
 
 ```bash
-pnpm --filter @jobpop/scripts tsx scraper/login.ts
+pnpm --filter @jobpop/scripts scrape:login
 ```
 
 1. ブラウザが開きます
