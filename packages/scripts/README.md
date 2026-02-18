@@ -8,8 +8,10 @@ Indeedから求人情報を自動収集するスクリプト集です。
 
 ### 依存パッケージのインストール
 
+プロジェクトルートで実行：
+
 ```bash
-npm install
+pnpm install
 ```
 
 ### 初回ログイン（スキル情報を取得する場合）
@@ -17,13 +19,13 @@ npm install
 スキル情報はIndeedにログインしないと表示されません。以下のコマンドでセッションを保存してください。
 
 ```bash
-npx tsx scripts/scraper/login.ts
+pnpm --filter @jobpop/scripts tsx scraper/login.ts
 ```
 
 1. ブラウザが開きます
 2. Indeedにログインしてください
 3. ログイン完了後、ターミナルでEnterキーを押してください
-4. セッションが `indeed-session.json` に保存されます
+4. セッションが `packages/scripts/scraper/indeed-session.json` に保存されます
 
 ※ セッションが切れたら再度このコマンドを実行してください
 
@@ -34,17 +36,17 @@ npx tsx scripts/scraper/login.ts
 ### 基本的な使い方
 
 ```bash
-npx tsx scripts/scraper/indeed.ts "検索キーワード" "場所"
+pnpm --filter @jobpop/scripts scrape:indeed "検索キーワード" "場所"
 ```
 
 ### 例
 
 ```bash
 # バリスタの仕事をバンクーバーで検索
-npx tsx scripts/scraper/indeed.ts "Barista" "Vancouver, BC"
+pnpm --filter @jobpop/scripts scrape:indeed "Barista" "Vancouver, BC"
 
 # ソフトウェアエンジニアをトロントで検索（3ページ分）
-npx tsx scripts/scraper/indeed.ts "Software Engineer" "Toronto, ON" --pages=3
+pnpm --filter @jobpop/scripts scrape:indeed "Software Engineer" "Toronto, ON" --pages=3
 ```
 
 ---
@@ -72,7 +74,7 @@ npx tsx scripts/scraper/indeed.ts "Software Engineer" "Toronto, ON" --pages=3
 ### 使用例（全オプション）
 
 ```bash
-npx tsx scripts/scraper/indeed.ts "Barista" "Vancouver, BC" \
+pnpm --filter @jobpop/scripts scrape:indeed "Barista" "Vancouver, BC" \
   --pages=2 \
   --radius=25 \
   --sort=date \
@@ -86,7 +88,7 @@ npx tsx scripts/scraper/indeed.ts "Barista" "Vancouver, BC" \
 
 ### search-result.json
 
-スクレイピング結果は `scripts/scraper/search-result.json` に保存されます。
+スクレイピング結果は `packages/scripts/scraper/search-result.json` に保存されます。
 
 - 新しい求人は既存データに追加されます（上書きではない）
 - 重複するIDの求人はスキップされます
@@ -117,16 +119,36 @@ npx tsx scripts/scraper/indeed.ts "Barista" "Vancouver, BC" \
 ## ファイル構成
 
 ```
-scripts/scraper/
-├── README.md           # このファイル
-├── education.md        # 技術解説
-├── indeed.ts           # メインスクレイパー
-├── login.ts            # ログイン用スクリプト
-├── test-skill.ts       # スキル抽出テスト用
-├── types.ts            # 型定義
-├── utils.ts            # ユーティリティ関数
-├── indeed-session.json # セッション情報（自動生成）
-└── search-result.json  # 収集結果（自動生成）
+packages/scripts/
+├── scraper/
+│   ├── indeed.ts           # メインスクレイパー
+│   ├── login.ts            # ログイン用スクリプト
+│   ├── types.ts            # 型定義
+│   ├── utils.ts            # ユーティリティ関数
+│   ├── extract-master.ts   # データ抽出
+│   ├── geocode-locations.ts # 位置情報変換
+│   ├── indeed-session.json # セッション情報（自動生成）
+│   └── search-result.json  # 収集結果（自動生成）
+├── seed/
+│   ├── seedExperience.ts   # 経験データ投入
+│   ├── seedDummyJobs.ts    # ダミー求人データ投入
+│   └── seedBaristaJobs.ts  # バリスタ求人データ投入
+├── package.json
+└── README.md               # このファイル
+```
+
+---
+
+## 利用可能なスクリプト
+
+```bash
+# スクレイパー
+pnpm --filter @jobpop/scripts scrape:indeed "キーワード" "場所"
+
+# シードデータ投入
+pnpm --filter @jobpop/scripts seed:experience
+pnpm --filter @jobpop/scripts seed:job
+pnpm --filter @jobpop/scripts seed:barista
 ```
 
 ---
@@ -147,4 +169,4 @@ scripts/scraper/
 ### ブラウザが起動しない
 
 - Chromeがインストールされているか確認
-- `node_modules` を削除して `npm install` を再実行
+- プロジェクトルートで `pnpm install` を再実行
