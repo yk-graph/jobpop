@@ -112,19 +112,17 @@ function deduplicateById(jobs: JobListing[]): JobListing[] {
 
 /**
  * ロケーション情報があるかどうかを判定
- * - locationが空文字でない
- * - または郵便番号パターン（カナダ: A1A 1A1）が含まれている
+ * - locationをカンマで分割して、3つ以上のパーツがあれば「詳細な住所あり」と判定
+ * - 例: "845 Hornby Street, Vancouver, BC V6Z 1V1" → 3パーツ → true
+ * - 例: "Vancouver, BC" → 2パーツ → false
  */
 function hasValidLocation(job: JobListing): boolean {
   if (!job.location || job.location.trim() === '') {
     return false
   }
 
-  // カナダの郵便番号パターン: A1A 1A1 または A1A1A1
-  const postalCodePattern = /[A-Z]\d[A-Z]\s?\d[A-Z]\d/i
-
-  // locationが空でないか、郵便番号が含まれていればtrue
-  return job.location.trim() !== '' || postalCodePattern.test(job.location)
+  const parts = job.location.split(',').map((p) => p.trim()).filter((p) => p !== '')
+  return parts.length >= 3
 }
 
 /**
