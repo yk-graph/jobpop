@@ -8,7 +8,7 @@ const SHAPE_DIR = path.join(__dirname, '..', 'data', 'shape')
 // 出力ファイルパス
 const UNIQUE_DATA_FILE = path.join(SHAPE_DIR, 'unique-id-data.json')
 const LOCATION_DATA_FILE = path.join(SHAPE_DIR, 'location-data.json')
-const MASTER_DATA_FILE = path.join(SHAPE_DIR, 'master-data.json')
+const REPORT_FILE = path.join(SHAPE_DIR, 'report.json')
 
 interface JobListing {
   id: string
@@ -26,12 +26,21 @@ interface JobListing {
   createdAt?: string
 }
 
-interface MasterData {
-  skills: string[]
+interface OriginFileData {
+  query: string
+  jobs: JobListing[]
+}
+
+interface ReportData {
+  skills: Record<string, string[]>
   benefits: string[]
   shiftAndSchedule: string[]
-  extractedAt: string
-  sourceCount: number
+  reports: {
+    resultCounts: number
+    uniqueCounts: number
+    locationCounts: number
+    reportDate: string
+  }[]
 }
 
 /**
@@ -45,9 +54,17 @@ function ensureDir(dir: string): void {
 }
 
 /**
- * origin配下のすべてのJSONファイルを読み込み、マージする
+ * ファイル名からクエリ名を抽出
+ * search-result-barista.json → barista
  */
-function loadAllOriginData(): JobListing[] {
+function extractQueryFromFilename(filename: string): string {
+  return filename.replace(/^search-result-/, '').replace(/\.json$/, '')
+}
+
+/**
+ * origin配下のすべてのJSONファイルを読み込み、クエリ別にデータを返す
+ */
+function loadAllOriginDataWithQuery(): OriginFileData[] {
   if (!fs.existsSync(ORIGIN_DIR)) {
     console.error(`❌ originディレクトリが見つかりません: ${ORIGIN_DIR}`)
     process.exit(1)
@@ -62,20 +79,21 @@ function loadAllOriginData(): JobListing[] {
 
   console.log(`📂 ${files.length}個のファイルを読み込み中...`)
 
-  const allJobs: JobListing[] = []
+  const results: OriginFileData[] = []
 
   for (const file of files) {
     const filePath = path.join(ORIGIN_DIR, file)
+    const query = extractQueryFromFilename(file)
     try {
-      const data: JobListing[] = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
-      console.log(`  - ${file}: ${data.length}件`)
-      allJobs.push(...data)
+      const jobs: JobListing[] = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+      console.log(`  - ${file}: ${jobs.length}件`)
+      results.push({ query, jobs })
     } catch (error) {
       console.warn(`  ⚠️ ${file}の読み込みに失敗: ${error}`)
     }
   }
 
-  return allJobs
+  return results
 }
 
 /**
@@ -110,14 +128,17 @@ function hasValidLocation(job: JobListing): boolean {
 }
 
 /**
- * ユニークな値を抽出してマスターデータを作成
+ * クエリ別にスキルをグループ化
  */
-function extractUniqueValues(jobs: JobListing[]): Omit<MasterData, 'extractedAt' | 'sourceCount'> {
-  const skills = [...new Set(jobs.flatMap((job) => job.skills || []))].sort()
-  const benefits = [...new Set(jobs.flatMap((job) => job.benefits || []))].sort()
-  const shiftAndSchedule = [...new Set(jobs.flatMap((job) => job.shiftAndSchedule || []))].sort()
+function groupSkillsByQuery(originData: OriginFileData[]): Record<string, string[]> {
+  const skillsByQuery: Record<string, string[]> = {}
 
-  return { skills, benefits, shiftAndSchedule }
+  for (const { query, jobs } of originData) {
+    const skills = [...new Set(jobs.flatMap((job) => job.skills || []))].sort()
+    skillsByQuery[query] = skills
+  }
+
+  return skillsByQuery
 }
 
 /**
@@ -129,8 +150,9 @@ function main(): void {
   // 出力ディレクトリを確保
   ensureDir(SHAPE_DIR)
 
-  // Step 1: originからすべてのデータを読み込み
-  const allJobs = loadAllOriginData()
+  // Step 1: originからすべてのデータをクエリ別に読み込み
+  const originData = loadAllOriginDataWithQuery()
+  const allJobs = originData.flatMap((d) => d.jobs)
   console.log(`\n📊 合計: ${allJobs.length}件のデータを読み込み`)
 
   // Step 2: IDの重複を除去
@@ -150,21 +172,32 @@ function main(): void {
   fs.writeFileSync(LOCATION_DATA_FILE, JSON.stringify(locationJobs, null, 2), 'utf-8')
   console.log(`✅ 保存: ${LOCATION_DATA_FILE}`)
 
-  // Step 5: マスターデータを生成
-  const uniqueValues = extractUniqueValues(uniqueJobs)
-  const masterData: MasterData = {
-    ...uniqueValues,
-    extractedAt: new Date().toISOString(),
-    sourceCount: uniqueJobs.length,
+  // Step 5: レポートデータを生成
+  const skillsByQuery = groupSkillsByQuery(originData)
+  const benefits = [...new Set(uniqueJobs.flatMap((job) => job.benefits || []))].sort()
+  const shiftAndSchedule = [...new Set(uniqueJobs.flatMap((job) => job.shiftAndSchedule || []))].sort()
+
+  const reportData: ReportData = {
+    skills: skillsByQuery,
+    benefits,
+    shiftAndSchedule,
+    reports: [
+      {
+        resultCounts: allJobs.length,
+        uniqueCounts: uniqueJobs.length,
+        locationCounts: locationJobs.length,
+        reportDate: new Date().toISOString().split('T')[0],
+      },
+    ],
   }
 
-  console.log(`\n=== マスターデータ ===`)
-  console.log(`  Skills: ${masterData.skills.length}件`)
-  console.log(`  Benefits: ${masterData.benefits.length}件`)
-  console.log(`  Shift and Schedule: ${masterData.shiftAndSchedule.length}件`)
+  console.log(`\n=== レポートデータ ===`)
+  console.log(`  Skills: ${Object.keys(skillsByQuery).length}クエリ分`)
+  console.log(`  Benefits: ${benefits.length}件`)
+  console.log(`  Shift and Schedule: ${shiftAndSchedule.length}件`)
 
-  fs.writeFileSync(MASTER_DATA_FILE, JSON.stringify(masterData, null, 2), 'utf-8')
-  console.log(`\n✅ 保存: ${MASTER_DATA_FILE}`)
+  fs.writeFileSync(REPORT_FILE, JSON.stringify(reportData, null, 2), 'utf-8')
+  console.log(`\n✅ 保存: ${REPORT_FILE}`)
 
   console.log('\n=== 処理完了 ===\n')
 }

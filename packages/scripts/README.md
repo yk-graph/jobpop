@@ -95,7 +95,7 @@ data/
 └── shape/                       # 加工済みデータ
     ├── unique-id-data.json      # 重複除去済みの全データ
     ├── location-data.json       # ロケーション情報ありのデータ
-    └── master-data.json         # スキル・福利厚生等のマスター
+    └── report.json              # スキル・福利厚生等のレポート
 ```
 
 ---
@@ -126,12 +126,35 @@ data/
 - `location` が空文字でない
 - または住所にカナダの郵便番号（例: `V6Z 1V1`）が含まれている
 
-### 4. shape/master-data.json
+### 4. shape/report.json
 
-全データから抽出したユニークな値のマスターデータ：
-- Skills（スキル一覧）
-- Benefits（福利厚生一覧）
-- Shift and Schedule（シフト一覧）
+全データから抽出したレポートデータ：
+
+```json
+{
+  "skills": {
+    "barista": ["Customer service", "Food handling"],
+    "server": ["Cash handling", "Customer service"]
+  },
+  "benefits": ["Dental care", "Flexible schedule", "Paid time off"],
+  "shiftAndSchedule": ["8 hour shift", "Day shift", "Morning shift"],
+  "reports": [
+    {
+      "resultCounts": 1000,
+      "uniqueCounts": 500,
+      "locationCounts": 100,
+      "reportDate": "2026-02-18"
+    }
+  ]
+}
+```
+
+| フィールド | 説明 |
+|-----------|------|
+| `skills` | 検索キーワード別のスキル一覧 |
+| `benefits` | 全データから抽出した福利厚生一覧 |
+| `shiftAndSchedule` | 全データから抽出したシフト一覧 |
+| `reports` | 処理結果のサマリー |
 
 ### 出力データの構造（求人データ）
 
@@ -165,11 +188,11 @@ packages/scripts/
 │   └── shape/                   # 加工済みデータ
 │       ├── unique-id-data.json
 │       ├── location-data.json
-│       └── master-data.json
+│       └── report.json
 ├── scraper/
 │   ├── indeed.ts                # メインスクレイパー
 │   ├── login.ts                 # ログイン用スクリプト
-│   ├── extract-master.ts        # データ加工・マスター生成
+│   ├── shape-data.ts            # データ加工・レポート生成
 │   ├── types.ts                 # 型定義
 │   ├── utils.ts                 # ユーティリティ関数
 │   ├── geocode-locations.ts     # 位置情報変換
@@ -192,7 +215,7 @@ pnpm --filter @jobpop/scripts scrape:indeed "キーワード" "場所"
 pnpm --filter @jobpop/scripts scrape:login
 
 # データ加工（origin → shape）
-pnpm --filter @jobpop/scripts scrape:extract-master
+pnpm --filter @jobpop/scripts data:shape
 
 # シードデータ投入
 pnpm --filter @jobpop/scripts seed:experience
@@ -213,11 +236,11 @@ pnpm --filter @jobpop/scripts seed:barista
    data/origin/search-result-server.json
 
 2. データ加工実行
-   pnpm --filter @jobpop/scripts scrape:extract-master
+   pnpm --filter @jobpop/scripts data:shape
        ↓
    data/shape/unique-id-data.json   (全データ、重複除去済み)
    data/shape/location-data.json    (ロケーション情報ありのみ)
-   data/shape/master-data.json      (スキル等のマスター)
+   data/shape/report.json           (スキル等のレポート)
 ```
 
 ---
