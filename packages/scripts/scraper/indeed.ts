@@ -358,7 +358,7 @@ async function main() {
     .toLowerCase()
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '')
-  const outputDir = path.join(__dirname, '..', 'data')
+  const outputDir = path.join(__dirname, '..', 'data', 'origin')
   const outputPath = path.join(outputDir, `search-result-${sanitizedQuery}.json`)
 
   // ディレクトリが存在しない場合は作成

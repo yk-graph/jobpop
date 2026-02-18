@@ -84,23 +84,56 @@ pnpm --filter @jobpop/scripts scrape:indeed "Barista" "Vancouver, BC" \
 
 ---
 
+## ディレクトリ構成
+
+```
+data/
+├── origin/                      # スクレイピング結果（生データ）
+│   ├── search-result-barista.json
+│   └── search-result-software-engineer.json
+│
+└── shape/                       # 加工済みデータ
+    ├── unique-id-data.json      # 重複除去済みの全データ
+    ├── location-data.json       # ロケーション情報ありのデータ
+    └── master-data.json         # スキル・福利厚生等のマスター
+```
+
+---
+
 ## 出力ファイル
 
-### search-result-{query}.json
+### 1. origin/search-result-{query}.json
 
-スクレイピング結果は検索キーワードに基づいたファイル名で `packages/scripts/data/` に保存されます。
+スクレイピング結果は検索キーワードに基づいたファイル名で `data/origin/` に保存されます。
 
 | 検索キーワード | 出力ファイル |
 |---------------|-------------|
-| `"Barista"` | `data/search-result-barista.json` |
-| `"Software Engineer"` | `data/search-result-software-engineer.json` |
+| `"Barista"` | `data/origin/search-result-barista.json` |
+| `"Software Engineer"` | `data/origin/search-result-software-engineer.json` |
 
 - ファイルが存在しない場合は新規作成
 - ファイルが存在する場合はデータを追記
 - 重複するIDの求人はスキップされます
 - 各求人には `createdAt` タイムスタンプが自動付与されます
 
-### 出力データの構造
+### 2. shape/unique-id-data.json
+
+`origin/` 内のすべてのJSONファイルをマージし、IDの重複を除去したデータ。
+
+### 3. shape/location-data.json
+
+ロケーション情報があるデータのみを抽出。以下の条件で判定：
+- `location` が空文字でない
+- または住所にカナダの郵便番号（例: `V6Z 1V1`）が含まれている
+
+### 4. shape/master-data.json
+
+全データから抽出したユニークな値のマスターデータ：
+- Skills（スキル一覧）
+- Benefits（福利厚生一覧）
+- Shift and Schedule（シフト一覧）
+
+### 出力データの構造（求人データ）
 
 ```json
 {
@@ -127,13 +160,18 @@ pnpm --filter @jobpop/scripts scrape:indeed "Barista" "Vancouver, BC" \
 ```
 packages/scripts/
 ├── data/                        # 出力ディレクトリ（自動生成）
-│   └── search-result-*.json     # 収集結果（キーワード別）
+│   ├── origin/                  # スクレイピング結果（生データ）
+│   │   └── search-result-*.json
+│   └── shape/                   # 加工済みデータ
+│       ├── unique-id-data.json
+│       ├── location-data.json
+│       └── master-data.json
 ├── scraper/
 │   ├── indeed.ts                # メインスクレイパー
 │   ├── login.ts                 # ログイン用スクリプト
+│   ├── extract-master.ts        # データ加工・マスター生成
 │   ├── types.ts                 # 型定義
 │   ├── utils.ts                 # ユーティリティ関数
-│   ├── extract-master.ts        # データ抽出
 │   ├── geocode-locations.ts     # 位置情報変換
 │   └── indeed-session.json      # セッション情報（自動生成）
 ├── seed/
@@ -151,11 +189,35 @@ packages/scripts/
 ```bash
 # スクレイパー
 pnpm --filter @jobpop/scripts scrape:indeed "キーワード" "場所"
+pnpm --filter @jobpop/scripts scrape:login
+
+# データ加工（origin → shape）
+pnpm --filter @jobpop/scripts scrape:extract-master
 
 # シードデータ投入
 pnpm --filter @jobpop/scripts seed:experience
 pnpm --filter @jobpop/scripts seed:job
 pnpm --filter @jobpop/scripts seed:barista
+```
+
+---
+
+## データ加工の流れ
+
+```
+1. スクレイピング実行
+   pnpm --filter @jobpop/scripts scrape:indeed "Barista" "Vancouver"
+   pnpm --filter @jobpop/scripts scrape:indeed "Server" "Vancouver"
+       ↓
+   data/origin/search-result-barista.json
+   data/origin/search-result-server.json
+
+2. データ加工実行
+   pnpm --filter @jobpop/scripts scrape:extract-master
+       ↓
+   data/shape/unique-id-data.json   (全データ、重複除去済み)
+   data/shape/location-data.json    (ロケーション情報ありのみ)
+   data/shape/master-data.json      (スキル等のマスター)
 ```
 
 ---
