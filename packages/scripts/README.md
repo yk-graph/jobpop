@@ -86,11 +86,17 @@ pnpm --filter @jobpop/scripts scrape:indeed "Barista" "Vancouver, BC" \
 
 ## 出力ファイル
 
-### search-result.json
+### search-result-{query}.json
 
-スクレイピング結果は `packages/scripts/data/search-result.json` に保存されます。
+スクレイピング結果は検索キーワードに基づいたファイル名で `packages/scripts/data/` に保存されます。
 
-- 新しい求人は既存データに追加されます（上書きではない）
+| 検索キーワード | 出力ファイル |
+|---------------|-------------|
+| `"Barista"` | `data/search-result-barista.json` |
+| `"Software Engineer"` | `data/search-result-software-engineer.json` |
+
+- ファイルが存在しない場合は新規作成
+- ファイルが存在する場合はデータを追記
 - 重複するIDの求人はスキップされます
 - 各求人には `createdAt` タイムスタンプが自動付与されます
 
@@ -120,21 +126,22 @@ pnpm --filter @jobpop/scripts scrape:indeed "Barista" "Vancouver, BC" \
 
 ```
 packages/scripts/
+├── data/                        # 出力ディレクトリ（自動生成）
+│   └── search-result-*.json     # 収集結果（キーワード別）
 ├── scraper/
-│   ├── indeed.ts           # メインスクレイパー
-│   ├── login.ts            # ログイン用スクリプト
-│   ├── types.ts            # 型定義
-│   ├── utils.ts            # ユーティリティ関数
-│   ├── extract-master.ts   # データ抽出
-│   ├── geocode-locations.ts # 位置情報変換
-│   ├── indeed-session.json # セッション情報（自動生成）
-│   └── search-result.json  # 収集結果（自動生成）
+│   ├── indeed.ts                # メインスクレイパー
+│   ├── login.ts                 # ログイン用スクリプト
+│   ├── types.ts                 # 型定義
+│   ├── utils.ts                 # ユーティリティ関数
+│   ├── extract-master.ts        # データ抽出
+│   ├── geocode-locations.ts     # 位置情報変換
+│   └── indeed-session.json      # セッション情報（自動生成）
 ├── seed/
-│   ├── seedExperience.ts   # 経験データ投入
-│   ├── seedDummyJobs.ts    # ダミー求人データ投入
-│   └── seedBaristaJobs.ts  # バリスタ求人データ投入
+│   ├── seedExperience.ts        # 経験データ投入
+│   ├── seedDummyJobs.ts         # ダミー求人データ投入
+│   └── seedBaristaJobs.ts       # バリスタ求人データ投入
 ├── package.json
-└── README.md               # このファイル
+└── README.md                    # このファイル
 ```
 
 ---
