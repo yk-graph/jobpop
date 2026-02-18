@@ -46,125 +46,129 @@ async function extractJobFromDetailPanel(page: Page, jobId: string): Promise<Job
     }
   }
 
-  return page.evaluate(
-    (id) => {
-      // タイトル
-      const titleEl = document.querySelector('.jobsearch-JobInfoHeader-title span')
-      if (!titleEl) return null
+  return page.evaluate((id) => {
+    // タイトル
+    const titleEl = document.querySelector('.jobsearch-JobInfoHeader-title span')
+    if (!titleEl) return null
 
-      // 会社名とURL
-      const companyLink = document.querySelector(
-        '[data-testid="inlineHeader-companyName"] a'
-      ) as HTMLAnchorElement | null
-      const company = companyLink?.textContent?.trim() || ''
-      const companyUrl = companyLink?.href
+    // 会社名とURL
+    const companyLink = document.querySelector('[data-testid="inlineHeader-companyName"] a') as HTMLAnchorElement | null
+    const company = companyLink?.textContent?.trim() || ''
+    const companyUrl = companyLink?.href
 
-      // 場所
-      const locationEl = document.querySelector('[data-testid="job-location"]')
-      const location = locationEl?.textContent?.trim() || ''
+    // 場所
+    const locationEl = document.querySelector('[data-testid="job-location"]')
+    const location = locationEl?.textContent?.trim() || ''
 
-      // 給与と雇用形態
-      const salaryTypeEl = document.querySelector('#salaryInfoAndJobType')
-      let salary: string | undefined
-      let jobType: string | undefined
+    // 給与と雇用形態
+    const salaryTypeEl = document.querySelector('#salaryInfoAndJobType')
+    let salary: string | undefined
+    let jobType: string | undefined
 
-      // 雇用形態のパターン
-      const jobTypePatterns = ['Part-time', 'Full-time', 'Contract', 'Temporary', 'Permanent', 'Internship', 'Co-op', 'Freelance']
+    // 雇用形態のパターン
+    const jobTypePatterns = [
+      'Part-time',
+      'Full-time',
+      'Contract',
+      'Temporary',
+      'Permanent',
+      'Internship',
+      'Co-op',
+      'Freelance',
+    ]
 
-      if (salaryTypeEl) {
-        const spans = salaryTypeEl.querySelectorAll('span')
-        spans.forEach((span) => {
-          const text = span.textContent?.trim() || ''
-          // 給与は通常 $ や 数字を含む
-          if (text.includes('$') || /\d/.test(text)) {
-            salary = text
-          } else if (text && jobTypePatterns.some((pattern) => text.includes(pattern))) {
-            // 雇用形態（Part-time, Full-time など）
-            // 先頭の "- " を除去
-            jobType = text.replace(/^-\s*/, '').trim()
-          }
-        })
-      }
-
-      // Job Detailsセクションからも雇用形態を取得（フォールバック）
-      if (!jobType) {
-        const jobDetailsSection = document.querySelector('#jobDetailsSection')
-        if (jobDetailsSection) {
-          jobDetailsSection.querySelectorAll('button[data-testid$="-tile"]').forEach((btn) => {
-            const testId = btn.getAttribute('data-testid')
-            if (testId) {
-              const value = testId.replace(/-tile$/, '')
-              if (jobTypePatterns.some((pattern) => value.includes(pattern))) {
-                jobType = value
-              }
-            }
-          })
+    if (salaryTypeEl) {
+      const spans = salaryTypeEl.querySelectorAll('span')
+      spans.forEach((span) => {
+        const text = span.textContent?.trim() || ''
+        // 給与は通常 $ や 数字を含む
+        if (text.includes('$') || /\d/.test(text)) {
+          salary = text
+        } else if (text && jobTypePatterns.some((pattern) => text.includes(pattern))) {
+          // 雇用形態（Part-time, Full-time など）
+          // 先頭の "- " を除去
+          jobType = text.replace(/^-\s*/, '').trim()
         }
-      }
-
-      // スキル（data-testid属性から取得）
-      const skills: string[] = []
-      const skillsSection = document.querySelector('[aria-label="Skills"]')
-      if (skillsSection) {
-        // button[data-testid="XXX-tile"] からスキル名を抽出
-        skillsSection.querySelectorAll('button[data-testid$="-tile"]').forEach((btn) => {
-          const testId = btn.getAttribute('data-testid')
-          if (testId) {
-            // "Customer service-tile" -> "Customer service"
-            const skillName = testId.replace(/-tile$/, '')
-            if (skillName) {
-              skills.push(skillName)
-            }
-          }
-        })
-      }
-
-      // 福利厚生
-      const benefits: string[] = []
-      document.querySelectorAll('#benefits ul li').forEach((el) => {
-        const text = el.textContent?.trim()
-        if (text && !text.includes('show')) benefits.push(text)
       })
+    }
 
-      // シフト・スケジュール（data-testid属性から取得）
-      const shiftAndSchedule: string[] = []
-      const shiftSection = document.querySelector('[aria-label="Shift and schedule"]')
-      if (shiftSection) {
-        shiftSection.querySelectorAll('button[data-testid$="-tile"]').forEach((btn) => {
+    // Job Detailsセクションからも雇用形態を取得（フォールバック）
+    if (!jobType) {
+      const jobDetailsSection = document.querySelector('#jobDetailsSection')
+      if (jobDetailsSection) {
+        jobDetailsSection.querySelectorAll('button[data-testid$="-tile"]').forEach((btn) => {
           const testId = btn.getAttribute('data-testid')
           if (testId) {
             const value = testId.replace(/-tile$/, '')
-            if (value) {
-              shiftAndSchedule.push(value)
+            if (jobTypePatterns.some((pattern) => value.includes(pattern))) {
+              jobType = value
             }
           }
         })
       }
+    }
 
-      // 説明
-      const descEl = document.querySelector('#jobDescriptionText')
-      const description = descEl?.textContent?.trim() || ''
+    // スキル（data-testid属性から取得）
+    const skills: string[] = []
+    const skillsSection = document.querySelector('[aria-label="Skills"]')
+    if (skillsSection) {
+      // button[data-testid="XXX-tile"] からスキル名を抽出
+      skillsSection.querySelectorAll('button[data-testid$="-tile"]').forEach((btn) => {
+        const testId = btn.getAttribute('data-testid')
+        if (testId) {
+          // "Customer service-tile" -> "Customer service"
+          const skillName = testId.replace(/-tile$/, '')
+          if (skillName) {
+            skills.push(skillName)
+          }
+        }
+      })
+    }
 
-      // URL
-      const url = window.location.href
+    // 福利厚生
+    const benefits: string[] = []
+    document.querySelectorAll('#benefits ul li').forEach((el) => {
+      const text = el.textContent?.trim()
+      if (text && !text.includes('show')) benefits.push(text)
+    })
 
-      return {
-        id,
-        title: titleEl.textContent?.trim() || '',
-        company,
-        companyUrl,
-        location,
-        salary,
-        jobType,
-        skills,
-        benefits,
-        shiftAndSchedule,
-        description,
-        url,
-      }
-    },
-    jobId
-  )
+    // シフト・スケジュール（data-testid属性から取得）
+    const shiftAndSchedule: string[] = []
+    const shiftSection = document.querySelector('[aria-label="Shift and schedule"]')
+    if (shiftSection) {
+      shiftSection.querySelectorAll('button[data-testid$="-tile"]').forEach((btn) => {
+        const testId = btn.getAttribute('data-testid')
+        if (testId) {
+          const value = testId.replace(/-tile$/, '')
+          if (value) {
+            shiftAndSchedule.push(value)
+          }
+        }
+      })
+    }
+
+    // 説明
+    const descEl = document.querySelector('#jobDescriptionText')
+    const description = descEl?.textContent?.trim() || ''
+
+    // URL
+    const url = window.location.href
+
+    return {
+      id,
+      title: titleEl.textContent?.trim() || '',
+      company,
+      companyUrl,
+      location,
+      salary,
+      jobType,
+      skills,
+      benefits,
+      shiftAndSchedule,
+      description,
+      url,
+    }
+  }, jobId)
 }
 
 export async function scrapeIndeed(options: ScrapeOptions): Promise<JobListing[]> {
@@ -349,7 +353,13 @@ async function main() {
   console.log(`\nTotal: ${jobs.length} jobs found\n`)
 
   // 結果をJSONファイルに保存（既存データに追加）
-  const outputPath = path.join(process.cwd(), 'scripts', 'scraper', 'search-result.json')
+  const outputDir = path.join(__dirname, '..', 'data')
+  const outputPath = path.join(outputDir, 'search-result.json')
+
+  // ディレクトリが存在しない場合は作成
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true })
+  }
 
   // 既存データを読み込み
   let existingJobs: (JobListing & { createdAt: string })[] = []
@@ -367,9 +377,7 @@ async function main() {
 
   // 新しいジョブにcreatedAtを追加し、重複を除外
   const createdAt = new Date().toISOString()
-  const newJobs = jobs
-    .filter((job) => !existingIds.has(job.id))
-    .map((job) => ({ ...job, createdAt }))
+  const newJobs = jobs.filter((job) => !existingIds.has(job.id)).map((job) => ({ ...job, createdAt }))
 
   console.log(`✨ New jobs: ${newJobs.length} (duplicates skipped: ${jobs.length - newJobs.length})`)
 

@@ -53,13 +53,13 @@ pnpm --filter @jobpop/scripts scrape:indeed "Software Engineer" "Toronto, ON" --
 
 ## オプション一覧
 
-| オプション | 説明 | 例 |
-|-----------|------|-----|
-| `--pages` | 取得するページ数（デフォルト: 1） | `--pages=3` |
-| `--radius` | 検索範囲（km） | `--radius=25` |
-| `--sort` | ソート順（`date` または `relevance`） | `--sort=date` |
-| `--fromage` | 投稿日（`last`, `1`, `3`, `7`, `14`） | `--fromage=last` |
-| `--jobType` | 雇用形態 | `--jobType=part-time` |
+| オプション  | 説明                                  | 例                    |
+| ----------- | ------------------------------------- | --------------------- |
+| `--pages`   | 取得するページ数（デフォルト: 1）     | `--pages=3`           |
+| `--radius`  | 検索範囲（km）                        | `--radius=25`         |
+| `--sort`    | ソート順（`date` または `relevance`） | `--sort=date`         |
+| `--fromage` | 投稿日（`last`, `1`, `3`, `7`, `14`） | `--fromage=last`      |
+| `--jobType` | 雇用形態                              | `--jobType=part-time` |
 
 ### jobTypeの選択肢
 
@@ -88,7 +88,7 @@ pnpm --filter @jobpop/scripts scrape:indeed "Barista" "Vancouver, BC" \
 
 ### search-result.json
 
-スクレイピング結果は `packages/scripts/scraper/search-result.json` に保存されます。
+スクレイピング結果は `packages/scripts/data/search-result.json` に保存されます。
 
 - 新しい求人は既存データに追加されます（上書きではない）
 - 重複するIDの求人はスキップされます
