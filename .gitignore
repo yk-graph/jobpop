@@ -54,3 +54,7 @@ debug-page-*.html
 
 # data
 packages/scripts/data
+
+# migration notes (local only)
+migrate.md
+migrateのコピー.md
