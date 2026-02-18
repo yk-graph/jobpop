@@ -51,10 +51,7 @@ certificates
 # scraper
 packages/scripts/scraper/debug-*.html
 debug-page-*.html
+packages/scripts/scraper/indeed-session.json
 
 # data
 packages/scripts/data
-
-# migration notes (local only)
-migrate.md
-migrateのコピー.md
