@@ -9,6 +9,7 @@ const SHAPE_DIR = path.join(__dirname, '..', 'data', 'shape')
 const UNIQUE_DATA_FILE = path.join(SHAPE_DIR, 'unique-id-data.json')
 const LOCATION_DATA_FILE = path.join(SHAPE_DIR, 'location-data.json')
 const REPORT_FILE = path.join(SHAPE_DIR, 'report.json')
+const TITLE_REPORT_FILE = path.join(SHAPE_DIR, 'title-report.json')
 
 interface JobListing {
   id: string
@@ -196,6 +197,13 @@ function main(): void {
 
   fs.writeFileSync(REPORT_FILE, JSON.stringify(reportData, null, 2), 'utf-8')
   console.log(`\n✅ 保存: ${REPORT_FILE}`)
+
+  // Step 6: タイトルレポートを生成（ユニークなタイトル一覧）
+  const uniqueTitles = [...new Set(uniqueJobs.map((job) => job.title))].sort()
+  console.log(`\n📝 ユニークタイトル: ${uniqueTitles.length}件`)
+
+  fs.writeFileSync(TITLE_REPORT_FILE, JSON.stringify(uniqueTitles, null, 2), 'utf-8')
+  console.log(`✅ 保存: ${TITLE_REPORT_FILE}`)
 
   console.log('\n=== 処理完了 ===\n')
 }

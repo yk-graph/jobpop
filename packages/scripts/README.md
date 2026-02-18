@@ -95,7 +95,8 @@ data/
 └── shape/                       # 加工済みデータ
     ├── unique-id-data.json      # 重複除去済みの全データ
     ├── location-data.json       # ロケーション情報ありのデータ
-    └── report.json              # スキル・福利厚生等のレポート
+    ├── report.json              # スキル・福利厚生等のレポート
+    └── title-report.json        # ユニークなタイトル一覧
 ```
 
 ---
@@ -123,8 +124,9 @@ data/
 ### 3. shape/location-data.json
 
 ロケーション情報があるデータのみを抽出。以下の条件で判定：
-- `location` が空文字でない
-- または住所にカナダの郵便番号（例: `V6Z 1V1`）が含まれている
+- `location` をカンマで分割して3つ以上のパーツがある
+- 例: `"845 Hornby Street, Vancouver, BC"` → 3パーツ → ✅
+- 例: `"Vancouver, BC"` → 2パーツ → ❌
 
 ### 4. shape/report.json
 
@@ -155,6 +157,20 @@ data/
 | `benefits` | 全データから抽出した福利厚生一覧 |
 | `shiftAndSchedule` | 全データから抽出したシフト一覧 |
 | `reports` | 処理結果のサマリー |
+
+### 5. shape/title-report.json
+
+全データからユニークな求人タイトルを抽出した一覧。完全に同一の文字列のタイトルは除外されます。
+
+```json
+[
+  "Barista",
+  "Barista - Full Time",
+  "Head Barista",
+  "Server",
+  "Server / Bartender"
+]
+```
 
 ### 出力データの構造（求人データ）
 
@@ -188,11 +204,12 @@ packages/scripts/
 │   └── shape/                   # 加工済みデータ
 │       ├── unique-id-data.json
 │       ├── location-data.json
-│       └── report.json
+│       ├── report.json
+│       └── title-report.json
 ├── scraper/
 │   ├── indeed.ts                # メインスクレイパー
 │   ├── login.ts                 # ログイン用スクリプト
-│   ├── shape-data.ts            # データ加工・レポート生成
+│   ├── report.ts                # データ加工・レポート生成
 │   ├── types.ts                 # 型定義
 │   ├── utils.ts                 # ユーティリティ関数
 │   ├── geocode-locations.ts     # 位置情報変換
@@ -215,7 +232,7 @@ pnpm --filter @jobpop/scripts scrape:indeed "キーワード" "場所"
 pnpm --filter @jobpop/scripts scrape:login
 
 # データ加工（origin → shape）
-pnpm --filter @jobpop/scripts data:shape
+pnpm --filter @jobpop/scripts data:report
 
 # シードデータ投入
 pnpm --filter @jobpop/scripts seed:experience
@@ -236,11 +253,12 @@ pnpm --filter @jobpop/scripts seed:barista
    data/origin/search-result-server.json
 
 2. データ加工実行
-   pnpm --filter @jobpop/scripts data:shape
+   pnpm --filter @jobpop/scripts data:report
        ↓
    data/shape/unique-id-data.json   (全データ、重複除去済み)
    data/shape/location-data.json    (ロケーション情報ありのみ)
    data/shape/report.json           (スキル等のレポート)
+   data/shape/title-report.json     (ユニークなタイトル一覧)
 ```
 
 ---

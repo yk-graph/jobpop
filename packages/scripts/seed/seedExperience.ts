@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 
 import { PrismaClient } from '@jobpop/database'
-import { INDUSTRY_EXPERIENCES } from '../../src/constants/experiences'
+import { INDUSTRY_EXPERIENCES } from '@jobpop/web/src/constants'
 
 const prisma = new PrismaClient()
 

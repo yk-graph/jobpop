@@ -8,10 +8,11 @@
     "seed:barista": "tsx seed/seedBaristaJobs.ts",
     "scrape:indeed": "tsx scraper/indeed.ts",
     "scrape:login": "tsx scraper/login.ts",
-    "data:shape": "tsx scraper/shape-data.ts"
+    "data:report": "tsx scraper/report.ts"
   },
   "dependencies": {
-    "@jobpop/database": "workspace:*"
+    "@jobpop/database": "workspace:*",
+    "@jobpop/web": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
